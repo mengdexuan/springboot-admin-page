@@ -26,56 +26,90 @@
 
 ## 功能模块
 #### 首页
-该项目已成功集成
 
-[![image](https://gitee.com/mengwei_036/MW-JOB-UI/raw/master/doc/img/config.jpg)](https://gitee.com/mengwei_036/MW-JOB-UI/raw/master/doc/img/config.jpg)
+[![image](https://github.com/mengdexuan/springboot-admin-page/blob/master/images/index.png)](https://github.com/mengdexuan/springboot-admin-page/blob/master/images/index.png)
 #### WebShell
 Web版的Xshell，在浏览器上简单实现Xshell功能，包括SFTP功能
 
+[![image](https://github.com/mengdexuan/springboot-admin-page/blob/master/images/webShell/sshServerList.png)](https://github.com/mengdexuan/springboot-admin-page/blob/master/images/webShell/sshServerList.png)
+
+[![image](https://github.com/mengdexuan/springboot-admin-page/blob/master/images/webShell/ssh.png)](https://github.com/mengdexuan/springboot-admin-page/blob/master/images/webShell/ssh.png)
+
+[![image](https://github.com/mengdexuan/springboot-admin-page/blob/master/images/webShell/sftp.png)](https://github.com/mengdexuan/springboot-admin-page/blob/master/images/webShell/sftp.png)
+
 #### 系统监控
 - 1.系统日志：在页面上查看程序运行的info,error日志而不用登录linux服务器，websocket实时推送日志到页面
+
+[![image](https://github.com/mengdexuan/springboot-admin-page/blob/master/images/sysMonitor/log.png)](https://github.com/mengdexuan/springboot-admin-page/blob/master/images/sysMonitor/log.png)
+
 - 2.Swagger文档：嵌入Swagger的API接口文档页面
+
+[![image](https://github.com/mengdexuan/springboot-admin-page/blob/master/images/sysMonitor/swagger.png)](https://github.com/mengdexuan/springboot-admin-page/blob/master/images/sysMonitor/swagger.png)
+
 - 3.请求追踪：基于WebFilter的请求响应日志记录
+
+[![image](https://github.com/mengdexuan/springboot-admin-page/blob/master/images/sysMonitor/requestLog.png)](https://github.com/mengdexuan/springboot-admin-page/blob/master/images/sysMonitor/requestLog.png)
+
 
 #### 数据库系统
 - 1.Web版Navicat：在页面上简单实现数据库连接工具Navicat的功能
+[![image](https://github.com/mengdexuan/springboot-admin-page/blob/master/images/db/webNavicat.png)](https://github.com/mengdexuan/springboot-admin-page/blob/master/images/db/webNavicat.png)
+
 - 2.应用数据库：本项目运行的数据库信息，可查看表信息，执行sql等功能
+
+[![image](https://github.com/mengdexuan/springboot-admin-page/blob/master/images/db/db.png)](https://github.com/mengdexuan/springboot-admin-page/blob/master/images/db/db.png)
 - 3.druid监控：嵌入Alibaba的druid监控页面
 
+[![image](https://github.com/mengdexuan/springboot-admin-page/blob/master/images/db/druid.png)](https://github.com/mengdexuan/springboot-admin-page/blob/master/images/db/druid.png)
 
 #### 文件系统
 项目部署所在服务器的磁盘文件系统，以tree的方式展示
 
+[![image](https://github.com/mengdexuan/springboot-admin-page/blob/master/images/fileSys/file.png)](https://github.com/mengdexuan/springboot-admin-page/blob/master/images/fileSys/file.png)
+
 #### FTP管理
 在Web页面中管理操作FTP服务器
+
+[![image](https://github.com/mengdexuan/springboot-admin-page/blob/master/images/ftp/ftpList.png)](https://github.com/mengdexuan/springboot-admin-page/blob/master/images/ftp/ftpList.png)
+
+[![image](https://github.com/mengdexuan/springboot-admin-page/blob/master/images/ftp/ftp.png)](https://github.com/mengdexuan/springboot-admin-page/blob/master/images/ftp/ftp.png)
 
 #### 任务管理
 基于Quartz的任务管理，可实现对任务的暂停、触发、删除、修改cron等操作，以及查看最近1次运行的错误日志
 
+[![image](https://github.com/mengdexuan/springboot-admin-page/blob/master/images/task/task.png)](https://github.com/mengdexuan/springboot-admin-page/blob/master/images/task/task.png)
+
 #### camel路由管理
 可在页面中手动控制Apache Camel路由的状态
+[![image](https://github.com/mengdexuan/springboot-admin-page/blob/master/images/camel/camel.png)](https://github.com/mengdexuan/springboot-admin-page/blob/master/images/camel/camel.png)
+
 
 #### 系统管理
 - 1.配置文件：项目运行所使用的配置文件，方便在页面上查看配置
+[![image](https://github.com/mengdexuan/springboot-admin-page/blob/master/images/sysManage/config.png)](https://github.com/mengdexuan/springboot-admin-page/blob/master/images/sysManage/config.png)
+
 - 2.接口限流：基于 google 的令牌桶算法实现的单体应用的限流控制
+[![image](https://github.com/mengdexuan/springboot-admin-page/blob/master/images/sysManage/urlLimit.png)](https://github.com/mengdexuan/springboot-admin-page/blob/master/images/sysManage/urlLimit.png)
+
 - 3.数据字典：系统数据配置维护
+[![image](https://github.com/mengdexuan/springboot-admin-page/blob/master/images/sysManage/dict.png)](https://github.com/mengdexuan/springboot-admin-page/blob/master/images/sysManage/dict.png)
+
 
 #### 权限中心
 - 1.用户管理：用户模块CRUD
-- 2.权限组管理：权限组模块CRUD
-- 3.菜单管理：菜单模块CRUD
+[![image](https://github.com/mengdexuan/springboot-admin-page/blob/master/images/auth/user.png)](https://github.com/mengdexuan/springboot-admin-page/blob/master/images/auth/user.png)
 
+- 2.权限组管理：权限组模块CRUD
+[![image](https://github.com/mengdexuan/springboot-admin-page/blob/master/images/auth/authGroup.png)](https://github.com/mengdexuan/springboot-admin-page/blob/master/images/auth/authGroup.png)
+
+- 3.菜单管理：菜单模块CRUD
+[![image](https://github.com/mengdexuan/springboot-admin-page/blob/master/images/auth/menu.png)](https://github.com/mengdexuan/springboot-admin-page/blob/master/images/auth/menu.png)
 
 [注：系统登录控制功能没有实现]
 
 
 
-
-
-
-
-
-### 开源推荐
+## 开源推荐
 
 - `hutool`：A set of tools that keep Java sweet，https://www.hutool.cn/
 
