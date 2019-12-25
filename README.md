@@ -19,7 +19,7 @@
 
 ## 运行方式
 
-1. `git clone https://github.com/xkcoding/spring-boot-demo.git`
+1. `git clone https://github.com/mengdexuan/springboot-admin-page.git`
 2. 使用 IDEA 打开 clone 下来的项目
 3. 在 IDEA 中 Maven Projects 的面板导入项目根目录下 的 `pom.xml` 文件
 4. Maven Projects 找不到的童鞋，可以勾上 IDEA 顶部工具栏的 View -> Tool Buttons ，然后 Maven Projects 的面板就会出现在 IDEA 的右侧
