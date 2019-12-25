@@ -1,0 +1,191 @@
+﻿<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+	<div th:replace="include/_meta :: head"></div>
+	<title>springboot-admin-page v1.0</title>
+</head>
+<body>
+<!--_header 作为公共模版分离出去-->
+<div th:replace="include/_header :: header"></div>
+<!--/_header 作为公共模版分离出去-->
+
+<!--_menu 作为公共模版分离出去-->
+<div th:replace="include/_menu :: aside"></div>
+<div class="dislpayArrow hidden-xs"><a class="pngfix" href="javascript:void(0);" onClick="displaynavbar(this)"></a></div>
+<!--/_menu 作为公共模版分离出去-->
+
+<section class="Hui-article-box">
+	<div th:replace="include/_nav :: nav"></div>
+	<div class="Hui-article">
+		<article class="cl pd-20">
+			<div class="container-fluid">
+				<div class="row cl">
+					<div class="col-md-12">
+						<input type="hidden" value="info" id="logType"/>
+						<button class="btn btn-success" type="button" onclick="changeLog('info')">INFO日志</button>
+						&nbsp;&nbsp;
+						<button class="btn btn-danger" type="button" onclick="changeLog('error')">ERROR日志</button>
+						&nbsp;&nbsp;
+						<button class="btn btn-primary" type="button" onclick="emptyContainer()">清空日志</button>
+						&nbsp;&nbsp;
+						<button class="btn btn-warning" type="button" onclick="logTrigger()">日志打印(on/off)</button>
+					</div>
+				</div>
+				<div class="row cl" style="margin-top: 15px;" id="container_1">
+					<div class="col-md-12" id="log-container"
+						 style="height: 600px; overflow-y: scroll; background: rgba(182,218,146,0.89); color: rgba(0,0,0,0.97); padding: 10px;">
+						<div>
+						</div>
+					</div>
+				</div>
+				<div class="row cl" style="margin-top: 15px;" id="container_2">
+					<div class="col-md-12" id="log-container2"
+						 style="height: 600px; overflow-y: scroll; background: rgba(182,218,146,0.89); color: rgba(0,0,0,0.97); padding: 10px;">
+						<div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<input type="hidden" id="logTrigger" th:value="1"/>
+		</article>
+	</div>
+</section>
+
+<!--_footer 作为公共模版分离出去-->
+<div th:replace="include/_footer :: footer"></div>
+<!--/_footer /作为公共模版分离出去-->
+
+<!--请在下方写此页面业务相关的脚本-->
+<script type="text/javascript" th:inline="javascript">
+
+
+    var websocket = null;
+    var websocket2 = null;
+
+    $(document).ready(function () {
+        clickLi("sysLog");
+        infoLog();
+        errorLog();
+
+        changeLog('info');
+    })
+
+
+    function logTrigger() {
+        var logTrigger = $("#logTrigger").val();
+        var logTriggerVal = "";
+        if ("1"==logTrigger){
+            logTriggerVal = "2";
+            websocket.close();
+            websocket2.close();
+            layer.msg("停止日志打印！")
+        }else if ("2"==logTrigger){
+            logTriggerVal = "1";
+            infoLog();
+            errorLog();
+            layer.msg("开启日志打印！")
+        }
+        $("#logTrigger").val(logTriggerVal);
+    }
+
+
+    function changeLog(logType) {
+        if ("info"==logType){
+            $("#container_1").show(800);
+            $("#container_2").hide(800);
+        }else if ("error"==logType){
+            $("#container_1").hide(800);
+            $("#container_2").show(800);
+        }
+        $("#logType").val(logType);
+    }
+
+    function infoLog() {
+        if (websocket == null) {
+        } else {
+            websocket.close();
+        }
+
+        //判断当前浏览器是否支持WebSocket
+        if ('WebSocket' in window) {
+            websocket = new WebSocket('ws://' + window.location.host + ctx +'/tail/info');
+        } else {
+            alert('Not support websocket')
+        }
+
+        websocket.onmessage = function (event) {
+            // 接收服务端的实时日志并添加到HTML页面中
+            $("#log-container div").append(event.data);
+            // 滚动条滚动到最低部
+            $("#log-container").scrollTop($("#log-container div").height() - $("#log-container").height());
+        };
+
+
+        //监听窗口关闭事件，当窗口关闭时，主动去关闭websocket连接，防止连接还没断开就关闭窗口，server端会抛异常。
+        window.onbeforeunload = function () {
+            websocket.close();
+        }
+    }
+
+    function errorLog() {
+        if (websocket2 == null) {
+        } else {
+            websocket2.close();
+        }
+
+        //判断当前浏览器是否支持WebSocket
+        if ('WebSocket' in window) {
+            websocket2 = new WebSocket('ws://' + window.location.host + ctx +'/tail/error');
+        } else {
+            alert('Not support websocket')
+        }
+
+        websocket2.onmessage = function (event) {
+            // 接收服务端的实时日志并添加到HTML页面中
+            $("#log-container2 div").append(event.data);
+            // 滚动条滚动到最低部
+            $("#log-container2").scrollTop($("#log-container2 div").height() - $("#log-container2").height());
+        };
+
+
+        //监听窗口关闭事件，当窗口关闭时，主动去关闭websocket连接，防止连接还没断开就关闭窗口，server端会抛异常。
+        window.onbeforeunload = function () {
+            websocket2.close();
+        }
+    }
+
+    function emptyContainer() {
+        var logType = $("#logType").val();
+        if ("info"==logType){
+            $("#log-container div").empty();
+        }else if ("error"==logType){
+            $("#log-container2 div").empty();
+        }
+    }
+
+    function stopApp() {
+        layer.confirm('确认？', {
+            btn: ['确认','取消']
+        }, function(index){
+            $.ajax({
+                type: "get",
+                url: ctx + "/exit",
+                dataType: "text",
+                async: true,
+                success: function (data) {
+                },
+                error: function (err) {
+                }
+            });
+            layer.close(index);
+        }, function(){
+
+        });
+    }
+
+
+
+</script>
+<!--/请在上方写此页面业务相关的脚本-->
+</body>
+</html>

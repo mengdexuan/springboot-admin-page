@@ -1,0 +1,376 @@
+﻿<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+	<meta charset="utf-8">
+	<meta title="SFTP">
+	<meta name="renderer" content="webkit|ie-comp|ie-stand">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+	<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+	<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+	<link rel="Bookmark" href="favicon.ico" >
+	<link rel="Shortcut Icon" href="favicon.ico" />
+	<link rel="stylesheet" type="text/css" th:href="@{/bootstrap/css/bootstrap.min.css}"/>
+	<script type="text/javascript" th:src="@{/lib/jquery/1.9.1/jquery.min.js}"></script>
+	<script type="text/javascript" th:src="@{/lib/layer/2.4/layer.js}"></script>
+	<script type="text/javascript" th:src="@{/bootstrap/js/bootstrap.min.js}"></script>
+	<script type="text/javascript" th:src="@{/lib/jquery/1.9.1/ajaxfileupload.js}"></script>
+
+</head>
+<body style="background-color: #cce8cf">
+
+<div class="container">
+	<div class="row" style="margin-top: 1%">
+		<h1 style="text-align: center;color:#1924ff" th:text="|${sshInfo.hostname} (SFTP)|"></h1>
+	</div>
+	<div class="row" style="margin-top: 1%">
+		<div class="col-md-12">
+			<div class="progress progress-striped active">
+				<div class="progress-bar progress-bar-info" role="progressbar"
+					 aria-valuenow="60" aria-valuemin="0" aria-valuemax="100"
+					 style="width: 0%;">
+					<span id="percent">00.00%</span>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="row" style="margin-top: 1%">
+		<div class="col-md-8">
+			<form class="form-inline">
+				<div class="form-group">
+					<input type="file" id="uploadFile" name="uploadFile"/>
+				</div>
+				<button type="button" class="btn btn-success" id="subFile">上传</button>
+			</form>
+		</div>
+		<div class="col-md-2"></div>
+		<div class="col-md-2">
+			<button class="btn btn-primary" type="button" onclick="refresh()">刷新</button>
+			&nbsp;&nbsp;
+			<button class="btn btn-danger" type="button" onclick="closeSftpClient();">关闭</button>
+		</div>
+	</div>
+	<div class="row" style="margin-top: 2%">
+		<div class="col-md-12">
+			<div class="panel panel-warning">
+				<div class="panel-heading">
+					<label class="panel-title pull-left" style="margin-top:5px" id="catalog"></label>
+					<button class="btn btn-sm btn-success col-md-2 col-sm-3 pull-right" id="subCreate">创建目录</button>
+					<div class="col-md-2 pull-right">
+						<input class="form-control input-sm" type="text" id="fName"/>
+					</div>
+					<label class="control-label pull-right" for="fName" style="margin-top:5px">目录名称</label>
+					<span class="clearfix"></span>
+				</div>
+				<div class="panel-body" style="height:500px;padding:0;overflow:scroll">
+					<table class="table table-striped  table-responsive table-hover">
+						<thead>
+						<tr>
+							<th>Remote Name</th>
+							<th>Size</th>
+							<th>Modified</th>
+							<th>Attributes</th>
+							<th>Action</th>
+						</tr>
+						</thead>
+						<tbody id="file-list">
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+
+<!-- action return message model begin -->
+<div class="modal fade" id="msgModal" tabindex="-1" role="dialog"
+	 aria-labelledby="msgModalLabel" data-backdrop="static">
+	<div class="modal-dialog">
+		<div id="message" style="text-align: center;color:white;margin-top: 20%"></div>
+	</div>
+</div>
+<!-- action return message model end -->
+
+
+
+<!-- attributes model begin -->
+<div class="modal fade" id="attrModal" tabindex="-1" role="dialog"
+	 aria-labelledby="attrModalLabel" aria-hidden="true" data-backdrop="static">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal"
+						aria-hidden="true">&times;</button>
+				<h4 class="modal-title" id="attrModalLabel"></h4>
+			</div>
+			<div class="modal-body text-center">
+				<table class="table" style="margin-bottom: 0">
+					<thead>
+					<tr>
+						<th class="text-center">Permissions</th>
+						<th class="text-center">Read</th>
+						<th class="text-center">Write</th>
+						<th class="text-center">Execute</th>
+					</tr>
+					</thead>
+					<tbody>
+					<tr>
+						<td>Owner</td>
+						<td><input type="checkbox" id="usrR" value="400"/></td>
+						<td><input type="checkbox" id="usrW" value="200"/></td>
+						<td><input type="checkbox" id="usrE" value="100"/></td>
+					</tr>
+					<tr>
+						<td>Group</td>
+						<td><input type="checkbox" id="grpR" value="40"/></td>
+						<td><input type="checkbox" id="grpW" value="20"/></td>
+						<td><input type="checkbox" id="grpE" value="10"/></td>
+					</tr>
+					<tr>
+						<td>Other</td>
+						<td><input type="checkbox" id="othR" value="4"/></td>
+						<td><input type="checkbox" id="othW" value="2"/></td>
+						<td><input type="checkbox" id="othE" value="1"/></td>
+					</tr>
+					<tr>
+						<td>Permission</td>
+						<td colspan="3">
+							<input class="form-control input-sm" type="text" id="permissions" name="permissions"/>
+						</td>
+					</tr>
+					</tbody>
+				</table>
+			</div>
+			<div class="modal-footer">
+				<button id="subAttr" type="button" class="btn btn-primary" data-dismiss="modal" onclick="">Submit</button>
+				<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+			</div>
+		</div>
+	</div>
+</div>
+<!-- attributes model end -->
+
+
+
+<!--请在下方写此页面业务相关的脚本-->
+<script type="text/javascript" th:inline="javascript">
+    var sshInfo = [[${sshInfo}]];
+
+    $(document).ready(function(){
+        $('#message').html('Sftp file loading...');
+        $("#msgModal").modal('show');
+        var $id = sshInfo.id;
+
+        $.getJSON('connectSftp?id=' + $id, function(data){
+            showFiles(data);
+        });
+    });
+
+    function refresh() {
+        window.location = location.href;
+    }
+
+    function closeSftpClient(){
+        $.ajax({
+            type: "get",
+            url: "closeSftpClient",
+            dataType: "text",
+            async: false,
+            data: {
+                id: sshInfo.id
+            },
+            success: function (data) {
+                window.opener=null;
+                window.open('','_self');
+                window.close();
+            },
+            error: function (err) {
+            }
+        });
+
+	}
+
+    $("#attrModal").on("hidden.bs.modal", function() {
+        $(this).removeData("bs.modal");
+        $('input[type=checkbox]').each(function(){
+            $(this).removeAttr('checked');
+        })
+        $('#permissions').val('');
+    });
+    $('input[type=checkbox]').click(function(){
+        var $p = 0;
+        $('input[type=checkbox]').each(function(){
+            if ($(this).is(':checked')){
+                var curr = $(this).val()+"";
+                $p += parseInt(curr);
+			}
+        });
+        $('#permissions').val($p);
+    })
+    function initAttr(p, fileName) {
+        $('#attrModalLabel').html(fileName);
+        $('#subAttr').attr('onclick',"setAttr('"+fileName+"')");
+        p = parseInt(p);
+        console.log(p);
+        $('#permissions').val(p.toString(8).slice(-3));
+        if (p%2==1) {
+            $('#othE').prop('checked',true)
+        }
+        p = p>>1;
+        if (p%2==1) {
+            $('#othW').prop('checked',true)
+        }
+        p = p>>1;
+        if (p%2==1) {
+            $('#othR').prop('checked',true)
+        }
+        p = p>>1;
+        if (p%2==1) {
+            $('#grpE').prop('checked',true)
+        }
+        p = p>>1;
+        if (p%2==1) {
+            $('#grpW').prop('checked',true)
+        }
+        p = p>>1;
+        if (p%2==1) {
+            $('#grpR').prop('checked',true)
+        }
+        p = p>>1;
+        if (p%2==1) {
+            $('#usrE').prop('checked',true)
+        }
+        p = p>>1;
+        if (p%2==1) {
+            $('#usrW').prop('checked',true)
+        }
+        p = p>>1;
+        if (p%2==1) {
+            $('#usrR').prop('checked',true)
+        }
+    }
+    function downLoadFile(fileName) {
+        var form = $("<form>");
+        form.attr('style', 'display:none');
+        // form.attr('target', '_blank');
+        form.attr('method', 'post');
+        form.attr('action', "downloadFile?id="+sshInfo.id);
+
+        var input1 = $('<input>');
+        input1.attr('type', 'hidden');
+        input1.attr('name', 'fileFileName');
+        input1.attr('value', fileName);
+        form.append(input1);
+        $('body').append(form);
+        form.submit();
+    }
+
+    function refreshProgress() {
+        $.get('uploadState?t=' + new Date().getTime()+"&id="+sshInfo.id,function(data){
+            data = jQuery.parseJSON(data);
+            $('.progress-bar').css('width',data.percent);
+            $('#percent').html(data.percent);
+            // $('#state').html('current percent:' + data.percent);
+            if (data.percent != '100.00%'){
+                setTimeout("refreshProgress()", 1000);
+			}
+        });
+    };
+    //create new fodder
+    $('#subCreate').click(function(){
+        $fName = $('#fName').val();
+        if ($.trim($fName)=="") {
+            alert("Fodder name is empty!");
+            return;
+        }
+        exec('mkdir', $fName);
+        $('#fName').val('');
+    })
+    //upload file
+    $('#subFile').click(function(){
+        $.ajaxFileUpload({
+            url: 'execCommand?cmd=upload&id='+sshInfo.id,
+            type: 'post',
+            secureuri: false,
+            fileElementId: 'uploadFile',
+            dataType: 'json',
+            elementIds: '',
+            success: function(data, status){
+                $('#message').html('Sftp file loading...');
+                $("#msgModal").modal('show');
+				refresh();
+            },
+            error: function(data, status, e){
+                $('#progress').html("upload failed.");
+            }
+        });
+        refreshProgress();
+    });
+    function setAttr(fileName) {
+        $('#message').html('Sftp file loading...');
+        $("#msgModal").modal('show');
+        $.post('execCommand', {'cmd':'attr', 'fileFileName':fileName, 'permissions':$('#permissions').val(),'id':sshInfo.id}, function(data){
+            showFiles(jQuery.parseJSON(data));
+        });
+    }
+    function exec(cmd, cmdParam) {
+        $('#message').html('Sftp file loading...');
+        $("#msgModal").modal('show');
+        $.post('execCommand', {'cmd':cmd, 'cmdParam':cmdParam,'id':sshInfo.id}, function(data){
+            showFiles(jQuery.parseJSON(data));
+        });
+    };
+    function initRemoveModal(fileName,isDir) {
+        layer.confirm('确认删除 '+fileName+" 吗？", function(index){
+
+            $('#message').html('Sftp file loading...');
+            $("#msgModal").modal('show');
+            $.post('execCommand', {'cmd':"rm", 'cmdParam':fileName,'id':sshInfo.id,'isDir':isDir}, function(data){
+                showFiles(jQuery.parseJSON(data));
+            });
+
+            layer.close(index);
+        });
+
+    }
+    function showFiles(data) {
+        if (data.code == -1) {
+            $("#message").removeClass("alert alert-success").addClass("alert alert-danger");
+            $('#message').html(data.msg);
+            setTimeout(function(){$("#msgModal").modal('hide');}, 2000);
+            return ;
+        }
+
+        var catalogStr = data.currentCatalog;
+        catalogStr += " [ ";
+        catalogStr += "文件数:";
+        catalogStr += data.fileCount;
+        catalogStr += "  目录数:";
+        catalogStr += data.dirCount;
+        catalogStr += " ]";
+        $('#catalog').html(catalogStr);
+
+        if (data != undefined && data != "")
+            $('#file-list').empty();
+
+        if (data.currentCatalog != "/") {
+            $tr = '<tr><td>&nbsp;<span class="glyphicon glyphicon-folder-open"></span>&nbsp;&nbsp;　<a href="javascript:void(0)" onclick="exec(\'cd\',\'..\')">..</a></td><td></td><td></td><td></td><td></td></tr>'
+            $('#file-list').append($tr);
+        }
+
+        $(data.files).each(function(i, e){
+            if (e.directory) {
+                $tr = '<tr><td>&nbsp;<span class="glyphicon glyphicon-folder-open"></span>&nbsp;　<a href="javascript:void(0)" onclick="exec(\'cd\',\''+e.filename+'\')">' +e.filename+ '</a></td><td></td><td>'+e.mtime+'</td><td>'+e.strPermissions+'</td><td><a class="glyphicon glyphicon-trash pull-right" data-toggle="modal" href="javascript:void(0)" title="delete" style="color:red;outline:none" onclick="initRemoveModal(\''+e.filename+'\',\''+e.directory+'\')"></a><a class="glyphicon glyphicon-edit pull-right" href="javascript:void(0)" data-toggle="modal" data-target="#attrModal" title="attributes" style="margin-right:10px;color:blue;outline:none" onclick="initAttr(\''+e.intPermissions+'\',\''+e.filename+'\')"></a></td></tr>';
+            } else {
+                $tr = '<tr><td>&nbsp;<span class="glyphicon glyphicon-file"></span>　'+e.filename+'</td><td>'+e.size+'</td><td>'+e.mtime+'</td><td>'+e.strPermissions+'</td><td><a class="glyphicon glyphicon-trash pull-right" data-toggle="modal" href="javascript:void(0)" title="delete" style="color:red;outline:none" onclick="initRemoveModal(\''+e.filename+'\',\''+e.directory+'\')"></a><a class="glyphicon glyphicon-download-alt pull-right" href="javascript:void(0)" title="download" style="margin-right:10px;color:#FF9933;outline:none" onclick="downLoadFile(\''+e.filename+'\')"></a><a class="glyphicon glyphicon-edit pull-right" href="javascript:void(0)" data-toggle="modal" data-target="#attrModal" title="attributes" style="margin-right:10px;color:blue;outline:none" onclick="initAttr(\''+e.intPermissions+'\',\''+e.filename+'\')"></a></td></tr>';
+            }
+            $('#file-list').append($tr);
+        });
+        $("#msgModal").modal('hide');
+    }
+</script>
+<!--/请在上方写此页面业务相关的脚本-->
+</body>
+
+</html>

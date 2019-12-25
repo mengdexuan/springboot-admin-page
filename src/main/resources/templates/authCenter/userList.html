@@ -1,0 +1,335 @@
+﻿<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+	<div th:replace="include/_meta :: head"></div>
+	<title>springboot-admin-page v1.0</title>
+</head>
+<body>
+<!--_header 部分-->
+<div th:replace="include/_header :: header"></div>
+<!--/_header 部分-->
+
+<!--_menu 部分-->
+<div th:replace="include/_menu :: aside"></div>
+<div class="dislpayArrow hidden-xs"><a class="pngfix" href="javascript:void(0);" onClick="displaynavbar(this)"></a></div>
+<!--/_menu 部分-->
+
+<section class="Hui-article-box">
+	<div th:replace="include/_nav :: nav"></div>
+	<div class="Hui-article">
+		<article class="cl pd-20">
+			<div class="container-fluid">
+				<div class="row">
+					<div class="col-md-10">
+					</div>
+					<div class="col-md-2">
+						<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal">添加用户</button>
+					</div>
+				</div>
+				</br>
+				<div class="row">
+					<div class="col-md-12">
+						<table id="tableData" class="table table-hover table-responsive table-condensed">
+							<thead>
+							<tr class="success">
+								<th>序号</th>
+								<th>登陆账号</th>
+								<th>用户名</th>
+								<th>是否可用</th>
+								<th>账号创建时间</th>
+								<th>最后登录时间</th>
+								<th>操作</th>
+							</tr>
+							</thead>
+							<tbody>
+							<tr th:each="user : ${userList}">
+								<td th:text="${userStat.count}"></td>
+								<td th:text="${user.loginname}"></td>
+								<td th:text="${user.username}"></td>
+								<td th:text="${user.status==1?'可用':'禁用'}"></td>
+								<td th:text="${#dates.format(user.createTime,'yyyy-MM-dd HH:mm:ss')}"></td>
+								<td th:text="${#dates.format(user.lastLoginTime,'yyyy-MM-dd HH:mm:ss')}"></td>
+								<td>
+									<button type="button" th:onclick="'linkAuthGroup(\''+${user.id}+'\');'" class="btn btn-success btn-xs">关联权限组</button>
+									<button type="button" th:if="${user.status==0}" th:onclick="'enabledUser(\''+${user.id}+'\');'" class="btn btn-success btn-xs">启用</button>
+									<button type="button" th:if="${user.status==1}" th:onclick="'disabledUser(\''+${user.id}+'\');'" class="btn btn-warning btn-xs">禁用</button>
+									<button type="button" th:onclick="'resetPwd(\''+${user.id}+'\');'" class="btn btn-info btn-xs">重置密码</button>
+									<button type="button" th:onclick="'delUser(\''+${user.id}+'\');'" class="btn btn-danger btn-xs">删除</button>
+								</td>
+							</tr>
+							</tbody>
+						</table>
+					</div>
+				</div>
+			</div>
+		</article>
+	</div>
+</section>
+
+
+<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel">
+	<div class="modal-dialog" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+				<h4 class="modal-title" id="exampleModalLabel">新建账号</h4>
+			</div>
+			<div class="modal-body">
+				<form id="addUserForm">
+					<div class="form-group">
+						<label for="loginname" class="control-label">登录账号:</label>
+						<input type="text" class="form-control" name="loginname" id="loginname">
+					</div>
+					<div class="form-group">
+						<label for="username" class="control-label">用户名:</label>
+						<input type="text" class="form-control" name="username" id="username">
+					</div>
+					<div class="form-group">
+						<label for="password" class="control-label">密码:</label>
+						<input type="password" class="form-control" name="password" id="password">
+					</div>
+				</form>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+				<button type="button" onclick="saveUser();" data-dismiss="modal" class="btn btn-primary">保存</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+
+<div class="modal fade" id="modal_2" tabindex="-1" role="dialog" aria-labelledby="gridSystemModalLabel">
+	<div class="modal-dialog" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+				<h4 class="modal-title" id="gridSystemModalLabel">选择要关联的权限组</h4>
+			</div>
+			<div class="modal-body">
+				<div class="row">
+					<div class="col-md-4 col-md-offset-4" id="listGroup">
+					</div>
+				</div>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+				<button type="button" class="btn btn-primary" onclick="saveLinkAuth()" data-dismiss="modal">保存</button>
+			</div>
+		</div><!-- /.modal-content -->
+	</div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+
+
+<!--_footer 部分-->
+<div th:replace="include/_footer :: footer"></div>
+<!--/_footer /部分-->
+
+<!--请在下方写此页面业务相关的脚本-->
+<script type="text/javascript" th:inline="javascript">
+    $(document).ready(function () {
+        clickLi("userList");
+    })
+
+    $(document).ready(function () {
+
+    })
+
+
+	function saveLinkAuth() {
+        var userId = $("#listGroup").find("input[type=hidden]").val();
+
+        var authGroupIdStr = "";
+        $("#listGroup").find("input[type=checkbox]:checked").each(function () {
+            authGroupIdStr += $(this).val();
+            authGroupIdStr += ",";
+        });
+
+        $.ajax({
+            type: "post",
+            url: ctx + "/userauthgroup/save",
+            dataType: "json",
+            async: false,
+            data: {
+                uid: userId,
+                groupIdStr: authGroupIdStr
+            },
+            success: function (data) {
+                layer.msg("关联成功");
+            },
+            error: function (err) {
+            }
+        });
+    }
+
+    function linkAuthGroup(id) {
+        $('#modal_2').modal('show');
+
+        $.ajax({
+            type: "get",
+            url: ctx + "/user/userAuthGroup",
+            dataType: "json",
+            async: false,
+            data: {
+                id:id
+            },
+            success: function (data) {
+                var html = "";
+
+                var arr = data.data;
+
+                $.each(arr,function(index){
+
+                    html += '<div class="has-success">' +
+                        '  <div class="checkbox">' +
+                        '    <label>';
+                    if (arr[index].hasAuthGroup) {
+                        html += '      <input type="checkbox" checked value="'+arr[index].authGroupId+'">';
+                    }else{
+                        html += '      <input type="checkbox" value="'+arr[index].authGroupId+'">';
+					}
+
+                        html +=                     arr[index].authGroupTitle
+                    	html += '	</label>' +
+                        '  </div>' +
+                        '</div>';
+
+                });
+
+                html += '<input type="hidden" value="'+id+'"/>';
+
+                $("#listGroup").empty();
+				$("#listGroup").append(html);
+
+            },
+            error: function (err) {
+            }
+        });
+    }
+
+
+
+
+
+    //禁用
+	function disabledUser(id) {
+        updateUserStatus(id,0);
+    }
+
+    //启用
+    function enabledUser(id) {
+        updateUserStatus(id,1);
+    }
+
+    function updateUserStatus(id,status) {
+        layer.confirm('操作确认？', {
+            btn: ['确认','取消']
+        }, function(index){
+            $.ajax({
+                type: "post",
+                url: ctx + "/user/update",
+                dataType: "json",
+                async: false,
+                data: {
+                    id:id,
+                    status:status
+                },
+                success: function (data) {
+                    refresh();
+                },
+                error: function (err) {
+                }
+            });
+            layer.close(index);
+        }, function(){
+        });
+    }
+
+    function resetPwd(id) {
+        layer.confirm('将密码重置为 000000 ？', {
+            btn: ['确认','取消']
+        }, function(index){
+            $.ajax({
+                type: "post",
+                url: ctx + "/user/update",
+                dataType: "json",
+                async: false,
+                data: {
+                    id:id,
+                    password:"000000"
+                },
+                success: function (data) {
+                    layer.msg("密码重置成功！");
+                },
+                error: function (err) {
+                }
+            });
+            layer.close(index);
+        }, function(){
+        });
+    }
+
+
+
+    function delUser(id) {
+        layer.confirm('删除确认？', {
+            btn: ['确认','取消']
+        }, function(index){
+            $.ajax({
+                type: "post",
+                url: ctx + "/user/delete/"+id,
+                dataType: "json",
+                async: false,
+                data: {
+                },
+                success: function (data) {
+                    refresh();
+                },
+                error: function (err) {
+                }
+            });
+            layer.close(index);
+        }, function(){
+        });
+    }
+
+
+
+    function saveUser() {
+
+        var data = $("#addUserForm").serializeArray();
+
+        var flag = false;
+        $.each(data,function (item) {
+			if (data[item].value != ""){
+                flag = true;
+    		}
+        })
+
+		if (flag){
+            $.ajax({
+                type: "post",
+                url: ctx + "/user/add",
+                dataType: "json",
+                async: false,
+                data: data,
+                success: function (data) {
+                    refresh();
+                },
+                error: function (err) {
+
+                }
+            });
+		}
+    }
+
+    $('#exampleModal').on('show.bs.modal', function (e) {
+        var modal = $(this);
+        modal.find("form")[0].reset();
+    })
+
+</script>
+<!--/请在上方写此页面业务相关的脚本-->
+</body>
+</html>

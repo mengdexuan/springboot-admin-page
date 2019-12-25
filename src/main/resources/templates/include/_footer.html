@@ -1,0 +1,57 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<body><!--头部引入公共配置-->
+<head th:fragment="footer">
+        <script type="text/javascript" th:src="@{/lib/jquery/1.9.1/jquery.min.js}"></script>
+
+        <script type="text/javascript" th:src="@{/app/js/page.js}"></script>
+
+        <script type="text/javascript" th:src="@{/lib/layer/2.4/layer.js}"></script>
+        <script type="text/javascript" th:src="@{/lib/sockjs/sockjs.min.js}"></script>
+        <script type="text/javascript" th:src="@{/lib/switch/js/bootstrap-switch.js}"></script>
+        <script type="text/javascript" th:src="@{/bootstrap/js/bootstrap.min.js}"></script>
+
+        <script type="text/javascript" th:src="@{/lib/zTree/v3/js/jquery.ztree.all-3.5.min.js}"></script>
+
+        <script th:inline="javascript">
+            var ctx = [[@{/}]];
+                ctx = ctx.substr(0, ctx.length - 1);
+
+                function refresh() {
+                    window.location = location.href;
+                }
+
+                function clickLi(idOfLi) {
+                    $(".menu_dropdown").find("li").each(function (li) {
+                        $(li).removeClass("current");
+                    });
+                    $(".menu_dropdown").find("dt").each(function (dt) {
+                        $(dt).removeClass("selected");
+                    });
+                    $(".menu_dropdown").find("dd").each(function (dd) {
+                        $(dd).removeAttr("style");
+                    });
+
+                    $("#" + idOfLi).parent().parent().prev().addClass("selected");
+                    $("#" + idOfLi).parent().parent().attr({style: "display:block"});
+                    $("#" + idOfLi).addClass("current");
+
+
+                    var spanText = $("#" + idOfLi).parent().parent().prev().find("span:last").text();
+
+                    $(".maincolor").next().next().text(spanText);
+                    $(".maincolor").next().next().next().next().text($("#"+idOfLi).text());
+                }
+
+                // 自动展开textarea
+                function autoSize(obj) {
+                    var el = obj;
+                    setTimeout(function () {
+                        el.style.cssText = 'height:auto; padding:0';
+                        el.style.cssText = 'height:' + (el.scrollHeight+10) + 'px';
+                    }, 0);
+                }
+        </script>
+</head>
+</body>
+</html>

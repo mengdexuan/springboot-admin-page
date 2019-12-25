@@ -1,0 +1,280 @@
+﻿<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+	<div th:replace="include/_meta :: head"></div>
+	<title>springboot-admin-page v1.0</title>
+</head>
+<body>
+<!--_header 作为公共模版分离出去-->
+<div th:replace="include/_header :: header"></div>
+<!--/_header 作为公共模版分离出去-->
+
+<!--_menu 作为公共模版分离出去-->
+<div th:replace="include/_menu :: aside"></div>
+<div class="dislpayArrow hidden-xs"><a class="pngfix" href="javascript:void(0);" onClick="displaynavbar(this)"></a></div>
+<!--/_menu 作为公共模版分离出去-->
+
+<section class="Hui-article-box">
+
+	<div th:replace="include/_nav :: nav"></div>
+
+	<div class="Hui-article">
+		<article class="cl pd-20">
+			<div class="container-fluid">
+				<div class="row cl" style="margin-top: 10px;">
+					<div class="col-md-12">
+						<div class="table-responsive">
+							<table class="table table-hover table-bordered">
+								<thead>
+								<tr class="success">
+									<th width="5%">序号</th>
+									<th>任务名称</th>
+									<th>cron表达式</th>
+									<th>任务状态</th>
+									<th>并发执行</th>
+									<th>创建时间</th>
+									<th>任务描述</th>
+									<th>操作</th>
+								</tr>
+								</thead>
+								<tbody>
+								<tr th:each="job : ${jobList}">
+									<td th:text="${jobStat.count}"></td>
+									<td th:text="${job.name}"></td>
+									<td th:text="${job.expression}"></td>
+									<td>
+										<div class="input-group">
+											<input type="checkbox" th:id="|statusSwitch_${job.id}|" th:value="${job.id}" checked/>
+										</div>
+									</td>
+									<td th:text="${job.allowConcurrent == 0?'是':'否'}"></td>
+									<td th:text="${#dates.format(job.createTime,'yyyy-MM-dd HH:mm:ss')}"></td>
+									<td th:text="${job.remark}"></td>
+									<td>
+										<button class="btn btn-success" th:data-val="${job.id}" onclick="showModal(this)">修改</button>
+										<button class="btn btn-warning" th:onclick="'errLog(\''+${job.id}+'\');'">错误日志</button>
+										<button class="btn btn-primary" th:onclick="'manual(\''+${job.id}+'\');'">手动触发1次</button>
+										<button class="btn btn-danger" th:onclick="'del(\''+${job.id}+'\');'">删除</button>
+									</td>
+								</tr>
+								</tbody>
+							</table>
+						</div>
+					</div>
+				</div>
+			</div>
+		</article>
+	</div>
+</section>
+
+
+<div class="modal fade" tabindex="-1" id="modal_1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+	<div class="modal-dialog" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+						aria-hidden="true">&times;</span></button>
+				<h4 class="modal-title" id="exampleModalLabel">任务修改</h4>
+			</div>
+			<div class="modal-body">
+				<form>
+					<div class="form-group">
+						<label for="taskName" class="control-label">任务名称:</label>
+						<input id="dataId" type="hidden">
+						<input type="text" class="form-control" id="taskName">
+					</div>
+					<div class="form-group">
+						<label for="cron" class="control-label">cron表达式:</label>
+						<input class="form-control" id="cron"/>
+					</div>
+					<div class="form-group">
+						<label for="remark" class="control-label">任务描述:</label>
+						<textarea class="form-control" id="remark"></textarea>
+					</div>
+				</form>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+				<button type="button" class="btn btn-primary" onclick="edit()">提交</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+
+<!--_footer 作为公共模版分离出去-->
+<div th:replace="include/_footer :: footer"></div>
+<!--/_footer /作为公共模版分离出去-->
+
+<!--请在下方写此页面业务相关的脚本-->
+<script type="text/javascript" th:inline="javascript">
+    var jobList = [[${jobList}]];
+
+    $(document).ready(function () {
+        clickLi("jobList");
+    })
+
+
+
+    for (job in jobList) {
+        var id = jobList[job].id;
+
+        $('#statusSwitch_' + id).bootstrapSwitch({
+            onText: "已启动",
+            offText: "已暂停",
+            onColor: "success",
+            offColor: "danger",
+            handleWidth: '82',
+            labelWidth: '55',
+            onSwitchChange: function (event, state) {
+                var id = $(this).val();
+                $.ajax({
+                    type: "post",
+                    url: ctx + "/schedule/job/updateStatus",
+                    dataType: "text",
+                    async: false,
+                    data: {
+                        id: id
+                    },
+                    success: function (data) {
+                        refresh();
+                    },
+                    error: function (err) {
+                    }
+                });
+            }
+        })
+
+        if (jobList[job].status == 0) {
+            $("#statusSwitch_" + id).bootstrapSwitch('state', true, true);
+        } else {
+            $("#statusSwitch_" + id).bootstrapSwitch('state', false, true);
+        }
+    }
+
+    function showModal(who) {
+        $('#modal_1').modal('show');
+
+        var dataId = $(who).attr("data-val");
+
+        for (job in jobList) {
+            var id = jobList[job].id;
+            if (dataId==id){
+                $('#modal_1').find('#dataId').val(dataId);
+                $('#modal_1').find('#taskName').val(jobList[job].name);
+                $('#modal_1').find('#cron').val(jobList[job].expression);
+                $('#modal_1').find('#remark').val(jobList[job].remark);
+            }
+        }
+    }
+
+
+
+    function errLog(jobId){
+        $.ajax({
+            type: "get",
+            url: ctx + "/schedule/job/getByJobId/"+jobId,
+            dataType: "json",
+            async: true,
+            success: function (data) {
+                if (data.success){
+                    if (data.data){
+                        var html = "<textarea class=\"form-control\">"+data.data+"</textarea>";
+                        layer.open({
+							title: "错误日志",
+                            type: 1,
+                            content: html, //这里content是一个普通的String
+                            maxmin: true,
+							full: function (dom) {
+								console.log(dom);
+                            }
+                        });
+                    } else {
+                        layer.msg("没有错误日志！");
+                    }
+                }
+            },
+            error: function (err) {
+            }
+        });
+    }
+
+
+    function edit() {
+        var id = $('#dataId').val();
+        var name = $('#taskName').val();
+        var expression = $('#cron').val();
+        var remark = $('#remark').val();
+
+        $.ajax({
+            type: "post",
+            url: ctx + "/schedule/job/update",
+            dataType: "text",
+            async: false,
+            data: {
+                id: id,
+                name: name,
+                expression: expression,
+                remark: remark
+            },
+            success: function (data) {
+                refresh();
+            },
+            error: function (err) {
+            }
+        });
+    }
+
+
+    function manual(id) {
+        $.ajax({
+            type: "post",
+            url: ctx + "/schedule/job/manual",
+            dataType: "json",
+            async: false,
+            data: {
+                id: id
+            },
+            success: function (data) {
+                if (data.success){
+                    layer.msg('已触发');
+                }else {
+                    layer.msg(data.msg);
+                }
+            },
+            error: function (err) {
+
+            }
+        });
+    }
+
+    function del(id) {
+        layer.confirm('确认删除？', {
+            btn: ['确认','取消']
+        }, function(){
+            $.ajax({
+                type: "post",
+                url: ctx + "/schedule/job/delete/"+id,
+                dataType: "json",
+                async: true,
+                success: function (data) {
+                    if (data.success){
+                        refresh();
+                    }else {
+                        layer.msg(data.msg);
+                    }
+                },
+                error: function (err) {
+
+                }
+            });
+        }, function(){
+
+        });
+    }
+
+</script>
+
+<!--/请在上方写此页面业务相关的脚本-->
+</body>
+</html>

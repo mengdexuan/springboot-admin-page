@@ -1,0 +1,57 @@
+﻿<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+	<div th:replace="include/_meta :: head"></div>
+	<title>springboot-admin-page v1.0</title>
+</head>
+<body>
+<!--_header 作为公共模版分离出去-->
+<div th:replace="include/_header :: header"></div>
+<!--/_header 作为公共模版分离出去-->
+
+<!--_menu 作为公共模版分离出去-->
+<div th:replace="include/_menu :: aside"></div>
+<div class="dislpayArrow hidden-xs"><a class="pngfix" href="javascript:void(0);" onClick="displaynavbar(this)"></a></div>
+<!--/_menu 作为公共模版分离出去-->
+
+<section class="Hui-article-box">
+	<div th:replace="include/_nav :: nav"></div>
+	<div class="Hui-article">
+		<article class="cl pd-20">
+			<div class="container-fluid">
+				<div class="row" style="margin-top: 10px;" th:each="configFile: ${configFileList}">
+					<label th:text="${configFile.name}"></label>
+					<br/>
+					<br/>
+					<textarea class="form-control" th:text="${configFile.content}" id="content" onfocus="autoSize(this)"></textarea>
+				</div>
+			</div>
+		</article>
+	</div>
+</section>
+
+<!--_footer 作为公共模版分离出去-->
+<div th:replace="include/_footer :: footer"></div>
+<!--/_footer /作为公共模版分离出去-->
+
+<!--请在下方写此页面业务相关的脚本-->
+<script type="text/javascript" th:inline="javascript">
+    $(function(){
+
+        clickLi("configFile");
+
+        $("#content").focus();
+    });
+
+    // 自动展开textarea
+    function autoSize(obj) {
+        var el = obj;
+        setTimeout(function() {
+            el.style.cssText = 'height:auto; padding:0';
+            el.style.cssText = 'height:' + el.scrollHeight + 'px';
+        }, 0);
+    }
+</script>
+<!--/请在上方写此页面业务相关的脚本-->
+</body>
+</html>

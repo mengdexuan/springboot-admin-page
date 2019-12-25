@@ -1,0 +1,362 @@
+﻿<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <div th:replace="include/_meta :: head"></div>
+    <title>springboot-admin-page v1.0</title>
+
+    <style>
+        .glyphicon{
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+<!--_header 部分-->
+<div th:replace="include/_header :: header"></div>
+<!--/_header 部分-->
+
+<!--_menu 部分-->
+<div th:replace="include/_menu :: aside"></div>
+<div class="dislpayArrow hidden-xs"><a class="pngfix" href="javascript:void(0);" onClick="displaynavbar(this)"></a>
+</div>
+<!--/_menu 部分-->
+
+<section class="Hui-article-box">
+    <div th:replace="include/_nav :: nav"></div>
+    <div class="Hui-article">
+        <article class="cl pd-20">
+            <div class="row">
+                <div class="col-md-4"></div>
+                <div class="col-md-8">
+                    <form class="form-inline">
+                        <div class="form-group">
+                            <label for="title2">菜单名称</label>
+                            <input type="text" class="form-control" id="title2" placeholder="菜单名称">
+                        </div>
+                        <div class="form-group">
+                            <label for="url2">访问路径</label>
+                            <input type="text" class="form-control" id="url2" placeholder="访问路径">
+                        </div>
+                        <div class="form-group">
+                            <label for="icon2">菜单图标</label>
+                            <input type="text" class="form-control" id="icon2" placeholder="菜单图标">
+                        </div>
+                        <button type="button" class="btn btn-success" onclick="addFirstMenu()">添加一级菜单</button>
+                    </form>
+                </div>
+            </div>
+        </br>
+            <div class="row">
+                <div class="col-md-12">
+                    <table class="table table-hover table-responsive table-condensed">
+                        <thead>
+                            <tr class="success">
+                                <th>ID</th>
+                                <th>菜单名称</th>
+                                <th>访问路径</th>
+                                <th>菜单图标</th>
+                                <th>状态</th>
+                                <th>排序</th>
+                                <th>操作</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="menu : ${menuList}">
+                                <td>
+                                    <span class="glyphicon glyphicon-menu-down" th:data-id="${menu.id}" onclick="expandData(this)" aria-hidden="true"></span>
+                                    &nbsp;&nbsp;
+                                    <span th:text="${menu.id}"></span>
+                                </td>
+                                <td th:text="${menu.title}"></td>
+                                <td th:text="${menu.url}"></td>
+                                <td th:text="${menu.icon}"></td>
+                                <td th:text="${menu.status==1?'可用':'隐藏'}"></td>
+                                <td th:text="${menu.sort}"></td>
+                                <td>
+                                    <span th:data-id="${menu.id}" onclick="delData(this)" class="glyphicon glyphicon-remove" title="删除"></span>
+                                    &nbsp;&nbsp;
+                                    <span th:data-id="${menu.id}" onclick="editData(this)" class="glyphicon glyphicon-pencil" title="编辑"></span>
+                                    &nbsp;&nbsp;
+                                    <span th:data-id="${menu.id}" class="glyphicon glyphicon-plus" data-toggle="modal" data-target="#exampleModal" title="添加子菜单"></span>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+
+        </article>
+    </div>
+</section>
+
+
+<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="exampleModalLabel">添加菜单</h4>
+            </div>
+            <div class="modal-body">
+                <form id="dataForm">
+                    <div class="form-group">
+                        <label for="title" class="control-label">菜单名称:</label>
+                        <input type="hidden" name="id" >
+                        <input type="hidden" name="type" value="2">
+                        <input type="text" name="title" class="form-control" id="title">
+                    </div>
+                    <div class="form-group">
+                        <label for="url" class="control-label">菜单地址:</label>
+                        <input type="text" name="url" class="form-control" id="url">
+                    </div>
+                    <div class="form-group">
+                        <label for="icon" class="control-label">菜单图标:</label>
+                        <input type="text" name="icon" class="form-control" id="icon">
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label">状态:</label>
+
+                        <label class="radio-inline">
+                            <input type="radio" name="status" id="inlineRadio1" value="1" checked> 显示
+                        </label>
+                        <label class="radio-inline">
+                            <input type="radio" name="status" id="inlineRadio2" value="0"> 隐藏
+                        </label>
+                    </div>
+                    <div class="form-group">
+                        <label for="pid" class="control-label">父级ID:</label>
+                        <input type="text" name="pid" disabled class="form-control" id="pid">
+                        <input type="hidden" name="pid" >
+                    </div>
+                    <div class="form-group">
+                        <label for="sort" class="control-label">排序:</label>
+                        <input type="text" name="sort" class="form-control" id="sort" value="0">
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="saveData()">保存</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!--_footer 部分-->
+<div th:replace="include/_footer :: footer"></div>
+<!--/_footer /部分-->
+
+<!--请在下方写此页面业务相关的脚本-->
+<script type="text/javascript" th:inline="javascript">
+    $(document).ready(function () {
+        clickLi("menuList");
+    })
+
+    
+    function addFirstMenu() {
+        var title = $("#title2").val();
+        var url = $("#url2").val();
+        var icon = $("#icon2").val();
+
+        if (title==""&&url==""){
+            layer.msg("数据为空！");
+        }else {
+            $.ajax({
+                type: "post",
+                url: ctx + "/menu/add",
+                dataType: "json",
+                async: false,
+                data: {
+                    title:title,
+                    url:url,
+                    icon:icon,
+                    status:1,
+                    type:2,
+                    sort:0
+                },
+                success: function (data) {
+                    refresh();
+                },
+                error: function (err) {
+
+                }
+            });
+        }
+    }
+
+    function expandData(who) {
+
+        var flag = $(who).hasClass("glyphicon-menu-down");
+
+        if (flag){
+            $(who).removeClass("glyphicon-menu-down")
+            $(who).addClass("glyphicon-menu-up")
+        }else {
+            $(who).removeClass("glyphicon-menu-up")
+            $(who).addClass("glyphicon-menu-down")
+        }
+
+        var id = $(who).attr("data-id");
+
+        if (flag){
+            $.ajax({
+                type: "get",
+                url: ctx + "/menu/list",
+                dataType: "json",
+                async: false,
+                data: {
+                    pid: id
+                },
+                success: function (data) {
+                    var arr = data.data;
+                    var html = "";
+
+                    // th:data-id="${menu.id}" onclick="editData(this)"
+
+                    $.each(arr,function (index) {
+                        var statusStr = "隐藏";
+                        if (arr[index].status==1){
+                            statusStr = "可用";
+                        }
+                        html += '<tr data-temp="'+id+'">' +
+                            '                                <td>' +
+                            '                                    <span style="margin-left: 45px;">'+arr[index].id+'</span>' +
+                            '                                </td>' +
+                            '                                <td>'+arr[index].title+'</td>' +
+                            '                                <td>'+arr[index].url+'</td>' +
+                            '                                <td>'+arr[index].icon+'</td>' +
+                            '                                <td>'+statusStr+'</td>' +
+                            '                                <td>'+arr[index].sort+'</td>' +
+                            '                                <td>' +
+                            '                                    <span onclick="delData(this)" data-id="'+arr[index].id+'" class="glyphicon glyphicon-remove" title="删除"></span>' +
+                            '                                    &nbsp;&nbsp;' +
+                            '                                    <span data-id="'+arr[index].id+'" onclick="editData(this)" class="glyphicon glyphicon-pencil" title="编辑"></span>' +
+                            '                                </td>' +
+                            '                            </tr>';
+                    });
+
+                    $(who).parent().parent().after(html);
+                },
+                error: function (err) {
+                }
+            });
+        }else {
+            var tbody = $(who).parent().parent().parent();
+            tbody.find("tr[data-temp='"+id+"']").each(function () {
+                $(this).remove();
+            });
+        }
+    }
+
+    
+    function delData(who) {
+
+        layer.confirm('删除确认？', {
+            btn: ['确认','取消']
+        }, function(index){
+            var id = $(who).attr("data-id");
+            $.ajax({
+                type: "post",
+                url: ctx + "/menu/delete/"+id,
+                dataType: "json",
+                async: false,
+                data: {
+                },
+                success: function (data) {
+                    refresh();
+                },
+                error: function (err) {
+                }
+            });
+            layer.close(index);
+        }, function(){
+        });
+
+
+    }
+
+
+    function saveData() {
+
+        var data = $("#dataForm").serializeArray();
+
+        var id = $("input[name='id']").val();
+        var url = ctx + "/menu/update";
+        if (id===""){
+            url = ctx + "/menu/add";
+        }
+        $.ajax({
+            type: "post",
+            url: url,
+            dataType: "json",
+            async: false,
+            data: data,
+            success: function (data) {
+                refresh();
+            },
+            error: function (err) {
+
+            }
+        });
+
+    }
+
+    function editData(who){
+        var id = $(who).attr("data-id");
+        $('#exampleModal').modal('show');
+
+        $.ajax({
+            type: "get",
+            url: ctx + "/menu/get/"+id,
+            dataType: "json",
+            async: false,
+            success: function (data) {
+                var menu = data.data;
+
+                $("input[name='id']").val(menu.id);
+
+                $("input[type='radio']").each(function () {
+                    if (menu.status==$(this).val()){
+                        $(this).attr("checked","checked");
+                    }else {
+                        $(this).removeAttr("checked");
+                    }
+                })
+
+                $("#title").val(menu.title);
+                $("#url").val(menu.url);
+                $("#icon").val(menu.icon);
+                $("#sort").val(menu.sort);
+                $("input[name='pid']").each(function () {
+                    $(this).val(menu.pid);
+                });
+            },
+            error: function (err) {
+
+            }
+        });
+
+    }
+
+    $('#exampleModal').on('show.bs.modal', function (event) {
+        var modal = $(this);
+        modal.find("form")[0].reset();
+
+        var span = $(event.relatedTarget);
+
+        if (span){
+            var pid = span.attr("data-id");
+
+            $("input[name='pid']").each(function () {
+                $(this).val(pid);
+            });
+        }
+
+
+    })
+</script>
+<!--/请在上方写此页面业务相关的脚本-->
+</body>
+</html>

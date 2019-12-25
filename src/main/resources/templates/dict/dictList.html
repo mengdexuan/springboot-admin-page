@@ -1,0 +1,224 @@
+﻿<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+	<div th:replace="include/_meta :: head"></div>
+	<title>springboot-admin-page v1.0</title>
+</head>
+<body>
+<!--_header 部分-->
+<div th:replace="include/_header :: header"></div>
+<!--/_header 部分-->
+
+<!--_menu 部分-->
+<div th:replace="include/_menu :: aside"></div>
+<div class="dislpayArrow"><a class="pngfix" href="javascript:void(0);" onClick="displaynavbar(this)"></a></div>
+<!--/_menu 部分-->
+
+<section class="Hui-article-box">
+	<div th:replace="include/_nav :: nav"></div>
+	<div class="Hui-article">
+		<article class="cl pd-20">
+			<div class="container-fluid">
+				<div class="row" id="dictEdit" style="display: none">
+					<div class="col-md-12">
+						<form class="form-inline">
+							<div class="row">
+								<div class="col-md-4">
+									<div class="form-group">
+										<label for="dictName">字典名称</label>
+										<input type="hidden" id="dictId">
+										<input type="text" class="form-control" id="dictName" placeholder="字典名称">
+									</div>
+								</div>
+								<div class="col-md-4">
+									<div class="form-group">
+										<label  for="dictKey">字典key</label>
+										<input type="text" disabled class="form-control" id="dictKey" placeholder="字典key">
+									</div>
+								</div>
+								<div class="col-md-4">
+									<div class="form-group">
+										<label  for="dictValue">字典val</label>
+										<input type="text" class="form-control" id="dictValue" placeholder="字典val">
+									</div>
+								</div>
+							</div>
+							</br>
+							<div class="row">
+								<div class="col-md-4">
+									<div class="form-group">
+										<label  for="dictNote">字典备注</label>
+										<input type="text" class="form-control" id="dictNote" placeholder="字典备注">
+									</div>
+								</div>
+								<div class="col-md-4">
+									<div class="form-group">
+										<label  for="enable">是否可用</label>
+										<select class="form-control" id="enable">
+											<option value="1">可用</option>
+											<option value="0">不可用</option>
+										</select>
+									</div>
+								</div>
+								<div class="col-md-3">
+									<div class="form-group">
+										<label  for="orderNo">字典排序</label>
+										<input type="text" class="form-control" id="orderNo" placeholder="字典排序">
+									</div>
+								</div>
+								<div class="col-md-1">
+									<button type="button" onclick="updateData();" class="btn btn-success">保存</button>
+								</div>
+							</div>
+						</form>
+					</div>
+				</div>
+				</br>
+				<div class="row">
+					<div class="col-md-12">
+						<table id="tableData" class="table table-hover table-responsive table-condensed">
+							<thead>
+								<tr class="success">
+									<th width="5%">序号</th>
+									<th width="20%">字典名称</th>
+									<th width="10%">字典key</th>
+									<th width="15%">字典val</th>
+									<th width="20%">字典备注</th>
+									<th width="5%">是否可用</th>
+									<th width="5%">排序</th>
+									<th width="10%">创建时间</th>
+									<th width="10%">操作</th>
+								</tr>
+							</thead>
+
+							<tbody>
+								<tr th:each="dict : ${dictList}">
+									<td th:text="${dictStat.count}"></td>
+									<td th:text="${dict.dictName}"></td>
+									<td th:text="${dict.dictKey}"></td>
+									<td th:text="${dict.dictValue}"></td>
+									<td th:text="${dict.dictNote}"></td>
+									<td th:text="${dict.enable==1?'可用':'不可用'}"></td>
+									<td th:text="${dict.orderNo}"></td>
+									<td th:text="${#dates.format(dict.createTime,'yyyy-MM-dd HH:mm:ss')}"></td>
+									<td>
+										<button type="button" class="btn btn-warning btn-sm" th:onclick="'editData(\''+${dict.id}+'\');'">修改</button>
+										<!--<button type="button" class="btn btn-danger btn-sm" th:onclick="'delData(\''+${dict.id}+'\');'">删除</button>-->
+									</td>
+								</tr>
+							</tbody>
+						</table>
+					</div>
+				</div>
+			</div>
+		</article>
+	</div>
+</section>
+
+
+
+
+
+<!--_footer 部分-->
+<div th:replace="include/_footer :: footer"></div>
+<!--/_footer /部分-->
+
+<!--请在下方写此页面业务相关的脚本-->
+<script type="text/javascript" th:inline="javascript">
+    $(document).ready(function () {
+        clickLi("dictList");
+    })
+
+
+    $(document).ready(function () {
+    })
+
+
+
+    function updateData() {
+
+        var id = $("#dictId").val();
+        var dictName = $("#dictName").val();
+        var dictKey = $("#dictKey").val();
+        var dictValue = $("#dictValue").val();
+        var dictNote = $("#dictNote").val();
+        var enable = $("#enable").val();
+        var orderNo = $("#orderNo").val();
+
+        $.ajax({
+            type: "post",
+            url: ctx + "/dict/update",
+            dataType: "json",
+            async: false,
+            data: {
+                id:id,
+                dictName:dictName,
+                dictKey:dictKey,
+                dictValue:dictValue,
+                dictNote:dictNote,
+                enable:enable,
+                orderNo:orderNo
+            },
+            success: function (data) {
+                $("#dictEdit").hide(800);
+                refresh();
+            },
+            error: function (err) {
+
+            }
+        });
+    }
+
+    function editData(id) {
+        $("#dictEdit").show(800);
+
+        $.ajax({
+            type: "get",
+            url: ctx + "/dict/get/" + id,
+            dataType: "json",
+            async: false,
+            data: {
+            },
+            success: function (data) {
+                $("#dictId").val(data.data.id);
+                $("#dictName").val(data.data.dictName);
+                $("#dictKey").val(data.data.dictKey);
+                $("#dictValue").val(data.data.dictValue);
+                $("#dictNote").val(data.data.dictNote);
+                $("#enable").val(data.data.enable);
+                $("#orderNo").val(data.data.orderNo);
+            },
+            error: function (err) {
+            }
+        });
+    }
+
+
+    function delData(id) {
+        layer.confirm('确认删除？', {
+            btn: ['确认','取消']
+        }, function(index){
+            $.ajax({
+                type: "post",
+                url: ctx + "/dict/delete/" + id,
+                dataType: "json",
+                async: false,
+                data: {
+                },
+                success: function (data) {
+                    layer.close(index);
+                    refresh();
+                },
+                error: function (err) {
+                }
+            });
+        }, function(){
+
+        });
+    }
+
+
+</script>
+<!--/请在上方写此页面业务相关的脚本-->
+</body>
+</html>

@@ -1,0 +1,258 @@
+﻿<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+	<div th:replace="include/_meta :: head"></div>
+	<title>springboot-admin-page v1.0</title>
+	<style>
+		.panel-heading{
+			cursor: pointer;
+		}
+	</style>
+</head>
+<body>
+<!--_header 作为公共模版分离出去-->
+<div th:replace="include/_header :: header"></div>
+<!--/_header 作为公共模版分离出去-->
+
+<!--_menu 作为公共模版分离出去-->
+<div th:replace="include/_menu :: aside"></div>
+<div class="dislpayArrow hidden-xs"><a class="pngfix" href="javascript:void(0);" onClick="displaynavbar(this)"></a></div>
+<!--/_menu 作为公共模版分离出去-->
+
+<section class="Hui-article-box">
+	<div th:replace="include/_nav :: nav"></div>
+	<div class="Hui-article">
+		<article class="cl pd-20">
+			<div class="container-fluid" style="margin-top: 30px;">
+				<div class="row">
+					<div class="col-md-12">
+						<div class="panel panel-success">
+							<div class="panel-heading" role="tab" href="#collapse_1" id="heading_1" data-toggle="collapse">
+								<h4 class="panel-title">
+									<a role="button" data-toggle="collapse" href="#collapse_1" aria-expanded="true"
+									   aria-controls="collapse_1">
+										基本信息
+									</a>
+								</h4>
+							</div>
+							<div id="collapse_1" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="heading_1">
+								<div class="panel-body">
+									<div class="row">
+										<div class="col-md-6" th:text="|url --> ${url}|">
+											url -->
+										</div>
+										<div class="col-md-2" th:text="|userName --> ${userName}|">
+											userName -->
+										</div>
+										<div class="col-md-2" th:text="|password --> ${password}|">
+											userName -->
+										</div>
+										<div class="col-md-2" th:text="|version --> ${version}|">
+											version -->
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-md-12">
+						<div class="panel panel-success">
+							<div class="panel-heading" role="tab">
+								<h4 class="panel-title">
+									<div class="row">
+										<div class="col-md-10" href="#collapse_2" id="heading_2" data-toggle="collapse">
+											<a role="button">
+												表信息 <small id="tableCount">(0)</small>
+											</a>
+										</div>
+										<div class="col-md-2">
+											<input type="text" id="tableName" autoComplete='off'/>
+										</div>
+									</div>
+								</h4>
+							</div>
+							<div id="collapse_2" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="heading_2">
+								<div class="panel-body" id="tableNameList">
+
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-md-12">
+						<div class="panel panel-success">
+							<div class="panel-heading" role="tab" href="#collapse_3" id="heading_3" data-toggle="collapse">
+								<h4 class="panel-title">
+									<div class="row">
+										<div class="col-md-3">
+											查询结果 <small id="resultCount"></small>
+										</div>
+										<div class="col-md-7">
+											sql语句  <span id="sqlContext"></span>
+										</div>
+										<div class="col-md-2">
+											用时 <small id="time"></small>
+										</div>
+									</div>
+								</h4>
+							</div>
+							<div id="collapse_3" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="heading_3">
+								<div class="panel-body">
+									<div class="row">
+										<div class="col-md-12">
+											<table class="table table-striped table-bordered table-hover table-condensed">
+												<thead id="tabHead">
+
+												</thead>
+												<tbody id="tabBody">
+
+												</tbody>
+											</table>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-md-12">
+						<div class="panel panel-success">
+							<div class="panel-heading" role="tab">
+								<div class="row">
+									<h4 class="panel-title">
+										<div class="col-md-10" href="#collapse_4" id="heading_4" data-toggle="collapse">
+											<a role="button">
+												SQL 脚本
+											</a>
+										</div>
+										<div class="col-md-2">
+											<button type="button" onclick="getResult();" class="btn btn-success" style="width: 160px;font-size: 20px;"><b>Just&nbsp;&nbsp;do&nbsp;&nbsp;it</b></button>
+										</div>
+									</h4>
+								</div>
+							</div>
+							<div id="collapse_4" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="heading_4">
+								<div class="panel-body">
+									<textarea class="form-control" rows="10" id="sql"></textarea>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</article>
+	</div>
+</section>
+
+<!--_footer 作为公共模版分离出去-->
+<div th:replace="include/_footer :: footer"></div>
+<!--/_footer /作为公共模版分离出去-->
+
+<!--请在下方写此页面业务相关的脚本-->
+<script type="text/javascript" th:inline="javascript">
+
+    $(function(){
+
+        clickLi("dbInfo");
+
+        getTables();
+        $('#tableName').bind('input propertychange', function() {
+            var tableName = $.trim($(this).val());
+            getTables(tableName);
+        });
+    });
+    function getTables(tableName){
+        $.ajax({
+            type: "post",
+            url: ctx + "/db/tables",
+            data: {
+                tableName: tableName
+            },
+            dataType: "text",
+            async: false,
+            success: function (data) {
+                var result = $.parseJSON(data);
+                var html = "";
+                var tableCount = 0;
+                for (var i=0;i<result.length;i++){
+                    html += "<div class='row'>";
+                    for (var j=0;j<result[i].length;j++){
+                        tableCount++;
+                        html += "<div class='col-md-2'>";
+                        html += result[i][j];
+                        html += "</div>";
+                    }
+                    html += "</div>";
+                }
+                $("#tableCount").text("("+tableCount+")");
+                $("#tableNameList").empty();
+                $("#tableNameList").append(html);
+            },
+            error: function (err) {
+            }
+        });
+    }
+
+    function getResult(){
+        var sql = $.trim($("#sql").val());
+        $.ajax({
+            type: "post",
+            url: ctx + "/db/results",
+            data: {
+                sql: sql
+            },
+            dataType: "text",
+            async: false,
+            success: function (data) {
+                var result = $.parseJSON(data);
+                if (result.flag==true){
+                    if (result.columns){
+                        var html = "<tr>";
+                        for (var i=0;i<result.columns.length;i++){
+                            html += "<th>"+result.columns[i]+"</th>";
+                        }
+                        html += "</tr>";
+                        $("#tabHead").empty();
+                        $("#tabHead").append(html);
+
+                        var count = 0;
+                        html = "";
+                        for (var i=0;i<result.data.length;i++){
+                            count++;
+                            html += "<tr>";
+                            for (var j=0;j<result.data[i].length;j++){
+                                console.log(typeof result.data[i][j]);
+                                html += "<td>"+result.data[i][j]+"</td>";
+                            }
+                            html += "</tr>";
+                        }
+                        $("#resultCount").html("("+count+")");
+                        $("#tabBody").empty();
+                        $("#tabBody").append(html);
+                    }else {
+                        $("#resultCount").html("(0)");
+                        $("#tabHead").empty();
+                        $("#tabBody").empty();
+                    }
+                }else{
+                    $("#resultCount").empty();
+                    $("#tabHead").html("<tr><th>影响的行数</th></tr>");
+                    $("#tabBody").html("<tr><td>"+result.data+"</td></tr>");
+                }
+                $("#sqlContext").html(result.sql);
+                $("#time").html(result.time+" (ms)");
+            },
+            error: function(XMLHttpRequest, textStatus, errorThrown) {
+                alert(XMLHttpRequest.responseText);
+            }
+        });
+    }
+
+</script>
+<!--/请在上方写此页面业务相关的脚本-->
+</body>
+</html>
