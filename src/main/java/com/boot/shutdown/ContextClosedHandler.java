@@ -5,6 +5,7 @@ import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextClosedEvent;
 import org.springframework.stereotype.Component;
 
+import java.util.concurrent.Executor;
 import java.util.concurrent.ThreadPoolExecutor;
 
 /**
@@ -16,7 +17,7 @@ import java.util.concurrent.ThreadPoolExecutor;
 @Component
 public class ContextClosedHandler implements ApplicationListener<ContextClosedEvent> {
 	@Autowired
-	ThreadPoolExecutor threadPoolExecutor;
+	ThreadPoolExecutor executor;
 
 	@Override
 	public void onApplicationEvent(ContextClosedEvent event) {
@@ -30,8 +31,8 @@ public class ContextClosedHandler implements ApplicationListener<ContextClosedEv
 		 *
 		 * 当我们使用shutdown方法关闭线程池时，一定要确保任务里不会有永久阻塞等待的逻辑，否则线程池就关闭不了
 		 */
-		if (threadPoolExecutor!=null){
-			threadPoolExecutor.shutdown();
+		if (executor!=null){
+			executor.shutdown();
 		}
 	}
 }

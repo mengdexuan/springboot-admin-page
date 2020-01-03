@@ -14,8 +14,8 @@ import java.util.concurrent.*;
 @Configuration
 public class ThreadPoolConfig {
 	@Bean
-	public Executor taskExecutor() {
-		Executor executor = ThreadUtil.newExecutor(10,20);
+	public ThreadPoolExecutor taskExecutor() {
+		ThreadPoolExecutor executor = ThreadUtil.newExecutor(10,20);
 		return executor;
 	}
 }

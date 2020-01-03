@@ -8,7 +8,6 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
-import java.util.concurrent.ThreadPoolExecutor;
 
 /**
  * @author mengdexuan on 2019/6/17 9:51.
@@ -20,9 +19,6 @@ public class AppShutdownHook {
 	@Qualifier("schedulerFactoryBean")
 	@Autowired
 	Scheduler quartzScheduler;
-
-	@Autowired
-	ThreadPoolExecutor threadPoolExecutor;
 
 	@PostConstruct
 	private void init(){

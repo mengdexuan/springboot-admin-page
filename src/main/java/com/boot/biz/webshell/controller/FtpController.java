@@ -37,7 +37,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Executor;
-import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
@@ -55,9 +54,6 @@ public class FtpController {
 
 	@Autowired
 	ServerInfoService serverInfoService;
-
-	@Autowired
-	Executor executor;
 
 
 	@RequestMapping("/ftpServerList")
