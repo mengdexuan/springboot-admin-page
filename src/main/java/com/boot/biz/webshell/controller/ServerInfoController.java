@@ -134,6 +134,16 @@ public class ServerInfoController {
 	}
 
 
+	@RequestMapping("/editSshServer")
+	@ResponseBody
+	public Boolean editSshServer(SshServerInfo info){
+
+		serverInfoService.update(info);
+
+		return true;
+
+	}
+
 
 
 	@RequestMapping("/delSshServer")
