@@ -35,7 +35,7 @@
 		</div>
 	</div>
 	<div class="row" style="margin-top: 1%">
-		<div class="col-md-8">
+		<div class="col-md-7">
 			<form class="form-inline">
 				<div class="form-group">
 					<input type="file" id="uploadFile" name="uploadFile"/>
@@ -43,11 +43,14 @@
 				<button type="button" class="btn btn-success" id="subFile">上传</button>
 			</form>
 		</div>
-		<div class="col-md-2"></div>
-		<div class="col-md-2">
-			<button class="btn btn-primary" type="button" onclick="refresh()">刷新</button>
-			&nbsp;&nbsp;
-			<button class="btn btn-danger" type="button" onclick="closeSftpClient();">关闭</button>
+		<div class="col-md-5">
+			<div class="btn-group" role="group">
+				<button type="button" class="btn btn-primary" onclick="selectAllBox()">全选</button>
+				<button type="button" class="btn btn-info" onclick="notSelectAllBox()">全不选</button>
+				<button type="button" class="btn btn-danger" onclick="batchDel()">批量删除</button>
+				<button class="btn btn-success" type="button" onclick="refresh()">刷新页面</button>
+				<button class="btn btn-warning" type="button" onclick="closeSftpClient();">关闭连接</button>
+			</div>
 		</div>
 	</div>
 	<div class="row" style="margin-top: 2%">
@@ -171,6 +174,67 @@
         window.location = location.href;
     }
 
+    function selectAllBox() {
+        $("input[name='checkbox']").each(function () {
+            $(this).prop("checked",true);
+        });
+    }
+
+    function notSelectAllBox() {
+        $("input[name='checkbox']").each(function () {
+            $(this).prop("checked",false);
+        });
+    }
+
+    function checkBox(tr) {
+        $(tr).find("input[name='checkbox']").each(function () {
+            $(this).prop('checked',$(this).is(':checked')?false:true);
+        });
+    }
+
+    function batchDel() {
+
+        var fileNameArr = new Array();
+
+        $("input[name='checkbox']:checked").each(function () {
+            var val = $(this).val();
+            fileNameArr.push(val);
+        });
+
+        var splitStr = "|";
+        var fileNameStr = fileNameArr.join(splitStr);
+
+        if (fileNameArr.length==0){
+            layer.msg("请先选择要删除的文件或目录！");
+            return;
+        }
+
+        layer.confirm('确定执行批量删除吗？', function(index){
+            $.ajax({
+                type: "post",
+                url: "batchDelSftpFile",
+                dataType:"text",
+                async: false,
+                data: {
+                    id: sshInfo.id,
+                    splitStr: splitStr,
+                    fileNameStr: fileNameStr
+                },
+                success: function (data) {
+                    if ("true"==data){
+                        refresh();
+                    }else {
+                        layer.msg("删除失败！");
+                    }
+                },
+                error: function (err) {
+                    layer.msg("权限不够，删除失败！");
+                }
+            });
+            layer.close(index);
+        });
+    }
+
     function closeSftpClient(){
         $.ajax({
             type: "get",
@@ -186,6 +250,9 @@
                 window.close();
             },
             error: function (err) {
+                window.opener=null;
+                window.open('','_self');
+                window.close();
             }
         });
 
@@ -361,9 +428,9 @@
 
         $(data.files).each(function(i, e){
             if (e.directory) {
-                $tr = '<tr><td>&nbsp;<span class="glyphicon glyphicon-folder-open"></span>&nbsp;　<a href="javascript:void(0)" onclick="exec(\'cd\',\''+e.filename+'\')">' +e.filename+ '</a></td><td></td><td>'+e.mtime+'</td><td>'+e.strPermissions+'</td><td><a class="glyphicon glyphicon-trash pull-right" data-toggle="modal" href="javascript:void(0)" title="delete" style="color:red;outline:none" onclick="initRemoveModal(\''+e.filename+'\',\''+e.directory+'\')"></a><a class="glyphicon glyphicon-edit pull-right" href="javascript:void(0)" data-toggle="modal" data-target="#attrModal" title="attributes" style="margin-right:10px;color:blue;outline:none" onclick="initAttr(\''+e.intPermissions+'\',\''+e.filename+'\')"></a></td></tr>';
+                $tr = '<tr style="cursor:pointer;" onclick="checkBox(this);"><td><input type="checkbox" name="checkbox" value="'+e.filename+',true">&nbsp;<span class="glyphicon glyphicon-folder-open"></span> <a href="javascript:void(0)" onclick="exec(\'cd\',\''+e.filename+'\')">' +e.filename+ '</a></td><td></td><td>'+e.mtime+'</td><td>'+e.strPermissions+'</td><td><a class="glyphicon glyphicon-trash pull-right" data-toggle="modal" href="javascript:void(0)" title="delete" style="color:red;outline:none" onclick="initRemoveModal(\''+e.filename+'\',\''+e.directory+'\')"></a><a class="glyphicon glyphicon-edit pull-right" href="javascript:void(0)" data-toggle="modal" data-target="#attrModal" title="attributes" style="margin-right:10px;color:blue;outline:none" onclick="initAttr(\''+e.intPermissions+'\',\''+e.filename+'\')"></a></td></tr>';
             } else {
-                $tr = '<tr><td>&nbsp;<span class="glyphicon glyphicon-file"></span>　'+e.filename+'</td><td>'+e.size+'</td><td>'+e.mtime+'</td><td>'+e.strPermissions+'</td><td><a class="glyphicon glyphicon-trash pull-right" data-toggle="modal" href="javascript:void(0)" title="delete" style="color:red;outline:none" onclick="initRemoveModal(\''+e.filename+'\',\''+e.directory+'\')"></a><a class="glyphicon glyphicon-download-alt pull-right" href="javascript:void(0)" title="download" style="margin-right:10px;color:#FF9933;outline:none" onclick="downLoadFile(\''+e.filename+'\')"></a><a class="glyphicon glyphicon-edit pull-right" href="javascript:void(0)" data-toggle="modal" data-target="#attrModal" title="attributes" style="margin-right:10px;color:blue;outline:none" onclick="initAttr(\''+e.intPermissions+'\',\''+e.filename+'\')"></a></td></tr>';
+                $tr = '<tr style="cursor:pointer;" onclick="checkBox(this);"><td><input type="checkbox" name="checkbox" value="'+e.filename+',false">&nbsp;<span class="glyphicon glyphicon-file"></span>'+e.filename+'</td><td>'+e.size+'</td><td>'+e.mtime+'</td><td>'+e.strPermissions+'</td><td><a class="glyphicon glyphicon-trash pull-right" data-toggle="modal" href="javascript:void(0)" title="delete" style="color:red;outline:none" onclick="initRemoveModal(\''+e.filename+'\',\''+e.directory+'\')"></a><a class="glyphicon glyphicon-download-alt pull-right" href="javascript:void(0)" title="download" style="margin-right:10px;color:#FF9933;outline:none" onclick="downLoadFile(\''+e.filename+'\')"></a><a class="glyphicon glyphicon-edit pull-right" href="javascript:void(0)" data-toggle="modal" data-target="#attrModal" title="attributes" style="margin-right:10px;color:blue;outline:none" onclick="initAttr(\''+e.intPermissions+'\',\''+e.filename+'\')"></a></td></tr>';
             }
             $('#file-list').append($tr);
         });

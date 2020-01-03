@@ -1,9 +1,10 @@
 package com.boot.biz.webshell.controller;
 
 import ch.ethz.ssh2.SFTPException;
-import cn.hutool.core.io.FileUtil;
+import cn.hutool.extra.ftp.Ftp;
 import cn.hutool.json.JSONUtil;
 import com.boot.base.util.ConcurrentLRUCache;
+import com.boot.base.util.HelpMe;
 import com.boot.biz.webshell.entity.SshServerInfo;
 import com.boot.biz.webshell.service.ServerInfoService;
 import com.boot.biz.webshell.sftp.CommandBean;
@@ -29,7 +30,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 /**
  * @author mengdexuan on 2019/11/27 10:14.
@@ -80,6 +80,44 @@ public class SftpController {
 		return "ok";
 	}
 
+
+	@PostMapping("/batchDelSftpFile")
+	@ResponseBody
+	public String batchDelSftpFile(String id,String splitStr,String fileNameStr) throws Exception{
+
+		SshServerInfo info = new SshServerInfo();
+		info.setId(id);
+		info.setType(1);
+
+		SshServerInfo sshServerInfo = serverInfoService.one(info);
+
+		SftpClient sftpClient = sftpClientMap.get(id);
+
+		List<String> fileNameList = HelpMe.easySplit(fileNameStr, splitStr.charAt(0));
+
+		String hostName = sshServerInfo.getHostname();
+		String pwd = sftpClient.getCurrentCatalog();
+		if (!pwd.equals("/")){
+			pwd += "/";
+		}
+
+		for (String temp:fileNameList){
+			List<String> tempList = HelpMe.easySplit(temp);
+
+			String fileName = tempList.get(0);
+			boolean isDir = Boolean.parseBoolean(tempList.get(1));
+
+			if (isDir){
+				sftpClient.deleteDir(fileName);
+			}else {
+				sftpClient.deleteFile(fileName);
+			}
+
+			log.info("删除SFTP服务器 {} 上的文件(夹)：{}",hostName,pwd+fileName);
+		}
+
+		return "true";
+	}
 
 
 	@GetMapping("/connectSftp")
@@ -140,11 +178,23 @@ public class SftpController {
 						sftp.changeDirectory(commandBean.getCmdParam());
 						break;
 					case "rm":
-						if (commandBean.getIsDir()){
-							sftp.deleteDir(commandBean.getCmdParam());
-						}else {
-							sftp.deleteFile(commandBean.getCmdParam());
+						SshServerInfo info = new SshServerInfo();
+						info.setId(id);
+						info.setType(1);
+						SshServerInfo sshServerInfo = serverInfoService.one(info);
+
+						String hostName = sshServerInfo.getHostname();
+						String pwd = sftp.getCurrentCatalog();
+						String fileNameStr = commandBean.getCmdParam();
+						if (!pwd.equals("/")){
+							pwd += "/";
 						}
+						if (commandBean.getIsDir()){
+							sftp.deleteDir(fileNameStr);
+						}else {
+							sftp.deleteFile(fileNameStr);
+						}
+						log.info("删除SFTP服务器 {} 上的文件(夹)：{}",hostName,pwd+fileNameStr);
 						break;
 					case "mkdir":
 						sftp.mkDir(commandBean.getCmdParam());

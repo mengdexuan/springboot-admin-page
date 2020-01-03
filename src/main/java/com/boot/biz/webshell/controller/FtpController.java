@@ -208,6 +208,13 @@ public class FtpController {
 		}else {
 			flag = ftp.delFile(fileName);
 		}
+		String pwd = ftp.pwd();
+		String host = ftp.getClient().getPassiveHost();
+		if (!pwd.equals("/")){
+			pwd += "/";
+		}
+
+		log.info("删除FTP服务器 {} 上的文件(夹)：{}",host,pwd+fileName);
 
 		return flag+"";
 	}
@@ -219,7 +226,11 @@ public class FtpController {
 
 		Ftp ftp = ftpClientMap.get(id);
 
+		String pwd = ftp.pwd();
 		String host = ftp.getClient().getPassiveHost();
+		if (!pwd.equals("/")){
+			pwd += "/";
+		}
 
 		List<String> fileNameList = HelpMe.easySplit(fileNameStr, splitStr.charAt(0));
 
@@ -235,7 +246,7 @@ public class FtpController {
 				ftp.delFile(fileName);
 			}
 
-			log.info("删除FTP服务器 {} 上的文件：{}",host,fileName);
+			log.info("删除FTP服务器 {} 上的文件(夹)：{}",host,pwd+fileName);
 		}
 
 		return "true";
