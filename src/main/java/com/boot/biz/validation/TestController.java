@@ -101,12 +101,12 @@ public class TestController {
 
 
 
-	@GetMapping("/test3")
+	@RequestMapping("/test3")
 	@ResponseBody
-	public Result test3() {
+	public Result test3(List<String> list) {
 		Object obj = null;
 
-		UrlLimitService abc = SpringContextUtil.getBean(UrlLimitService.class);
+		log.info("{}",list);
 
 
 		return ResultUtil.buildSuccess(obj);

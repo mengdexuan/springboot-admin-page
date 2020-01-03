@@ -21,20 +21,24 @@ import org.apache.commons.net.ftp.FTPFile;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.*;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.UnsupportedEncodingException;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.Executor;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 /**
@@ -51,6 +55,9 @@ public class FtpController {
 
 	@Autowired
 	ServerInfoService serverInfoService;
+
+	@Autowired
+	Executor executor;
 
 
 	@RequestMapping("/ftpServerList")
@@ -203,6 +210,35 @@ public class FtpController {
 		}
 
 		return flag+"";
+	}
+
+
+	@PostMapping("/batchDelFtpFile")
+	@ResponseBody
+	public String batchDelFtpFile(String id,String splitStr,String fileNameStr) {
+
+		Ftp ftp = ftpClientMap.get(id);
+
+		String host = ftp.getClient().getPassiveHost();
+
+		List<String> fileNameList = HelpMe.easySplit(fileNameStr, splitStr.charAt(0));
+
+		for (String temp:fileNameList){
+			List<String> tempList = HelpMe.easySplit(temp);
+
+			String fileName = tempList.get(0);
+			boolean isDir = Boolean.parseBoolean(tempList.get(1));
+
+			if (isDir){
+				ftp.delDir(fileName);
+			}else {
+				ftp.delFile(fileName);
+			}
+
+			log.info("删除FTP服务器 {} 上的文件：{}",host,fileName);
+		}
+
+		return "true";
 	}
 
 
