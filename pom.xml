@@ -30,6 +30,13 @@
 
 
 	<dependencies>
+        <!--获取图片及视频的元数据-->
+        <dependency>
+            <groupId>com.drewnoakes</groupId>
+            <artifactId>metadata-extractor</artifactId>
+            <version>2.12.0</version>
+        </dependency>
+
 		<dependency>
 			<groupId>io.springfox</groupId>
 			<artifactId>springfox-swagger2</artifactId>

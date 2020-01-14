@@ -148,6 +148,12 @@ public class BaseServiceImpl<T, R extends BaseRepository<T>> implements BaseServ
 
 	@Override
 	@Transactional(rollbackFor = Exception.class)
+	public T saveAndFlush(T t) {
+		return repository.saveAndFlush(t);
+	}
+
+	@Override
+	@Transactional(rollbackFor = Exception.class)
 	public void save(Iterable<T> entities) {
 		repository.saveAll(entities);
 	}

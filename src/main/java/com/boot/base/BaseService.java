@@ -31,6 +31,14 @@ public interface BaseService<T>{
 	@Transactional(rollbackFor = Exception.class)
 	void save(T t);
 
+	/**
+	 * 保存后，可以返回自增ID
+	 * @param t
+	 * @return
+	 */
+	@Transactional(rollbackFor = Exception.class)
+	T saveAndFlush(T t);
+
 	@Transactional(rollbackFor = Exception.class)
 	void save(Iterable<T> entities);
 
