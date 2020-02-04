@@ -118,14 +118,13 @@ public class TestController {
 
 	@RequestMapping("/test3")
 	@ResponseBody
-	public Result test3(List<String> list) {
+	public Result test3() {
 		Object obj = null;
 
 		HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder
 				.getRequestAttributes()).getRequest();
 
 
-		log.info("{}",list);
 
 
 		return ResultUtil.buildSuccess(obj);
