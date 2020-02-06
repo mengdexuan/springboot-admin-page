@@ -14,6 +14,7 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.Id;
+import javax.persistence.Transient;
 import javax.persistence.criteria.*;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -103,6 +104,17 @@ public class BaseServiceImpl<T, R extends BaseRepository<T>> implements BaseServ
 				return false;
 			} else {
 				return true;
+			}
+		}).collect(Collectors.toList());
+
+
+		//过滤掉 Transient 注解标记的字段
+		fields = fields.stream().filter(field->{
+			Transient temp = field.getAnnotation(Transient.class);
+			if (temp==null){
+				return true;
+			}else {
+				return false;
 			}
 		}).collect(Collectors.toList());
 
