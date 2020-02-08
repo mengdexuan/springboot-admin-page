@@ -158,4 +158,18 @@ public interface BaseService<T>{
 
 	boolean existsById(Long id);
 
+	/**
+	 * 执行本地sql查询
+	 * @param sql
+	 * @param tClass
+	 * @return
+	 */
+	<W> List<W>  query(String sql,Class<W> tClass);
+
+	/**
+	 * 执行本地sql更新
+	 * @param sql
+	 * @return
+	 */
+	int update(String sql);
 }

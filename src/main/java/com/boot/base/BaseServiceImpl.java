@@ -6,6 +6,9 @@ import cn.hutool.core.util.ReflectUtil;
 import com.boot.base.exception.GlobalServiceException;
 import com.boot.base.util.HelpMe;
 import com.google.common.collect.Lists;
+import lombok.extern.slf4j.Slf4j;
+import org.hibernate.query.internal.NativeQueryImpl;
+import org.hibernate.transform.Transformers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.Page;
@@ -13,7 +16,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.EntityManager;
 import javax.persistence.Id;
+import javax.persistence.Query;
 import javax.persistence.Transient;
 import javax.persistence.criteria.*;
 import java.lang.reflect.Field;
@@ -29,10 +34,61 @@ import java.util.stream.Collectors;
  * 基础服务实现类
  */
 @SuppressWarnings("rawtypes")
+@Slf4j
 public class BaseServiceImpl<T, R extends BaseRepository<T>> implements BaseService<T> {
 
 	@Autowired
 	protected R repository;
+
+	@Autowired
+	EntityManager em;
+
+
+
+	/**
+	 * 执行本地sql查询
+	 * @param sql
+	 * @param tClass
+	 * @return
+	 */
+	public <X> List<X> query(String sql,Class<X> tClass) {
+
+		Query query = em.createNativeQuery(sql);
+
+		//将查询结果封装到Map中
+		List<Map> list = query.unwrap(NativeQueryImpl.class)
+				.setResultTransformer(Transformers.ALIAS_TO_ENTITY_MAP)
+				.list();
+
+		List<X> result = Lists.newArrayList();
+
+		//将Map转换为Bean
+		for (Map map:list){
+			X bean = BeanUtil.mapToBean(map, tClass, true);
+			result.add(bean);
+		}
+
+		log.info("执行本地sql查询：{}  查询结果：{}",sql,result);
+
+		return result;
+	}
+
+
+	/**
+	 * 执行本地sql更新
+	 * @param sql
+	 * @return
+	 */
+	@Transactional
+	public int update(String sql) {
+		Query query = em.createNativeQuery(sql);
+		int count = query.executeUpdate();
+
+		log.info("执行本地sql更新：{}  影响的行数：{}",sql,count);
+
+		return count;
+	}
+
 
 	public long count(T t){
 		Example<T> example = Example.of(t);
