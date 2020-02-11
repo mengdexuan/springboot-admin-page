@@ -19,7 +19,9 @@
                 <dd>
                     <ul>
                         <li id="sysLog"><a th:href="@{/jump2Page(page='sys/log')}" title="系统日志">系统日志</a></li>
-                        <li id="swaggerUi"><a target="_blank" th:href="@{'/swagger-ui.html'}" title="Swagger文档">Swagger文档</a>
+                        <li id="swaggerUi">
+                            <!--<a target="_blank" th:href="@{'/swagger-ui.html'}" title="Swagger文档">Swagger文档</a>-->
+                            <a target="_blank" th:href="@{'/doc.html'}" title="Swagger文档">Swagger文档</a>
                         </li>
                         <li id="requestFollowList"><a th:href="@{/requestFollowList}" title="请求追踪">请求追踪</a></li>
                     </ul>
