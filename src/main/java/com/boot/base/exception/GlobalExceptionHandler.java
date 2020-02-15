@@ -1,5 +1,7 @@
 package com.boot.base.exception;
 
+import cn.hutool.core.util.StrUtil;
+import cn.hutool.json.JSONUtil;
 import com.boot.base.Result;
 import com.boot.base.ResultUtil;
 import org.hibernate.validator.internal.engine.path.PathImpl;
@@ -23,6 +25,9 @@ import org.springframework.web.server.ResponseStatusException;
 
 import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -42,11 +47,6 @@ public class GlobalExceptionHandler {
     private Logger log = LoggerFactory.getLogger(GlobalExceptionHandler.class);
 
     private String getMessage(Exception exception,ErrorStatus status){
-        /*if(activeProfile.equalsIgnoreCase(DEV_MODE) || activeProfile.equalsIgnoreCase(TEST_MODE)){
-            return exception.getMessage() != null ? exception.getMessage() : status.getMessage();
-        }else{
-            return status.getMessage();
-        }*/
         String msg = "";
         if (status!=null){
             msg += status.getMessage();
@@ -55,6 +55,7 @@ public class GlobalExceptionHandler {
         if (exception!=null){
             msg += exception.getMessage();
         }
+
         return msg;
     }
 
@@ -236,6 +237,29 @@ public class GlobalExceptionHandler {
             return buildFailure(e.getCode(),e.getMessage());
         }
     }
+
+
+    @ResponseBody
+    @ExceptionHandler(NullPointerException.class)
+    @ResponseStatus(HttpStatus.OK)
+    public Result handleServiceException(NullPointerException e) {
+        log.error(ErrorStatus.SERVICE_EXCEPTION.getMessage() + ":" + e.getMessage(),e);
+
+        ByteArrayOutputStream b = new ByteArrayOutputStream();
+        PrintWriter pw = new PrintWriter(b);
+        e.printStackTrace(pw);
+        pw.close();
+
+        //打印空指针具体的堆栈信息
+        String errStack = b.toString();
+        try {
+            b.close();
+        } catch (IOException ex) {
+        }
+
+        return failure(ErrorStatus.SERVICE_EXCEPTION,errStack);
+    }
+
 
     @ResponseBody
     @ExceptionHandler(IllegalStateException.class)
