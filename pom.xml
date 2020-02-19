@@ -26,6 +26,7 @@
 		<hutool.version>5.1.0</hutool.version>
 		<commons-io.version>2.4</commons-io.version>
 		<swagger.version>2.9.2</swagger.version>
+		<commons-lang3.version>3.9</commons-lang3.version>
 	</properties>
 
 
@@ -166,6 +167,11 @@
             <artifactId>guava</artifactId>
             <version>21.0</version>
         </dependency>
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-lang3</artifactId>
+			<version>${commons-lang3.version}</version>
+		</dependency>
 
 		<dependency>
 			<groupId>commons-io</groupId>
