@@ -3,6 +3,8 @@ package com.boot.base.util;
 import org.apache.commons.lang3.text.StrTokenizer;
 
 import javax.servlet.http.HttpServletRequest;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.regex.Pattern;
 
 /**
@@ -81,6 +83,20 @@ public class IpUtils {
 		if (!found) {
 			ip = request.getRemoteAddr();
 		}
+
+		if ("0:0:0:0:0:0:0:1".equals(ip)){
+			ip = getLocalhostIp();
+		}
+
 		return ip;
+	}
+
+
+	public static String getLocalhostIp(){
+		try {
+			return InetAddress.getLocalHost().getHostAddress();
+		} catch (UnknownHostException e) {
+		}
+		return null;
 	}
 }
