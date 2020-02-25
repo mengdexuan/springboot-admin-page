@@ -1,6 +1,7 @@
 package com.boot.config;
 
 import com.boot.biz.webshell.ssh.SshShellHandler;
+import com.boot.biz.ws.SysTimeHandler;
 import com.boot.biz.wstest.EchoHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
@@ -19,11 +20,14 @@ public class WsConfig implements WebSocketConfigurer {
 	EchoHandler echoHandler;
 	@Autowired
 	SshShellHandler sshShellHandler;
+	@Autowired
+	SysTimeHandler sysTimeHandler;
 
 	@Override
 	public void registerWebSocketHandlers(WebSocketHandlerRegistry webSocketHandlerRegistry) {
 
 		// withSockJS 声明启用支持 sockJS
+		webSocketHandlerRegistry.addHandler(sysTimeHandler, "/sysTime").withSockJS();
 		webSocketHandlerRegistry.addHandler(echoHandler, "/echo").withSockJS();
 
 		webSocketHandlerRegistry.addHandler(sshShellHandler, "/sshShellHandler").setAllowedOrigins("*").withSockJS();

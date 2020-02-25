@@ -20,6 +20,7 @@
     <nav class="breadcrumb"><i class="Hui-iconfont"></i> <a th:href="@{/}" class="maincolor">首页</a>
         <span class="c-999 en">&gt;</span>
         <span class="c-666">我的桌面</span>
+        <label id="sysTime" style="margin-left: 55%;color: red"></label>
         <a class="btn btn-success radius r" style="line-height:1.6em;margin-top:3px;float: right;"
            href="javascript:location.replace(location.href);" title="刷新"><i class="Hui-iconfont">&#xe68f;</i></a></nav>
     <div class="Hui-article">
@@ -32,9 +33,11 @@
                     <p>上次登录IP：222.35.131.79.1 上次登录时间：2014-6-14 11:19:55</p>
                 </div>
                 <div class="col-md-4">
-                    <a class="btn btn-success" type="button" th:href="@{/test}">webSocket测试</a>
-                    &nbsp;&nbsp;
+                    <a class="btn btn-success" type="button" th:href="@{/jump2Page(page='sys/log')}"
+                       title="系统日志">系统日志</a>&nbsp;&nbsp;
                     <button class="btn btn-danger" type="button" onclick="stopApp()">停止服务</button>
+                    &nbsp;&nbsp;
+                    <a class="btn btn-success" type="button" th:href="@{/test}">webSocket测试</a>
                 </div>
             </div>
 
