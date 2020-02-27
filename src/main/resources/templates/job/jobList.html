@@ -209,7 +209,7 @@
         $.ajax({
             type: "post",
             url: ctx + "/schedule/job/update",
-            dataType: "text",
+            dataType: "json",
             async: false,
             data: {
                 id: id,
@@ -218,7 +218,11 @@
                 remark: remark
             },
             success: function (data) {
-                refresh();
+                if (data.success){
+                    refresh();
+                } else {
+                    layer.msg(data.msg);
+                }
             },
             error: function (err) {
             }

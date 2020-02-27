@@ -2,6 +2,7 @@ package com.boot.biz.schedule.controller;
 
 import com.boot.base.Result;
 import com.boot.base.ResultUtil;
+import com.boot.base.util.CronCheckUtil;
 import com.boot.base.util.HelpMe;
 import com.boot.biz.schedule.entity.ScheduleJob;
 import com.boot.biz.schedule.service.ScheduleJobService;
@@ -64,6 +65,9 @@ public class ScheduleJobController {
 
     @PostMapping(value = "/update")
     public Result<ScheduleJob> update(ScheduleJob scheduleJob) {
+
+        CronCheckUtil.check(scheduleJob.getExpression());
+
         ScheduleJob job = scheduleJobService.get(scheduleJob.getId());
 
         job.setRemark(scheduleJob.getRemark());
