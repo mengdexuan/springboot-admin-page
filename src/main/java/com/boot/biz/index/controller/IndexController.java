@@ -2,6 +2,7 @@ package com.boot.biz.index.controller;
 
 import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.io.resource.ResourceUtil;
+import cn.hutool.core.util.StrUtil;
 import com.boot.base.util.HelpMe;
 import com.boot.biz.authgroup.entity.AuthGroup;
 import com.boot.biz.authgroup.service.AuthGroupService;
@@ -193,6 +194,10 @@ public class IndexController {
 	public String list(Model model) {
 
 		List<ScheduleJob> jobList = scheduleJobService.findAll();
+
+		jobList.stream().forEach(item->{
+			item.setRemark(StrUtil.maxLength(item.getRemark(),10));
+		});
 
 		model.addAttribute("jobList",jobList);
 

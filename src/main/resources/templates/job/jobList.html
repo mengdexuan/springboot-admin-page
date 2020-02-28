@@ -124,8 +124,8 @@
             offText: "已暂停",
             onColor: "success",
             offColor: "danger",
-            handleWidth: '82',
-            labelWidth: '55',
+            handleWidth: '70',
+            labelWidth: '50',
             onSwitchChange: function (event, state) {
                 var id = $(this).val();
                 $.ajax({
@@ -157,15 +157,25 @@
 
         var dataId = $(who).attr("data-val");
 
-        for (job in jobList) {
-            var id = jobList[job].id;
-            if (dataId==id){
-                $('#modal_1').find('#dataId').val(dataId);
-                $('#modal_1').find('#taskName').val(jobList[job].name);
-                $('#modal_1').find('#cron').val(jobList[job].expression);
-                $('#modal_1').find('#remark').val(jobList[job].remark);
+        $.ajax({
+            type: "get",
+            url: ctx + "/schedule/job/get/"+dataId,
+            dataType: "json",
+            async: true,
+            success: function (data) {
+                if (data.success){
+                    var job = data.data;
+                    $('#modal_1').find('#dataId').val(dataId);
+                    $('#modal_1').find('#taskName').val(job.name);
+                    $('#modal_1').find('#cron').val(job.expression);
+                    $('#modal_1').find('#remark').val(job.remark);
+                }else {
+                    layer.msg("获取任务失败！")
+                }
+            },
+            error: function (err) {
             }
-        }
+        });
     }
 
 
