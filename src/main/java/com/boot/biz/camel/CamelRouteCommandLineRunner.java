@@ -2,6 +2,7 @@ package com.boot.biz.camel;
 
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.map.MapUtil;
+import cn.hutool.core.thread.ThreadUtil;
 import com.boot.base.util.HelpMe;
 import com.boot.biz.camel.entity.CamelRoute;
 import com.boot.biz.camel.repository.CamelRouteRepository;
@@ -43,6 +44,9 @@ public class CamelRouteCommandLineRunner implements CommandLineRunner{
 
 	@Override
 	public void run(String... args) throws Exception {
+
+		//暂停5秒，等待 camelContext 初始化完成
+		ThreadUtil.safeSleep(5000);
 
 		List<CamelRoute> dbList = camelRouteService.findAll();
 
