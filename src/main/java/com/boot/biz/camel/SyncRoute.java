@@ -2,7 +2,6 @@ package com.boot.biz.camel;
 
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.map.MapUtil;
-import cn.hutool.core.thread.ThreadUtil;
 import com.boot.base.util.HelpMe;
 import com.boot.biz.camel.entity.CamelRoute;
 import com.boot.biz.camel.repository.CamelRouteRepository;
@@ -15,8 +14,6 @@ import org.apache.camel.Route;
 import org.apache.camel.ServiceStatus;
 import org.apache.camel.impl.EventDrivenConsumerRoute;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.CommandLineRunner;
-import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
 import java.util.Date;
@@ -26,12 +23,12 @@ import java.util.stream.Collectors;
 
 
 /**
+ * 同步路由
  * @author mengdexuan on 2019/6/23 12:21.
  */
-@Order(2)
 @Slf4j
 @Component
-public class CamelRouteCommandLineRunner implements CommandLineRunner{
+public class SyncRoute {
 
 	@Autowired
 	CamelContext camelContext;
@@ -42,11 +39,8 @@ public class CamelRouteCommandLineRunner implements CommandLineRunner{
 	@Autowired
 	RouteUtil routeUtil;
 
-	@Override
-	public void run(String... args) throws Exception {
 
-		//暂停5秒，等待 camelContext 初始化完成
-		ThreadUtil.safeSleep(5000);
+	public void sync()   {
 
 		List<CamelRoute> dbList = camelRouteService.findAll();
 
