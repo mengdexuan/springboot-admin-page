@@ -3,13 +3,13 @@ package com.boot.biz.camel.controller;
 
 import com.boot.base.Result;
 import com.boot.base.ResultUtil;
+import com.boot.biz.camel.RouteUtil;
 import com.boot.biz.camel.entity.CamelRoute;
 import com.boot.biz.camel.service.CamelRouteService;
+import org.apache.camel.CamelContext;
+import org.apache.camel.Route;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -28,6 +28,12 @@ public class CamelRouteController {
 	@Autowired
 	private CamelRouteService camelRouteService;
 
+	@Autowired
+	CamelContext camelContext;
+
+	@Autowired
+	RouteUtil routeUtil;
+
 	/**
 	 * 获取camel路由列表
 	 */
@@ -37,10 +43,36 @@ public class CamelRouteController {
 	}
 
 
+	@GetMapping(value = "/get/{routeId}")
+	public Result get(@PathVariable("routeId")String routeId) {
+
+		Route route = camelContext.getRoute(routeId);
+
+		String routeStr = route.getRouteContext().getRoute().toString();
+
+		return ResultUtil.buildSuccess((Object) routeStr);
+	}
+
+
 	@PostMapping("/update")
 	public Result update(String routeId) {
 
 		camelRouteService.triggerRouteStatus(routeId);
+
+		return ResultUtil.buildSuccess();
+	}
+
+
+	@DeleteMapping("/del/{routeId}")
+	public Result del(@PathVariable("routeId")String routeId) {
+
+		try {
+			routeUtil.stop(routeId);
+
+			camelContext.removeRoute(routeId);
+		} catch (Exception e) {
+
+		}
 
 		return ResultUtil.buildSuccess();
 	}
