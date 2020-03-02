@@ -60,7 +60,14 @@ public class CamelLifecycleStrategySupport extends LifecycleStrategySupport impl
 	private void startOrStopRoute(){
 		List<CamelRoute> dbList = camelRouteService.findAll();
 
-		dbList.stream().forEach(item->{
+		for (CamelRoute item:dbList){
+
+			Route route = camelContext.getRoute(item.getRouteId());
+			if (route==null){
+				camelRouteService.delete(item);
+				continue;
+			}
+
 			if (ServiceStatus.Started.name().equals(item.getStatus())){
 				routeUtil.start(item.getRouteId());
 			}else if (ServiceStatus.Stopped.name().equals(item.getStatus())){
@@ -73,7 +80,7 @@ public class CamelLifecycleStrategySupport extends LifecycleStrategySupport impl
 				//更新描述信息
 				camelRouteService.save(item);
 			}
-		});
+		}
 	}
 
 	private void addRouteToDb(Collection<Route> routes){
