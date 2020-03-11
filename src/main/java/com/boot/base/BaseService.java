@@ -4,6 +4,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.lang.Nullable;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
@@ -150,6 +151,9 @@ public interface BaseService<T>{
 	 * @return
 	 */
 	List<T> findAll(Specification<T> specification);
+
+	Page<T> findAll(@Nullable Specification<T> var1, Pageable var2);
+
 
 	void flush();
 

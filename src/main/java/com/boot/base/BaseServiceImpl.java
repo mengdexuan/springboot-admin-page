@@ -382,6 +382,11 @@ public class BaseServiceImpl<T, R extends BaseRepository<T>> implements BaseServ
 	}
 
 	@Override
+	public Page<T> findAll(Specification<T> var1, Pageable var2) {
+		return repository.findAll(var1,var2);
+	}
+
+	@Override
 	public void flush() {
 		this.repository.flush();
 	}
