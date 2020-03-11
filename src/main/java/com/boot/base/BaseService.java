@@ -2,6 +2,7 @@ package com.boot.base;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,7 +27,7 @@ public interface BaseService<T>{
 	void delete(Iterable<T> entities);
 
 	@Transactional(rollbackFor = Exception.class)
-	void update(T t);
+	T update(T t);
 
 	@Transactional(rollbackFor = Exception.class)
 	void save(T t);
@@ -51,7 +52,7 @@ public interface BaseService<T>{
 	 * @param map
 	 * @return
 	 */
-	T one(Map<String,Object> map,Class<T> bean);
+	T one(Map<String, Object> map, Class<T> bean);
 
 	/**
 	 * 构造 Specification 查询
@@ -64,10 +65,10 @@ public interface BaseService<T>{
 	 * 查询对象
 	 * @param property	属性名称
 	 * @param value		属性值
-	 * @param equal 	true:按属性值等于查询		false：按属性值不等于查询
+	 * @param equalArr 	true:按属性值等于查询		false：按属性值不等于查询，不传则默认为 true
 	 * @return
 	 */
-	T one(String property, Object value,Boolean equal);
+	T one(String property, Object value, Boolean... equalArr);
 
 	/**
 	 * 按实体对象中不为null的属性查询，多个属性是 and 关系
@@ -92,10 +93,10 @@ public interface BaseService<T>{
 	 * 查询列表（true:按属性值等于查询		false：按属性值不等于查询）
 	 * @param property	属性名称
 	 * @param val	属性值
-	 * @param equal	true:按属性值等于查询		false：按属性值不等于查询
+	 * @param equalArr 	true:按属性值等于查询		false：按属性值不等于查询，不传则默认为 true
 	 * @return
 	 */
-	List<T> list(String property, Object val,Boolean equal);
+	List<T> list(String property, Object val, Boolean... equalArr);
 
 	/**
 	 * 查询列表（jpa between...and 的方式）
@@ -104,7 +105,7 @@ public interface BaseService<T>{
 	 * @param end	结束值
 	 * @return
 	 */
-	List<T> list(String property, Comparable begin,Comparable end);
+	List<T> list(String property, Comparable begin, Comparable end);
 
 
 	/**
@@ -119,7 +120,7 @@ public interface BaseService<T>{
 	 * @param t
 	 * @return
 	 */
-	Page<T> list(T t,Pageable pageable);
+	Page<T> list(T t, Pageable pageable);
 
 
 
@@ -141,6 +142,8 @@ public interface BaseService<T>{
 	 */
 	List<T> findAll();
 
+	List<T> findAll(Sort sort);
+
 	/**
 	 * 按 Specification 查询所有
 	 * @param specification
@@ -158,18 +161,4 @@ public interface BaseService<T>{
 
 	boolean existsById(Long id);
 
-	/**
-	 * 执行本地sql查询
-	 * @param sql
-	 * @param tClass
-	 * @return
-	 */
-	<W> List<W>  query(String sql,Class<W> tClass);
-
-	/**
-	 * 执行本地sql更新
-	 * @param sql
-	 * @return
-	 */
-	int update(String sql);
 }
