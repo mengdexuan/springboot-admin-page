@@ -1,24 +1,28 @@
 package com.boot.base.util;
 
-import com.boot.base.exception.GlobalServiceException;
+import cn.hutool.cron.pattern.CronPattern;
+import lombok.extern.slf4j.Slf4j;
 import org.quartz.CronExpression;
 
 /**
  * @author mengdexuan on 2019/6/26 14:47.
  */
+@Slf4j
 public class CronCheckUtil {
 
 	/**
 	 * 校验cron表达式
 	 * @param cronExpression
 	 */
-	public static void check(String cronExpression){
+	public static boolean ok(String cronExpression){
+		boolean ok = true;
 		try {
-			CronExpression cron = new CronExpression(cronExpression);
-			cron = null;
+			CronPattern cronPattern = new CronPattern(cronExpression);
 		} catch (Exception e) {
-			throw new GlobalServiceException("cron 表达式校验失败！");
+			ok = false;
+			log.error("cron 表达式校验失败！");
 		}
+		return ok;
 	}
 
 }

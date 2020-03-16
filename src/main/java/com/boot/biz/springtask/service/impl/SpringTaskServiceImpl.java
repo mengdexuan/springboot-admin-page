@@ -149,8 +149,10 @@ public class SpringTaskServiceImpl extends BaseServiceImpl<SpringTask,SpringTask
 		//先取消任务
 		SpringTaskUtil.cancelCronTask(taskId);
 
-		//再添加任务
-		SpringTaskUtil.scheduleCronTask(springTask);
+		if (SpringTask.Status.RUN.getValue()==springTask.getStatus().intValue()){
+			//再添加任务
+			SpringTaskUtil.scheduleCronTask(springTask);
+		}
 
 		this.save(springTask);
 	}

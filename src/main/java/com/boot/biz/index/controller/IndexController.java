@@ -17,6 +17,8 @@ import com.boot.biz.requestfollow.entity.RequestFollow;
 import com.boot.biz.requestfollow.service.RequestFollowService;
 import com.boot.biz.schedule.entity.ScheduleJob;
 import com.boot.biz.schedule.service.ScheduleJobService;
+import com.boot.biz.springtask.entity.SpringTask;
+import com.boot.biz.springtask.service.SpringTaskService;
 import com.boot.biz.urllimit.entity.UrlLimit;
 import com.boot.biz.urllimit.repository.UrlLimitRepository;
 import com.boot.biz.user.entity.SysUser;
@@ -59,6 +61,9 @@ public class IndexController {
 
 	@Autowired
 	ScheduleJobService scheduleJobService;
+
+	@Autowired
+	SpringTaskService springTaskService;
 
 	@Autowired
 	CamelContext camelContext;
@@ -191,7 +196,7 @@ public class IndexController {
 
 
 	@GetMapping(value = "/jobList")
-	public String list(Model model) {
+	public String jobList(Model model) {
 
 		List<ScheduleJob> jobList = scheduleJobService.findAll();
 
@@ -203,6 +208,23 @@ public class IndexController {
 
 		return "job/jobList";
 	}
+
+
+
+	@GetMapping(value = "/taskList")
+	public String taskList(Model model) {
+
+		List<SpringTask> taskList = springTaskService.findAll();
+
+		taskList.stream().forEach(item->{
+			item.setRemark(StrUtil.maxLength(item.getRemark(),10));
+		});
+
+		model.addAttribute("taskList",taskList);
+
+		return "job/taskList";
+	}
+
 
 
 

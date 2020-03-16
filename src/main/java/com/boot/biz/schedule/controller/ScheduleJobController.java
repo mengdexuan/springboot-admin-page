@@ -2,6 +2,7 @@ package com.boot.biz.schedule.controller;
 
 import com.boot.base.Result;
 import com.boot.base.ResultUtil;
+import com.boot.base.exception.GlobalServiceException;
 import com.boot.base.util.CronCheckUtil;
 import com.boot.base.util.HelpMe;
 import com.boot.biz.schedule.entity.ScheduleJob;
@@ -66,7 +67,11 @@ public class ScheduleJobController {
     @PostMapping(value = "/update")
     public Result<ScheduleJob> update(ScheduleJob scheduleJob) {
 
-        CronCheckUtil.check(scheduleJob.getExpression());
+        boolean ok = CronCheckUtil.ok(scheduleJob.getExpression());
+
+        if (!ok){
+            throw new GlobalServiceException("Cron 表达式校验失败！");
+        }
 
         ScheduleJob job = scheduleJobService.get(scheduleJob.getId());
 
