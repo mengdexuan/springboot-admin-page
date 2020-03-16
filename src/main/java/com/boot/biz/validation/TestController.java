@@ -4,6 +4,9 @@ import cn.hutool.crypto.SecureUtil;
 import com.boot.base.Result;
 import com.boot.base.ResultUtil;
 import com.boot.base.annotation.PrintTime;
+import com.boot.base.util.HelpMe;
+import com.boot.biz.springtask.entity.SpringTask;
+import com.boot.biz.springtask.service.SpringTaskService;
 import com.boot.biz.urllimit.service.UrlLimitService;
 import com.boot.biz.userauthgroup.entity.UserAuthGroup;
 import com.boot.biz.userauthgroup.service.UserAuthGroupService;
@@ -17,6 +20,7 @@ import org.apache.camel.CamelContext;
 import org.apache.camel.Route;
 import org.apache.camel.impl.EventDrivenConsumerRoute;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.context.request.RequestContextHolder;
@@ -26,6 +30,7 @@ import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandl
 import javax.servlet.http.HttpServletRequest;
 import java.io.File;
 import java.io.IOException;
+import java.util.Date;
 import java.util.List;
 import java.util.concurrent.Executor;
 
@@ -37,8 +42,10 @@ import java.util.concurrent.Executor;
 @RequestMapping("/test")
 public class TestController {
 
+	@Qualifier("taskExecutor")
 	@Autowired
 	Executor executor;
+
 	@Autowired
 	RequestMappingHandlerMapping handlerMapping;
 
@@ -53,6 +60,8 @@ public class TestController {
 	@Autowired
 	UserAuthGroupService userAuthGroupService;
 
+	@Autowired
+	SpringTaskService springTaskService;
 
 	@GetMapping("/test1")
 	@ResponseBody
@@ -60,21 +69,22 @@ public class TestController {
 
 		Object obj = null;
 
-		List<Route> routes = camelContext.getRoutes();
+
+		SpringTask springTask = new SpringTask();
+
+		springTask.setTaskId(HelpMe.uuid());
+		springTask.setCron("0/1 * * * * *");
+		springTask.setStatus(1);
+		springTask.setBean("springTaskTest");
+		springTask.setMethod("run2");
+		springTask.setRemark("测试任务");
+		springTask.setName("测试名称");
+		springTask.setParams("abc");
+		springTask.setCreateTime(new Date());
+		springTask.setDelWhenSuccess(1);
 
 
-		routes.stream().forEach(item->{
-			EventDrivenConsumerRoute route = ((EventDrivenConsumerRoute) item);
-			log.info("路由：{}，参数：{}",item.getId(),route.getStatus());
-		});
-
-		UserAuthGroup userAuthGroup = new UserAuthGroup();
-		userAuthGroup.setUid(1L);
-		userAuthGroup.setGroupId(2L);
-
-		UserAuthGroup one = userAuthGroupService.saveAndFlush(userAuthGroup);
-
-		log.info("{}",one);
+		springTaskService.addSpringTask(springTask);
 
 
 		return ResultUtil.buildSuccess(obj);
@@ -87,28 +97,15 @@ public class TestController {
 
 	@GetMapping("/test2")
 	@ResponseBody
-	public Result test2(HttpServletRequest request) {
+	public Result test2(HttpServletRequest request,String taskId) {
 
 		Object obj = null;
 
-		String flag = request.getParameter("flag");
-
-		if ("1".equals(flag)){
-			try {
-				camelContext.stopRoute("route2");
-			} catch (Exception e) {
-				log.error("停止路由失败！",e);
-			}
-		}else {
-
-			try {
-				camelContext.startRoute("route2");
-			} catch (Exception e) {
-				log.error("启动路由失败！",e);
-			}
+		try {
+			springTaskService.manualTrigger(taskId);
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
-
-
 
 
 		return ResultUtil.buildSuccess(obj);
