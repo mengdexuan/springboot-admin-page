@@ -45,16 +45,19 @@ public class WebMvc  implements WebMvcConfigurer {
 
 	}
 
+
 	/**
 	 * 允许所有请求跨域访问
+	 *
+	 * 当配置自定义的 Interceptor 后，此处的配置就不生效了；需要在 filter 中单独配置，参看：CorsFilterConfig
 	 * @param registry
 	 */
 	@Override
 	public void addCorsMappings(CorsRegistry registry) {
-		registry.addMapping("/**")
+		/*registry.addMapping("/**")
 				.allowedOrigins("*")
 				.allowedMethods("GET", "HEAD", "POST", "PUT", "PATCH", "DELETE", "OPTIONS", "TRACE")
 				.maxAge(3600)
-				.allowCredentials(true);
+				.allowCredentials(true);*/
 	}
 }
