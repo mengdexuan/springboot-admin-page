@@ -1,6 +1,7 @@
 package com.boot.base;
 
 import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.collection.IterUtil;
 import cn.hutool.core.exceptions.UtilException;
 import cn.hutool.core.util.ReflectUtil;
 import com.boot.base.exception.GlobalServiceException;
@@ -68,13 +69,22 @@ public class BaseServiceImpl<T, R extends BaseRepository<T>> implements BaseServ
 	@Override
 	@Transactional(rollbackFor = Exception.class)
 	public void delete(T t) {
-		repository.delete(one(t));
+		T one = one(t);
+
+		if(one!=null){
+			repository.delete(one);
+		}
 	}
 
 	@Override
 	@Transactional(rollbackFor = Exception.class)
 	public void delete(Iterable<T> entities) {
-		repository.deleteAll(entities);
+		if (entities!=null){
+			List<T> list = IterUtil.toList(entities);
+			if (HelpMe.isNotNull(list)){
+				repository.deleteAll(list);
+			}
+		}
 	}
 
 	/**
