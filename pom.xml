@@ -27,6 +27,7 @@
 		<commons-io.version>2.4</commons-io.version>
 		<swagger.version>2.9.2</swagger.version>
 		<commons-lang3.version>3.9</commons-lang3.version>
+		<oshi.version>3.9.1</oshi.version>
 	</properties>
 
 
@@ -39,16 +40,13 @@
         </dependency>
 
 
-		<!--<dependency>
-			<groupId>io.springfox</groupId>
-			<artifactId>springfox-swagger2</artifactId>
-			<version>${swagger.version}</version>
-		</dependency>
+		<!-- 获取系统信息 -->
 		<dependency>
-			<groupId>io.springfox</groupId>
-			<artifactId>springfox-swagger-ui</artifactId>
-			<version>${swagger.version}</version>
-		</dependency>-->
+			<groupId>com.github.oshi</groupId>
+			<artifactId>oshi-core</artifactId>
+			<version>${oshi.version}</version>
+		</dependency>
+
 		<dependency>
 			<groupId>com.github.xiaoymin</groupId>
 			<artifactId>knife4j-spring-boot-starter</artifactId>

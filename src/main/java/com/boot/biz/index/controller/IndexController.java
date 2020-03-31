@@ -17,6 +17,8 @@ import com.boot.biz.requestfollow.entity.RequestFollow;
 import com.boot.biz.requestfollow.service.RequestFollowService;
 import com.boot.biz.schedule.entity.ScheduleJob;
 import com.boot.biz.schedule.service.ScheduleJobService;
+import com.boot.biz.serverinfo.Server;
+import com.boot.biz.serverinfo.ServerController;
 import com.boot.biz.springtask.entity.SpringTask;
 import com.boot.biz.springtask.service.SpringTaskService;
 import com.boot.biz.urllimit.entity.UrlLimit;
@@ -131,7 +133,10 @@ public class IndexController {
 
 		log.info("首页被访问...");
 
+		Server serverInfo = ServerController.serverInfo();
+
 		model.addAttribute("sysTime", System.currentTimeMillis());
+		model.addAttribute("serverInfo", serverInfo);
 
 		return "index";
 	}

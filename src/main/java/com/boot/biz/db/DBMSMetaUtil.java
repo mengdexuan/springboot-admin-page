@@ -1,9 +1,9 @@
 package com.boot.biz.db;
 
 import cn.hutool.core.bean.BeanUtil;
-import cn.hutool.core.collection.IterUtil;
-import cn.hutool.core.map.MapUtil;
 import cn.hutool.json.JSONUtil;
+import com.alibaba.druid.util.JdbcUtils;
+import com.alibaba.druid.util.MySqlUtils;
 import com.boot.base.util.HelpMe;
 import com.boot.biz.db.dto.DbConnDto;
 import com.google.common.collect.Lists;
@@ -133,13 +133,18 @@ public class DBMSMetaUtil {
 	 */
 	public static List<String> tableList(DbConnDto dbConnDto) {
 
-		List<Map<String, Object>> tempList = listTables(dbConnDto.getDbType(), dbConnDto.getIp(), dbConnDto.getPort(), dbConnDto.getDbName(), dbConnDto.getUserName(), dbConnDto.getPwd());
+		String url = DBMSMetaUtil.concatUrl(DBMSMetaUtil.parseDATABASETYPE(dbConnDto.getDbType()),
+				dbConnDto.getIp(), dbConnDto.getPort(), dbConnDto.getDbName());
+		Connection conn = DBMSMetaUtil.getConnection(url, dbConnDto.getUserName(), dbConnDto.getPwd());
 
 		List<String> tableList = Lists.newArrayList();
 
-		for (Map<String, Object> map:tempList){
-			tableList.add(map.get("TABLE_NAME").toString());
+		try {
+			tableList = MySqlUtils.showTables(conn);
+		} catch (SQLException e) {
 		}
+
+		JdbcUtils.close(conn);
 
 		return tableList;
 	}
