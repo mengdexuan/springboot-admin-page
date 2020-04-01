@@ -20,14 +20,11 @@ public class WsConfig implements WebSocketConfigurer {
 	EchoHandler echoHandler;
 	@Autowired
 	SshShellHandler sshShellHandler;
-	@Autowired
-	SysTimeHandler sysTimeHandler;
 
 	@Override
 	public void registerWebSocketHandlers(WebSocketHandlerRegistry webSocketHandlerRegistry) {
 
 		// withSockJS 声明启用支持 sockJS
-		webSocketHandlerRegistry.addHandler(sysTimeHandler, "/sysTime").withSockJS();
 		webSocketHandlerRegistry.addHandler(echoHandler, "/echo").withSockJS();
 
 		webSocketHandlerRegistry.addHandler(sshShellHandler, "/sshShellHandler").setAllowedOrigins("*").withSockJS();

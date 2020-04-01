@@ -8,10 +8,12 @@
 
         <script type="text/javascript" th:src="@{/lib/layer/2.4/layer.js}"></script>
         <script type="text/javascript" th:src="@{/lib/sockjs/sockjs.min.js}"></script>
+        <script type="text/javascript" th:src="@{/lib/stomp.js}"></script>
         <script type="text/javascript" th:src="@{/lib/switch/js/bootstrap-switch.js}"></script>
         <script type="text/javascript" th:src="@{/bootstrap/js/bootstrap.min.js}"></script>
 
         <script type="text/javascript" th:src="@{/lib/zTree/v3/js/jquery.ztree.all-3.5.min.js}"></script>
+        <script type="text/javascript" th:src="@{/lib/layui2.5.6/layui.js}"></script>
 
         <script th:inline="javascript">
             var ctx = [[@{/}]];
@@ -21,6 +23,14 @@
                     window.location = location.href;
                 }
 
+
+                //清空form表单数据
+                function clearFormData(formId) {
+                    $("#"+formId).find('input[type=text],select,input[type=hidden]').each(function() {
+                            $(this).val('');
+                    });
+                }
+                
                 function clickLi(idOfLi) {
                     $(".menu_dropdown").find("li").each(function (li) {
                         $(li).removeClass("current");
@@ -51,28 +61,111 @@
                         el.style.cssText = 'height:' + (el.scrollHeight+10) + 'px';
                     }, 0);
                 }
+
+                //配置全局 header
+            $.ajaxSettings.beforeSend = function(xhr,request){
+                xhr.setRequestHeader('loginKey','meng123456');
+            }
         </script>
 
-    <script th:inline="javascript">
-        var sysTime_url = ctx + "/sysTime";
+        <script th:inline="javascript">
+            var sysTime_url = ctx + "/sysTime";
 
-        var sysTime_url_sock = new SockJS(sysTime_url);
+            // 定义全局变量 stomp socket
+            var stompClient,socket;
 
-        sysTime_url_sock.onopen = function (ev) {
-        };
-        sysTime_url_sock.onmessage = function (ev) {
-            // console.log(ev.data);
-            $("#sysTime").text(ev.data);
-        };
-        sysTime_url_sock.onclose = function (ev) {
-            console.log("closed");
-        };
+            $(document).ready(function () {
+                if (window.WebSocket){
+                    wsConfig();
+                } else {
+                    alert("浏览器不支持websocket技术通讯.");
+                }
+            });
 
-        //监听窗口关闭事件，当窗口关闭时，主动去关闭websocket连接，防止连接还没断开就关闭窗口，server端会抛异常。
-        window.onbeforeunload = function () {
-            sysTime_url_sock.close();
-        }
-    </script>
+            // webSocket 配置
+            function wsConfig() {
+                /*
+                 * 1. 连接url为endpointChat的endpoint,对应后台WebSoccketConfig的配置
+                 * 2. SockJS 所处理的URL 是 "http://" 或 "https://" 模式，而不是 "ws://" or  "wss://"
+                 */
+                socket = new SockJS(sysTime_url);
+
+                // 获取 STOMP 子协议的客户端对象
+                stompClient = Stomp.over(socket);
+
+                /*
+                 * 1. 获取到stomp 子协议后，可以设置心跳连接时间，认证连接，主动断开连接
+                 * 2，连接心跳有的版本的stomp.js 是默认开启的，这里我们不管版本，手工设置
+                 * 3. 心跳是双向的，客户端开启心跳，必须要服务端支持心跳才行
+                 * 4. heartbeat.outgoing 表示客户端给服务端发送心跳的间隔时间
+                 * 5. 客户端接收服务端心跳的间隔时间，如果为0 表示客户端不接收服务端心跳
+                 */
+                stompClient.heartbeat.outgoing = 10000;
+                stompClient.heartbeat.incoming = 0;
+
+                /*
+                 * 1. stompClient.connect(headers, connectCallback, errorCallback);
+                 * 2. headers表示客户端的认证信息,多个参数 json格式存,这里简单用的httpsessionID，可以根据业务场景变更
+                 *    这里存的信息，在服务端StompHeaderAccessor 对象调用方法可以取到
+                 * 3. connectCallback 表示连接成功时（服务器响应 CONNECTED 帧）的回调方法；
+                 *    errorCallback 表示连接失败时（服务器响应 ERROR 帧）的回调方法，非必须；
+                 */
+                var headers = {token:"admin"};
+
+                stompClient.connect(headers,function (frame) {
+                    console.log('Connected: ' + frame);
+                    /*
+                     * 1. 订阅服务，订阅地址为服务器Controller 中的地址
+                     * 2. 如果订阅为公告，地址为Controller 中@SendTo 注解地址
+                     * 3. 如果订阅为私信，地址为setUserDestinationPrefix 前缀+@SendToUser注解地址
+                     *    或者setUserDestinationPrefix 前缀 + controller的convertAndSendToUser地址一致
+                     * 4. 这里演示为公告信息，所有订阅了的用户都能接受
+                     */
+                    stompClient.subscribe("/sysTime",function (message) {
+                        // var msg = JSON.parse(message.body).msg;
+                        var msg = message.body;
+                        $("#sysTime").text(msg);
+                        // console.log("接收到信息：" + msg);
+                    });
+                }, function (error) {
+                    console.log('STOMP: ' + error);
+                    console.log('STOMP: Reconnecting in 10 seconds');
+                });
+            }
+
+
+            function sendMsg() {
+                var data ={"msg":"test"};
+                /**
+                 *  1. 第一个参数 url 为服务器 controller中 @MessageMapping 中匹配的URL，字符串，必须参数；
+                 *  2. headers 为发送信息的header，json格式，JavaScript 对象，
+                 *     可选参数,可以携带消息头信息，也可以做事务，如果没有，传{}
+                 *  3. body 为发送信息的 body，字符串，可选参数
+                 */
+                stompClient.send('/xx/xx',{},JSON.stringify(data));
+            }
+
+
+
+
+
+            // 关闭websocket
+            function disconnect() {
+                if (socket != null) {
+                    socket.close();
+                    socket = null;
+                }
+                if (stompClient != null) {
+                    stompClient.disconnect();
+                    stompClient = null;
+                }
+            }
+
+            //监听窗口关闭事件，当窗口关闭时，主动去关闭websocket连接，防止连接还没断开就关闭窗口，server端会抛异常。
+            window.onbeforeunload = function () {
+                disconnect();
+            }
+        </script>
 </head>
 </body>
 </html>

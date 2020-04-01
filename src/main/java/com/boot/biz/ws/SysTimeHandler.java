@@ -1,58 +1,29 @@
 package com.boot.biz.ws;
 
-import cn.hutool.core.date.DateUtil;
-import cn.hutool.core.thread.ThreadUtil;
-import com.boot.base.util.HelpMe;
+import com.boot.config.WebSocketConfig;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
-import org.springframework.web.socket.CloseStatus;
-import org.springframework.web.socket.TextMessage;
-import org.springframework.web.socket.WebSocketSession;
-import org.springframework.web.socket.handler.AbstractWebSocketHandler;
 
-import java.io.IOException;
 import java.time.DayOfWeek;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Calendar;
-import java.util.concurrent.ExecutorService;
 
 @Slf4j
 @Component
-public class SysTimeHandler extends AbstractWebSocketHandler {
+public class SysTimeHandler {
 
-    ExecutorService singleExe = ThreadUtil.newSingleExecutor();
 
-    @Override
-    public void afterConnectionEstablished(WebSocketSession session) throws Exception {
-        super.afterConnectionEstablished(session);
+    @Autowired
+    private SimpMessagingTemplate simpMessagingTemplate;
 
-        singleExe.execute(()->{
-            while (true){
 
-                if (session.isOpen()){
-                    try {
-                        session.sendMessage(new TextMessage(sysTime()));
-                    } catch (IOException e) {
-                        break;
-                    }
-                }else {
-                    break;
-                }
-
-                ThreadUtil.safeSleep(1000);
-            }
-        });
-    }
-
-    @Override
-    protected void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
-        log.info("a text msg received: " + message.getPayload());
-    }
-
-    @Override
-    public void afterConnectionClosed(WebSocketSession session, CloseStatus status) throws Exception {
-        super.afterConnectionClosed(session, status);
+    //每 1 秒发送 1 次
+    @Scheduled(cron = "0/1 * * * * ?")
+    public void send(){
+        simpMessagingTemplate.convertAndSend(WebSocketConfig.sysTime, sysTime());
     }
 
 
