@@ -1,11 +1,14 @@
 package com.boot.biz.db.controller;
 
-import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.io.FileUtil;
+import cn.hutool.core.io.IoUtil;
+import cn.hutool.core.io.StreamProgress;
 import cn.hutool.core.map.MapUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.json.JSONUtil;
+import com.alibaba.druid.pool.DruidDataSource;
 import com.alibaba.druid.sql.SQLUtils;
+import com.alibaba.druid.util.JdbcUtils;
 import com.boot.base.BaseController;
 import com.boot.base.Result;
 import com.boot.base.util.HelpMe;
@@ -16,12 +19,23 @@ import com.boot.biz.keyval.service.KeyValService;
 import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.FileSystemResource;
+import org.springframework.jdbc.datasource.init.DatabasePopulatorUtils;
+import org.springframework.jdbc.datasource.init.ResourceDatabasePopulator;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.MultipartHttpServletRequest;
 import org.testng.collections.Maps;
 
+import javax.servlet.http.HttpServletRequest;
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.InputStream;
+import java.sql.Connection;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -351,6 +365,94 @@ public class DbConnController extends BaseController {
 
 		return success();
 	}
+
+
+
+	//sql脚本文件存储目录
+	public static String sqlScriptDir = "sqlScript";
+
+
+	@PostMapping(value = "/uploadSqlScript")
+	@ResponseBody
+	public Result uploadSqlScript(HttpServletRequest request) {
+
+		List<MultipartFile> files = ((MultipartHttpServletRequest) request).getFiles("sqlScriptFile");
+		MultipartFile file = null;
+		BufferedOutputStream out = null;
+
+		file = files.get(0);
+		String fileName = file.getOriginalFilename();
+		String extName = FileUtil.extName(fileName);
+
+		FileUtil.mkdir(new File(sqlScriptDir));
+
+		String storePath = sqlScriptDir+File.separator+fileName;
+
+		try {
+			File sqlScript = new File(storePath);
+
+			log.info("sql脚本文件存储路径：{}",sqlScript.getAbsolutePath());
+
+			out = new BufferedOutputStream(new FileOutputStream(sqlScript));
+
+			InputStream in = file.getInputStream();
+			IoUtil.copyByNIO(in, out, 1024, (StreamProgress) null);
+			IoUtil.close(in);
+			IoUtil.close(out);
+
+		} catch (Exception e) {
+			log.error("上传附件失败！",e);
+			return failure("上传文件失败！");
+		}
+
+		return success();
+	}
+
+
+
+	@PostMapping(value = "/exeScript")
+	@ResponseBody
+	public Result exeScript(String id,String fileName) {
+		//dev_pbank|a16eeb2d967d45c48d9488be8bd98110，test.sql
+		log.info("id:{},fileName:{}",id,fileName);
+
+		String storePath = sqlScriptDir+File.separator+fileName;
+		File sqlScript = new File(storePath);
+
+		try {
+			List<String> tempList = HelpMe.easySplit(id, '|');
+			String dbName = tempList.get(0);
+			String connId = tempList.get(1);
+
+			DbConnDto dbConnDto = keyValService.getByDataId(connId,DbConnDto.class);
+			dbConnDto.setDbName(dbName);
+
+			Connection conn = DBMSMetaUtil.getConn(dbConnDto);
+
+			FileSystemResource resource = new FileSystemResource(sqlScript);
+
+			ResourceDatabasePopulator populator = new ResourceDatabasePopulator();
+			populator.addScripts(resource);
+
+			populator.populate(conn);
+
+			JdbcUtils.close(conn);
+		}catch (Exception e){
+			log.error("执行sql脚本失败！"+e.getMessage());
+
+			if (!sqlScript.exists()){
+				return failure("SQL文件不存在，请先上传脚本！");
+			}
+
+			return failure(e.getMessage());
+		}finally {
+			FileUtil.del(sqlScript);
+		}
+
+		return success();
+	}
+
+
 
 
 }

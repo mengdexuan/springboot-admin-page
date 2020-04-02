@@ -381,6 +381,15 @@ public class DBMSMetaUtil {
 	}
 
 
+	public static Connection getConn(DbConnDto dbConnDto){
+		String concatUrl = concatUrl(parseDATABASETYPE(dbConnDto.getDbType()), dbConnDto.getIp(), dbConnDto.getPort(), dbConnDto.getDbName());
+
+		Connection conn = getConnection(concatUrl, dbConnDto.getUserName(), dbConnDto.getPwd());
+
+		return conn;
+	}
+
+
 
 	public static QueryResult exeSql(DbConnDto dbConnDto,String sql){
 

@@ -139,20 +139,40 @@
 									</row>
 								</div>
 								<div role="tabpanel" class="tab-pane" id="profile">
-									</br>
-									<div class="=row">
+									<div class="row" style="margin-top: 1%">
+										<div class="col-md-6">
+											<form class="form-inline">
+												<div class="form-group">
+													<input type="file" id="sqlScriptFile" name="sqlScriptFile"/>
+												</div>
+												<button type="button" class="btn btn-success" id="uploadSqlScript">上传SQL脚本</button>
+											</form>
+										</div>
+										<div class="col-md-6">
+											<button type="button" fileName="" class="btn btn-danger" id="exeScript">执行SQL脚本</button>
+										</div>
+									</div>
+									<div class="row" style="margin-top: 1%">
+										<div class="col-md-12 well well-sm">
+											<label style="color: red">1.只有选择了相应的数据库后，才可以执行sql查询或执行sql脚本</label>
+											</br>
+											<label style="color: red">2.执行SQL脚本后，会立即删除上传的SQL脚本文件</label>
+										</div>
+									</div>
+									<div class="=row" style="margin-top: 1%">
 										<div class="col-md-12 well well-sm">
 											<span id="well" style="float: left"></span>
 											<span style="float: right">
 												<button class="btn btn-success" onclick="exeSqlScript(this)" id="exeSqlScript">
-													Action
+													SQL查询
 												</button>
-												<button class="btn btn-warning" onclick="clearSqlScript();">Clear</button>
+												<button class="btn btn-warning" onclick="clearSqlScript();">清空</button>
 											</span>
 										</div>
 									</div>
 									<div class="=row">
 										<div class="col-md-12">
+											<label>SQL查询：</label>
 											<textarea class="form-control" rows="5" id="sqlScript" name="sqlScript"></textarea>
 										</div>
 									</div>
@@ -255,6 +275,7 @@
 <div th:replace="include/_footer :: footer"></div>
 <!--/_footer /部分-->
 
+<script type="text/javascript" th:src="@{/lib/jquery/1.9.1/ajaxfileupload.js}"></script>
 
 
 
@@ -459,6 +480,7 @@
 
                 $("#well").html(str);
                 $("#exeSqlScript").attr("data-id",id);
+                $("#exeScript").attr("data-id",id);
 
             },
             error: function (err) {
@@ -738,6 +760,64 @@
             });
         }
     }
+
+    function getFileName(fileName){
+        var arr = fileName.split('\\');//通过\分隔字符串，成字符串数组
+        return arr[arr.length-1];//取最后一个，就是文件名
+    }
+
+    $('#uploadSqlScript').click(function(){
+        $.ajaxFileUpload({
+            url: 'dbConn/uploadSqlScript',
+            type: 'post',
+            secureuri: false,
+            fileElementId: 'sqlScriptFile',
+            dataType: 'json',
+            elementIds: '',
+            success: function(data, status){
+                console.log(data);
+                var fileName = getFileName($("#sqlScriptFile").val());
+                if (data.success){
+                    layer.msg(fileName+" 上传成功！");
+                    $("#exeScript").attr("fileName",fileName);
+                } else {
+                    layer.msg(fileName+" 上传失败！");
+                }
+            },
+            error: function(data, status, e){
+                console.log(e);
+            }
+        });
+
+    });
+
+    $("#exeScript").click(function () {
+        var id = $(this).attr("data-id");
+        var fileName = $(this).attr("fileName");
+
+        $.ajax({
+            type: "post",
+            url: 'dbConn/exeScript',
+            dataType: "json",
+            async: false,
+            data: {
+                id:id,
+				fileName:fileName
+			},
+            success: function (data) {
+                console.log(data);
+                if (data.success){
+                    layer.msg("脚本执行成功！");
+                } else {
+                    alert(data.msg);
+                }
+            },
+            error: function (err) {
+
+            }
+        });
+
+    });
 
 </script>
 <!--/请在上方写此页面业务相关的脚本-->
