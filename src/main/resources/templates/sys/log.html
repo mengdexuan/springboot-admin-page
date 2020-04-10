@@ -58,10 +58,6 @@
 <!--请在下方写此页面业务相关的脚本-->
 <script type="text/javascript" th:inline="javascript">
 
-
-    var websocket = null;
-    var websocket2 = null;
-
     $(document).ready(function () {
         clickLi("sysLog");
         infoLog();
@@ -76,8 +72,8 @@
         var logTriggerVal = "";
         if ("1"==logTrigger){
             logTriggerVal = "2";
-            websocket.close();
-            websocket2.close();
+            infoLogSocketClose();
+            errorLogSocketClose();
             layer.msg("停止日志打印！")
         }else if ("2"==logTrigger){
             logTriggerVal = "1";
@@ -100,59 +96,57 @@
         $("#logType").val(logType);
     }
 
+
+    var infoLogSocket;
+    var infoLogStompClient;
+
+    var sysInfoLogUrl = ctx + "/sysInfoLog";
+
     function infoLog() {
-        if (websocket == null) {
-        } else {
-            websocket.close();
-        }
+        infoLogSocket = new SockJS(sysInfoLogUrl);
+        infoLogStompClient = Stomp.over(infoLogSocket);
+        infoLogStompClient.heartbeat.outgoing = 10000;
+        infoLogStompClient.heartbeat.incoming = 0;
+        var headers = {token:""};
 
-        //判断当前浏览器是否支持WebSocket
-        if ('WebSocket' in window) {
-            websocket = new WebSocket('ws://' + window.location.host + ctx +'/tail/info');
-        } else {
-            alert('Not support websocket')
-        }
-
-        websocket.onmessage = function (event) {
-            // 接收服务端的实时日志并添加到HTML页面中
-            $("#log-container div").append(event.data);
-            // 滚动条滚动到最低部
-            $("#log-container").scrollTop($("#log-container div").height() - $("#log-container").height());
-        };
-
-
-        //监听窗口关闭事件，当窗口关闭时，主动去关闭websocket连接，防止连接还没断开就关闭窗口，server端会抛异常。
-        window.onbeforeunload = function () {
-            websocket.close();
-        }
+        infoLogStompClient.connect(headers,function (frame) {
+            infoLogStompClient.subscribe("/sysInfoLog",function (message) {
+                var msg = message.body;
+                // 接收服务端的实时日志并添加到HTML页面中
+                $("#log-container div").append(msg);
+                // 滚动条滚动到最低部
+                $("#log-container").scrollTop($("#log-container div").height() - $("#log-container").height());
+            });
+        }, function (error) {
+        });
     }
+
+    var errorLogSocket;
+    var errorLogStompClient;
+
+    var sysErrorLogUrl = ctx + "/sysErrorLog";
 
     function errorLog() {
-        if (websocket2 == null) {
-        } else {
-            websocket2.close();
-        }
+        errorLogSocket = new SockJS(sysErrorLogUrl);
+        errorLogStompClient = Stomp.over(socket);
+        errorLogStompClient.heartbeat.outgoing = 10000;
+        errorLogStompClient.heartbeat.incoming = 0;
+        var headers = {token:""};
 
-        //判断当前浏览器是否支持WebSocket
-        if ('WebSocket' in window) {
-            websocket2 = new WebSocket('ws://' + window.location.host + ctx +'/tail/error');
-        } else {
-            alert('Not support websocket')
-        }
-
-        websocket2.onmessage = function (event) {
-            // 接收服务端的实时日志并添加到HTML页面中
-            $("#log-container2 div").append(event.data);
-            // 滚动条滚动到最低部
-            $("#log-container2").scrollTop($("#log-container2 div").height() - $("#log-container2").height());
-        };
-
-
-        //监听窗口关闭事件，当窗口关闭时，主动去关闭websocket连接，防止连接还没断开就关闭窗口，server端会抛异常。
-        window.onbeforeunload = function () {
-            websocket2.close();
-        }
+        errorLogStompClient.connect(headers,function (frame) {
+            errorLogStompClient.subscribe("/sysErrorLog",function (message) {
+                var msg = message.body;
+                // 接收服务端的实时日志并添加到HTML页面中
+                $("#log-container2 div").append(msg);
+                // 滚动条滚动到最低部
+                $("#log-container2").scrollTop($("#log-container2 div").height() - $("#log-container2").height());
+            });
+        }, function (error) {
+        });
     }
+
+
+
 
     function emptyContainer() {
         var logType = $("#logType").val();
@@ -184,6 +178,33 @@
     }
 
 
+    function infoLogSocketClose() {
+        if (infoLogSocket != null) {
+            infoLogSocket.close();
+            infoLogSocket = null;
+        }
+        if (infoLogStompClient != null) {
+            infoLogStompClient.disconnect();
+            infoLogStompClient = null;
+        }
+    }
+
+    function errorLogSocketClose() {
+        if (errorLogSocket != null) {
+            errorLogSocket.close();
+            errorLogSocket = null;
+        }
+        if (errorLogStompClient != null) {
+            errorLogStompClient.disconnect();
+            errorLogStompClient = null;
+        }
+    }
+
+    //监听窗口关闭事件，当窗口关闭时，主动去关闭websocket连接，防止连接还没断开就关闭窗口，server端会抛异常。
+    window.onbeforeunload = function () {
+        infoLogSocketClose();
+        errorLogSocketClose();
+    }
 
 </script>
 <!--/请在上方写此页面业务相关的脚本-->

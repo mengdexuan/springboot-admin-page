@@ -1,7 +1,6 @@
 package com.boot.config;
 
 import com.boot.biz.webshell.ssh.SshShellHandler;
-import com.boot.biz.ws.SysTimeHandler;
 import com.boot.biz.wstest.EchoHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;

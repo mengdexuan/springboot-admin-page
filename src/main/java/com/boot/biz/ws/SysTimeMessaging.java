@@ -13,7 +13,7 @@ import java.time.format.DateTimeFormatter;
 
 @Slf4j
 @Component
-public class SysTimeHandler {
+public class SysTimeMessaging {
 
 
     @Autowired

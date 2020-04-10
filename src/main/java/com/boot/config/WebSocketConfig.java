@@ -15,6 +15,8 @@ import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerCo
 public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
 	public static String sysTime = "/sysTime";
+	public static String sysInfoLog = "/sysInfoLog";
+	public static String sysErrorLog = "/sysErrorLog";
 
 	@Override
 	public void registerStompEndpoints(StompEndpointRegistry registry) {
@@ -23,6 +25,17 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 				//解决跨域问题
 				.setAllowedOrigins("*")
 				.withSockJS();
+
+		registry.addEndpoint(sysInfoLog)
+				//解决跨域问题
+				.setAllowedOrigins("*")
+				.withSockJS();
+
+		registry.addEndpoint(sysErrorLog)
+				//解决跨域问题
+				.setAllowedOrigins("*")
+				.withSockJS();
+
 	}
 
 
