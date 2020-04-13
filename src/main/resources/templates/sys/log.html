@@ -60,11 +60,26 @@
 
     $(document).ready(function () {
         clickLi("sysLog");
+        initLog();
+        changeLog('info');
+    })
+
+
+    function initLog() {
         infoLog();
         errorLog();
 
-        changeLog('info');
-    })
+        $.ajax({
+            type: "get",
+            url: ctx + "/initLog",
+            dataType: "text",
+            async: true,
+            success: function (data) {
+            },
+            error: function (err) {
+            }
+        });
+    }
 
 
     function logTrigger() {

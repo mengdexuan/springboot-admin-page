@@ -1,16 +1,13 @@
 package com.boot.biz.log;
 
 import com.boot.config.WebSocketConfig;
-import com.boot.config.WsConfig;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.CommandLineRunner;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
-import javax.websocket.Session;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -20,7 +17,7 @@ import java.io.InputStream;
  */
 @Slf4j
 @Component
-public class SysLogSysTimeMessaging implements CommandLineRunner {
+public class SysLogMessaging {
 
 	@Value("${logging.error-log}")
 	private String errorLogTemp;
@@ -44,26 +41,38 @@ public class SysLogSysTimeMessaging implements CommandLineRunner {
 	}
 
 
-	@Override
-	public void run(String... args) throws Exception {
+	public void initLog() {
 		tailInfoLog();
 		tailErrorLog();
 	}
 
-
+	Process infoLogProcess = null;
+	InputStream infoLogInputStream = null;
+	Process errorLogProcess = null;
+	InputStream errorLogInputStream = null;
 
 	//监控输出 info 日志
 	private void tailInfoLog() {
 		try {
+
+			if (infoLogProcess!=null){
+				infoLogProcess.destroyForcibly();
+				infoLogProcess = null;
+			}
+			if (infoLogInputStream!=null){
+				infoLogInputStream.close();
+				infoLogInputStream = null;
+			}
+
 			File file = new File(infoLog);
 
 			// 执行tail -f命令
-			Process process = Runtime.getRuntime().exec("tail -f " + file.getAbsolutePath());
+			infoLogProcess = Runtime.getRuntime().exec("tail -f " + file.getAbsolutePath());
 
-			InputStream inputStream = process.getInputStream();
+			infoLogInputStream = infoLogProcess.getInputStream();
 
 			// 一定要启动新的线程，防止InputStream阻塞处理WebSocket的线程
-			TailLogThread thread = new TailLogThread(WebSocketConfig.sysInfoLog,inputStream, simpMessagingTemplate);
+			TailLogThread thread = new TailLogThread(WebSocketConfig.sysInfoLog,infoLogInputStream, simpMessagingTemplate);
 			thread.start();
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -74,15 +83,25 @@ public class SysLogSysTimeMessaging implements CommandLineRunner {
 	//监控输出 error 日志
 	private void tailErrorLog() {
 		try {
+
+			if (errorLogProcess!=null){
+				errorLogProcess.destroyForcibly();
+				errorLogProcess = null;
+			}
+			if (errorLogInputStream!=null){
+				errorLogInputStream.close();
+				errorLogInputStream = null;
+			}
+
 			File file = new File(errorLog);
 
 			// 执行tail -f命令
-			Process process = Runtime.getRuntime().exec("tail -f " + file.getAbsolutePath());
+			errorLogProcess = Runtime.getRuntime().exec("tail -f " + file.getAbsolutePath());
 
-			InputStream inputStream = process.getInputStream();
+			errorLogInputStream = errorLogProcess.getInputStream();
 
 			// 一定要启动新的线程，防止InputStream阻塞处理WebSocket的线程
-			TailLogThread thread = new TailLogThread(WebSocketConfig.sysErrorLog,inputStream, simpMessagingTemplate);
+			TailLogThread thread = new TailLogThread(WebSocketConfig.sysErrorLog,errorLogInputStream, simpMessagingTemplate);
 			thread.start();
 		} catch (IOException e) {
 			e.printStackTrace();

@@ -11,6 +11,7 @@ import com.boot.biz.camel.repository.CamelRouteRepository;
 import com.boot.biz.dict.entity.Dict;
 import com.boot.biz.dict.service.DictService;
 import com.boot.biz.index.dto.ConfigFileDto;
+import com.boot.biz.log.SysLogMessaging;
 import com.boot.biz.menu.entity.Menu;
 import com.boot.biz.menu.service.MenuService;
 import com.boot.biz.requestfollow.entity.RequestFollow;
@@ -98,6 +99,9 @@ public class IndexController {
 	@Autowired
 	RequestFollowService requestFollowService;
 
+	@Autowired
+	SysLogMessaging sysLogMessaging;
+
 	@PostConstruct
 	private void init(){
 		log.info("");
@@ -125,6 +129,14 @@ public class IndexController {
 		return "test/webSocketTest";
 	}
 
+
+
+	@ResponseBody
+	@GetMapping("/initLog")
+	public String initLog() {
+		sysLogMessaging.initLog();
+		return "ok";
+	}
 
 
 
