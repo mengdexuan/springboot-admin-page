@@ -568,7 +568,7 @@ public class BaseServiceImpl<T, R extends BaseRepository<T>> implements BaseServ
 			if (unique!=null){
 				Object fieldVal = ReflectUtil.getFieldValue(t, field);
 
-				List tempList = this.list(field.getName(), fieldVal);
+				List tempList = this.list(field.getName(), fieldVal,true);
 
 				if (HelpMe.isNotNull(tempList)){
 					String uniqueVal = unique.value();
