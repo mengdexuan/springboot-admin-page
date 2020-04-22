@@ -87,7 +87,7 @@ public interface BaseService<T>{
 	 * @param list	属性值
 	 * @return
 	 */
-	List<T> list(String property, List<?> list);
+	List<T> findByFieldIn(String property, List<?> list);
 
 
 	/**
@@ -106,7 +106,7 @@ public interface BaseService<T>{
 	 * @param end	结束值
 	 * @return
 	 */
-	List<T> list(String property, Comparable begin, Comparable end);
+	List<T> findByFieldBetween(String property, Comparable begin, Comparable end);
 
 
 	/**

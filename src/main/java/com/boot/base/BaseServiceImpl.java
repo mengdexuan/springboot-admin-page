@@ -222,7 +222,7 @@ public class BaseServiceImpl<T, R extends BaseRepository<T>> implements BaseServ
 
 
 	@Override
-	public List<T> list(String property, List<?> list) {
+	public List<T> findByFieldIn(String property, List<?> list) {
 
 		if (HelpMe.isNull(list)){
 			return Lists.newArrayList();
@@ -288,7 +288,7 @@ public class BaseServiceImpl<T, R extends BaseRepository<T>> implements BaseServ
 
 
 	@Override
-	public List<T> list(String property, Comparable begin,Comparable end) {
+	public List<T> findByFieldBetween(String property, Comparable begin,Comparable end) {
 		Specification specification = new Specification<T>() {
 			@Override
 			public Predicate toPredicate(Root<T> root, CriteriaQuery<?> criteriaQuery, CriteriaBuilder criteriaBuilder) {
