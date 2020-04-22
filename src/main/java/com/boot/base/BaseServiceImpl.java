@@ -1,9 +1,9 @@
 package com.boot.base;
 
 import cn.hutool.core.bean.BeanUtil;
-import cn.hutool.core.collection.IterUtil;
 import cn.hutool.core.exceptions.UtilException;
 import cn.hutool.core.util.ReflectUtil;
+import com.boot.base.annotation.Unique;
 import com.boot.base.exception.GlobalServiceException;
 import com.boot.base.util.HelpMe;
 import com.google.common.collect.Lists;
@@ -69,22 +69,13 @@ public class BaseServiceImpl<T, R extends BaseRepository<T>> implements BaseServ
 	@Override
 	@Transactional(rollbackFor = Exception.class)
 	public void delete(T t) {
-		T one = one(t);
-
-		if(one!=null){
-			repository.delete(one);
-		}
+		repository.delete(one(t));
 	}
 
 	@Override
 	@Transactional(rollbackFor = Exception.class)
 	public void delete(Iterable<T> entities) {
-		if (entities!=null){
-			List<T> list = IterUtil.toList(entities);
-			if (HelpMe.isNotNull(list)){
-				repository.deleteAll(list);
-			}
-		}
+		repository.deleteAll(entities);
 	}
 
 	/**
@@ -171,12 +162,14 @@ public class BaseServiceImpl<T, R extends BaseRepository<T>> implements BaseServ
 	@Override
 	@Transactional(rollbackFor = Exception.class)
 	public void save(T t) {
+		uniqueCheck(t);
 		repository.save(t);
 	}
 
 	@Override
 	@Transactional(rollbackFor = Exception.class)
 	public T saveAndFlush(T t) {
+		uniqueCheck(t);
 		return repository.saveAndFlush(t);
 	}
 
@@ -192,6 +185,23 @@ public class BaseServiceImpl<T, R extends BaseRepository<T>> implements BaseServ
 		return this.repository.findOne(specification).orElse(null);
 	}
 
+
+	@Override
+	public T getByFieldIsNull(String property){
+
+		List<T> list = this.listByFieldIsNull(property);
+
+		return HelpMe.isNull(list)?null:list.get(0);
+	}
+
+
+	@Override
+	public T getByFieldIsNotNull(String property){
+
+		List<T> list = this.listByFieldIsNotNull(property);
+
+		return HelpMe.isNull(list)?null:list.get(0);
+	}
 
 	@Override
 	public T one(String property, Object value,Boolean... equalArr) {
@@ -222,7 +232,7 @@ public class BaseServiceImpl<T, R extends BaseRepository<T>> implements BaseServ
 
 
 	@Override
-	public List<T> findByFieldIn(String property, List<?> list) {
+	public List<T> listByFieldIn(String property, List<?> list) {
 
 		if (HelpMe.isNull(list)){
 			return Lists.newArrayList();
@@ -287,8 +297,62 @@ public class BaseServiceImpl<T, R extends BaseRepository<T>> implements BaseServ
 	}
 
 
+
 	@Override
-	public List<T> findByFieldBetween(String property, Comparable begin,Comparable end) {
+	public List<T> listByFieldIsNull(String property,Sort... sorts) {
+
+		Specification specification = new Specification<T>() {
+			@Override
+			public Predicate toPredicate(Root<T> root, CriteriaQuery<?> criteriaQuery, CriteriaBuilder criteriaBuilder) {
+
+				List<Predicate> predicates = new ArrayList<>();
+
+				Predicate p = criteriaBuilder.isNull(root.get(property));
+
+				predicates.add(p);
+
+				return criteriaBuilder.and(predicates.toArray(new Predicate[predicates.size()]));
+			}
+		};
+
+		if (HelpMe.isNotNull(sorts)){
+			return repository.findAll(specification,sorts[0]);
+		}else {
+			return this.findAll(specification);
+		}
+	}
+
+
+
+	@Override
+	public List<T> listByFieldIsNotNull(String property,Sort... sorts) {
+
+		Specification specification = new Specification<T>() {
+			@Override
+			public Predicate toPredicate(Root<T> root, CriteriaQuery<?> criteriaQuery, CriteriaBuilder criteriaBuilder) {
+
+				List<Predicate> predicates = new ArrayList<>();
+
+				Predicate p = criteriaBuilder.isNotNull(root.get(property));
+
+				predicates.add(p);
+
+				return criteriaBuilder.and(predicates.toArray(new Predicate[predicates.size()]));
+			}
+		};
+
+		if (HelpMe.isNotNull(sorts)){
+			return repository.findAll(specification,sorts[0]);
+		}else {
+			return this.findAll(specification);
+		}
+	}
+
+
+
+
+	@Override
+	public List<T> listByFieldBetween(String property, Comparable begin,Comparable end,Sort... sorts) {
 		Specification specification = new Specification<T>() {
 			@Override
 			public Predicate toPredicate(Root<T> root, CriteriaQuery<?> criteriaQuery, CriteriaBuilder criteriaBuilder) {
@@ -301,7 +365,11 @@ public class BaseServiceImpl<T, R extends BaseRepository<T>> implements BaseServ
 			}
 		};
 
-		return this.findAll(specification);
+		if (HelpMe.isNotNull(sorts)){
+			return repository.findAll(specification,sorts[0]);
+		}else {
+			return this.findAll(specification);
+		}
 	}
 
 
@@ -392,11 +460,6 @@ public class BaseServiceImpl<T, R extends BaseRepository<T>> implements BaseServ
 	}
 
 	@Override
-	public Page<T> findAll(Specification<T> var1, Pageable var2) {
-		return repository.findAll(var1,var2);
-	}
-
-	@Override
 	public void flush() {
 		this.repository.flush();
 	}
@@ -419,6 +482,36 @@ public class BaseServiceImpl<T, R extends BaseRepository<T>> implements BaseServ
 	@Override
 	public boolean exists(Specification<T> specification) {
 		return this.repository.count(specification) > 0;
+	}
+
+
+	@Override
+	public Page<T> findAll(Specification<T> var1, Pageable var2) {
+		return repository.findAll(var1,var2);
+	}
+
+
+	/**
+	 * 唯一性字段校验
+	 */
+	private <T> void uniqueCheck(T t){
+
+		Field[] fields = ReflectUtil.getFields(t.getClass());
+
+		for (Field field:fields){
+			Unique unique = field.getAnnotation(Unique.class);
+			if (unique!=null){
+				Object fieldVal = ReflectUtil.getFieldValue(t, field);
+
+				List tempList = this.list(field.getName(), fieldVal);
+
+				if (HelpMe.isNotNull(tempList)){
+					String uniqueVal = unique.value();
+					throw new GlobalServiceException(uniqueVal);
+				}
+			}
+		}
+
 	}
 
 

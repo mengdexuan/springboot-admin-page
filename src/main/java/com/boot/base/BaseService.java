@@ -16,6 +16,7 @@ import java.util.Map;
  */
 public interface BaseService<T>{
 
+
 	T get(Long id);
 
 	@Transactional(rollbackFor = Exception.class)
@@ -69,7 +70,21 @@ public interface BaseService<T>{
 	 * @param equalArr 	true:按属性值等于查询		false：按属性值不等于查询，不传则默认为 true
 	 * @return
 	 */
-	T one(String property, Object value, Boolean... equalArr);
+	T one(String property, Object value,Boolean... equalArr);
+
+	/**
+	 * 查询对象（按属性值等于null查询）
+	 * @param property
+	 * @return
+	 */
+	T getByFieldIsNull(String property);
+
+	/**
+	 * 查询对象（按属性值不等于null查询）
+	 * @param property
+	 * @return
+	 */
+	T getByFieldIsNotNull(String property);
 
 	/**
 	 * 按实体对象中不为null的属性查询，多个属性是 and 关系
@@ -87,7 +102,7 @@ public interface BaseService<T>{
 	 * @param list	属性值
 	 * @return
 	 */
-	List<T> findByFieldIn(String property, List<?> list);
+	List<T> listByFieldIn(String property, List<?> list);
 
 
 	/**
@@ -99,6 +114,25 @@ public interface BaseService<T>{
 	 */
 	List<T> list(String property, Object val, Boolean... equalArr);
 
+
+	/**
+	 * 查询列表（按属性值等于null查询）
+	 * @param property
+	 * @param sorts
+	 * @return
+	 */
+	List<T> listByFieldIsNull(String property, Sort... sorts);
+
+	/**
+	 * 查询列表（按属性值不等于null查询）
+	 * @param property
+	 * @param sorts
+	 * @return
+	 */
+	List<T> listByFieldIsNotNull(String property, Sort... sorts);
+
+
+
 	/**
 	 * 查询列表（jpa between...and 的方式）
 	 * @param property	属性名称
@@ -106,7 +140,7 @@ public interface BaseService<T>{
 	 * @param end	结束值
 	 * @return
 	 */
-	List<T> findByFieldBetween(String property, Comparable begin, Comparable end);
+	List<T> listByFieldBetween(String property, Comparable begin, Comparable end,Sort... sorts);
 
 
 	/**
@@ -152,9 +186,6 @@ public interface BaseService<T>{
 	 */
 	List<T> findAll(Specification<T> specification);
 
-	Page<T> findAll(@Nullable Specification<T> var1, Pageable var2);
-
-
 	void flush();
 
 	boolean exists(Specification<T> specification);
@@ -164,5 +195,7 @@ public interface BaseService<T>{
 	boolean exists(T t);
 
 	boolean existsById(Long id);
+
+	Page<T> findAll(Specification<T> var1, Pageable var2);
 
 }
