@@ -79,6 +79,24 @@ public interface BaseService<T>{
 	 */
 	T getByFieldIsNull(String property);
 
+
+	/**
+	 * 查询对象(按属性值等于查询)
+	 * @param property
+	 * @param obj
+	 * @return
+	 */
+	T getByFieldEqual(String property,Object obj);
+
+	/**
+	 * 查询对象(按属性值不等于查询)
+	 * @param property
+	 * @param obj
+	 * @return
+	 */
+	T getByFieldNotEqual(String property,Object obj);
+
+
 	/**
 	 * 查询对象（按属性值不等于null查询）
 	 * @param property
@@ -113,6 +131,26 @@ public interface BaseService<T>{
 	 * @return
 	 */
 	List<T> list(String property, Object val, Boolean... equalArr);
+
+
+	/**
+	 * 查询列表(按属性值等于查询)
+	 * @param property
+	 * @param val
+	 * @param sorts
+	 * @return
+	 */
+	List<T> listByFieldEqual(String property, Object val,Sort... sorts);
+
+
+	/**
+	 * 查询列表(按属性值不等于查询)
+	 * @param property
+	 * @param val
+	 * @param sorts
+	 * @return
+	 */
+	List<T> listByFieldNotEqual(String property, Object val,Sort... sorts);
 
 
 	/**

@@ -298,6 +298,71 @@ public class BaseServiceImpl<T, R extends BaseRepository<T>> implements BaseServ
 
 
 
+	public T getByFieldEqual(String property,Object obj){
+		List<T> list = this.listByFieldEqual(property, obj);
+		return HelpMe.isNull(list)?null:list.get(0);
+	}
+
+
+	public T getByFieldNotEqual(String property,Object obj){
+		List<T> list = this.listByFieldNotEqual(property, obj);
+		return HelpMe.isNull(list)?null:list.get(0);
+	}
+
+
+
+
+	@Override
+	public List<T> listByFieldEqual(String property,Object val,Sort... sorts) {
+
+		Specification specification = new Specification<T>() {
+			@Override
+			public Predicate toPredicate(Root<T> root, CriteriaQuery<?> criteriaQuery, CriteriaBuilder criteriaBuilder) {
+
+				List<Predicate> predicates = new ArrayList<>();
+
+				Predicate p = criteriaBuilder.equal(root.get(property), val);
+
+				predicates.add(p);
+
+				return criteriaBuilder.and(predicates.toArray(new Predicate[predicates.size()]));
+			}
+		};
+
+		if (HelpMe.isNotNull(sorts)){
+			return repository.findAll(specification,sorts[0]);
+		}else {
+			return this.findAll(specification);
+		}
+	}
+
+
+
+	@Override
+	public List<T> listByFieldNotEqual(String property,Object val,Sort... sorts) {
+
+		Specification specification = new Specification<T>() {
+			@Override
+			public Predicate toPredicate(Root<T> root, CriteriaQuery<?> criteriaQuery, CriteriaBuilder criteriaBuilder) {
+
+				List<Predicate> predicates = new ArrayList<>();
+
+				Predicate p = criteriaBuilder.notEqual(root.get(property), val);
+
+				predicates.add(p);
+
+				return criteriaBuilder.and(predicates.toArray(new Predicate[predicates.size()]));
+			}
+		};
+
+		if (HelpMe.isNotNull(sorts)){
+			return repository.findAll(specification,sorts[0]);
+		}else {
+			return this.findAll(specification);
+		}
+	}
+
+
 	@Override
 	public List<T> listByFieldIsNull(String property,Sort... sorts) {
 
