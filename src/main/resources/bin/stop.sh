@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 jar_name=
 
-for jar_name in `ls .|egrep '*.jar|*.war'`
+for jar_name in `ls ../|egrep '*.jar|*.war'`
 do
    if [ -n "$jar_name" ];then
       echo "find  $jar_name"
@@ -22,7 +22,7 @@ then
    echo "kill $jar_name  pid: $pid"
    kill $pid
    
-   sleep 30
+   sleep 5
    
    pid=`ps -ef | grep ${jar_name} | grep -v grep | awk '{print $2}'`
    if [ -n "$pid" ]

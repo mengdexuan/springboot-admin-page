@@ -1,11 +1,8 @@
 #!/usr/bin/env bash
 
-#调用stop.sh
-./stop.sh
-
 jar_name=
 
-for jar_name in `ls .|egrep '*.jar|*.war'`
+for jar_name in `ls ../|egrep '*.jar|*.war'`
 do
    if [ -n "$jar_name" ];then
       echo "find  $jar_name"
@@ -18,6 +15,9 @@ if [ "$jar_name" = "" ];then
    echo "not find *.jar or *.war"
    exit 11
 fi
+cd ..
+dir=`pwd`;
+jar_name=$dir"/"$jar_name;
 
 echo "start $jar_name ..."
 
@@ -35,8 +35,3 @@ echo "start $jar_name ..."
 #-XX:+PrintGCDetails （打印详细的GC日志）
 
 nohup  ${JAVA_HOME}/bin/java -XX:MetaspaceSize=128m -XX:MaxMetaspaceSize=128m -Xms1024m -Xmx1024m -Xss256k -XX:SurvivorRatio=8 -XX:+UseConcMarkSweepGC -jar ${jar_name}>/dev/null --logging.config=config/logback-spring.xml  2>&1 &
-
-sleep 8
-tailf log/info.log
-
-
