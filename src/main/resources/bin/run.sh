@@ -1,27 +1,9 @@
 #!/usr/bin/env bash
 
-jar_name=
+dir_name=/home/tq/adminPage
+jar_name=springboot-admin-page-full.jar
 
-for jar_name in `ls ../|egrep '*.jar|*.war'`
-do
-   if [ -n "$jar_name" ];then
-      echo "find  $jar_name"
-   fi
-   break
-
-done
-
-if [ "$jar_name" = "" ];then
-   echo "not find *.jar or *.war"
-   exit 11
-fi
-cd ..
-dir=`pwd`;
-jar_name=$dir"/"$jar_name;
-
-echo "start $jar_name ..."
-
-
+echo "start $dir_name/$jar_name ..."
 
 
 #-XX:MetaspaceSize=128m （元空间默认大小）
@@ -34,4 +16,5 @@ echo "start $jar_name ..."
 #-XX:+UseConcMarkSweepGC （指定使用的垃圾收集器，这里使用CMS收集器）
 #-XX:+PrintGCDetails （打印详细的GC日志）
 
-nohup  ${JAVA_HOME}/bin/java -XX:MetaspaceSize=128m -XX:MaxMetaspaceSize=128m -Xms1024m -Xmx1024m -Xss256k -XX:SurvivorRatio=8 -XX:+UseConcMarkSweepGC -jar ${jar_name}>/dev/null --logging.config=config/logback-spring.xml  2>&1 &
+nohup  ${JAVA_HOME}/bin/java -XX:MetaspaceSize=128m -XX:MaxMetaspaceSize=128m -Xms1024m -Xmx1024m -Xss256k -XX:SurvivorRatio=8 -XX:+UseConcMarkSweepGC -jar ${dir_name}/${jar_name}>/dev/null --spring.config.location=${dir_name}/config/ --logging.config=${dir_name}/config/logback-spring.xml  2>&1 &
+

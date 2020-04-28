@@ -1,3 +1,6 @@
+#应用目录
+app-dir: D:\Project\GitHubProject\springboot-admin-page
+
 spring:
   profiles:
     active: dev1
@@ -56,7 +59,7 @@ server:
   servlet:
     context-path: /adminPage #项目名称
   tomcat:
-    basedir: tomcatWorkDir
+    basedir: ${app-dir}/workDir
 
 
 
@@ -69,6 +72,6 @@ logging:
         ROOT: INFO
         com.boot: INFO
     #与logback.xml中配置的日志路径保持一致
-    info-log: log/info.log
-    error-log: log/error.log
+    info-log: ${app-dir}/log/info.log
+    error-log: ${app-dir}/log/error.log
 
