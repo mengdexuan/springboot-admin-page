@@ -1,4 +1,4 @@
-#应用目录
+#应用目录，jar包部署后所在的目录
 app-dir: D:\Project\GitHubProject\springboot-admin-page
 
 spring:

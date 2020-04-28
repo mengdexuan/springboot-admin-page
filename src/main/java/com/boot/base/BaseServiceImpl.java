@@ -563,16 +563,36 @@ public class BaseServiceImpl<T, R extends BaseRepository<T>> implements BaseServ
 
 		Field[] fields = ReflectUtil.getFields(t.getClass());
 
+		//主键值是否存在，存在：表示更新操作		不存在：表示新增操作
+		boolean primaryKeyValExist = false;
+
+		for (Field field:fields){
+			Id id = field.getAnnotation(Id.class);
+			if (id!=null){
+				Object val = ReflectUtil.getFieldValue(t, field);
+				if (val!=null){
+					primaryKeyValExist = true;
+				}
+				break;
+			}
+		}
+
+
 		for (Field field:fields){
 			Unique unique = field.getAnnotation(Unique.class);
 			if (unique!=null){
 				Object fieldVal = ReflectUtil.getFieldValue(t, field);
+				String uniqueVal = unique.value();
 
-				List tempList = this.list(field.getName(), fieldVal,true);
+				if (primaryKeyValExist){
+					//更新操作，唯一性字段校验
 
-				if (HelpMe.isNotNull(tempList)){
-					String uniqueVal = unique.value();
-					throw new GlobalServiceException(uniqueVal);
+				}else {
+					//新增操作，唯一性字段校验
+					List tempList = this.list(field.getName(), fieldVal,true);
+					if (HelpMe.isNotNull(tempList)){
+						throw new GlobalServiceException(uniqueVal);
+					}
 				}
 			}
 		}
