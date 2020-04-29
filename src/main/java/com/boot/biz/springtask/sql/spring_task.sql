@@ -25,7 +25,7 @@ CREATE TABLE `spring_task` (
   `name` varchar(255) DEFAULT NULL COMMENT '任务名称',
   `bean` varchar(255) DEFAULT NULL COMMENT 'spring bean名称',
   `method` varchar(64) DEFAULT NULL COMMENT '方法名',
-  `params` text COMMENT '参数',
+  `params` longtext COMMENT '参数',
   `cron` varchar(20) DEFAULT NULL COMMENT 'cron表达式',
   `status` tinyint(1) DEFAULT NULL COMMENT '任务状态  1.运行  2.暂停',
   `remark` varchar(2048) DEFAULT NULL COMMENT '备注',

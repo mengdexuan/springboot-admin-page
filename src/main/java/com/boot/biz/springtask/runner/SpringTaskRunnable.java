@@ -54,8 +54,8 @@ public class SpringTaskRunnable implements Runnable{
 				springTaskService.delSpringTask(taskId);
 			}
 		} catch (Exception e) {
-			log.error("执行定时任务失败！",e);
-			task.setErrLog(e.getMessage());
+			log.error("执行定时任务失败！",e.getCause().getMessage());
+			task.setErrLog(e.getCause().getMessage());
 			springTaskService.save(task);
 		}
 	}
