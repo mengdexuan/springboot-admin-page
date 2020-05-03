@@ -287,7 +287,7 @@ public class IndexController {
 	@GetMapping(value = "/menuList")
 	public String menuList(Model model) {
 
-		List<Menu> menuList = menuService.list("pid",(Object) null,true);
+		List<Menu> menuList = menuService.listByFieldIsNull("pid");
 		/*menuList = menuList.stream().filter(item->{
 			return item.getType()==2;
 		}).collect(Collectors.toList());*/

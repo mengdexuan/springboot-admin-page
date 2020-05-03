@@ -86,7 +86,7 @@ public class CamelLifecycleStrategySupport extends LifecycleStrategySupport impl
 	private void addRouteToDb(Collection<Route> routes){
 		for (Route route:routes){
 			try {
-				CamelRoute one = camelRouteService.one("routeId", route.getId(), true);
+				CamelRoute one = camelRouteService.getByFieldEqual("routeId", route.getId());
 				if (one==null){
 					CamelRoute camelRoute = trans2CamelRoute(route);
 					camelRouteService.save(camelRoute);
@@ -102,7 +102,7 @@ public class CamelLifecycleStrategySupport extends LifecycleStrategySupport impl
 				return item.getId();
 			}).collect(Collectors.toList());
 
-			List<CamelRoute> list = camelRouteService.list("routeId", idList);
+			List<CamelRoute> list = camelRouteService.listByFieldEqual("routeId", idList);
 
 			camelRouteService.delete(list);
 		}catch (Exception e){

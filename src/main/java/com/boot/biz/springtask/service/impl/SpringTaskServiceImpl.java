@@ -91,7 +91,7 @@ public class SpringTaskServiceImpl extends BaseServiceImpl<SpringTask,SpringTask
 	@Transactional
 	public void delSpringTask(String taskId) {
 
-		SpringTask springTask = this.one("taskId", taskId);
+		SpringTask springTask = this.getByFieldEqual("taskId", taskId);
 
 		SpringTaskUtil.cancelCronTask(taskId);
 
@@ -107,7 +107,7 @@ public class SpringTaskServiceImpl extends BaseServiceImpl<SpringTask,SpringTask
 	@Override
 	@Transactional
 	public void parseSpringTask(String taskId) {
-		SpringTask springTask = this.one("taskId", taskId);
+		SpringTask springTask = this.getByFieldEqual("taskId", taskId);
 		springTask.setStatus(SpringTask.Status.PAUSE.getValue());
 
 		SpringTaskUtil.cancelCronTask(taskId);
@@ -124,7 +124,7 @@ public class SpringTaskServiceImpl extends BaseServiceImpl<SpringTask,SpringTask
 	@Transactional
 	public void restartSpringTask(String taskId) throws Exception{
 
-		SpringTask springTask = this.one("taskId", taskId);
+		SpringTask springTask = this.getByFieldEqual("taskId", taskId);
 		springTask.setStatus(SpringTask.Status.RUN.getValue());
 
 		SpringTaskUtil.scheduleCronTask(springTask);
@@ -143,7 +143,7 @@ public class SpringTaskServiceImpl extends BaseServiceImpl<SpringTask,SpringTask
 	@Override
 	@Transactional
 	public void changeSpringTaskCron(String taskId, String newCron) throws Exception {
-		SpringTask springTask = this.one("taskId", taskId);
+		SpringTask springTask = this.getByFieldEqual("taskId", taskId);
 		springTask.setCron(newCron);
 
 		//先取消任务
@@ -166,7 +166,7 @@ public class SpringTaskServiceImpl extends BaseServiceImpl<SpringTask,SpringTask
 	@Override
 	public void manualTrigger(String taskId) throws Exception{
 
-		SpringTask springTask = this.one("taskId", taskId);
+		SpringTask springTask = this.getByFieldEqual("taskId", taskId);
 
 		SpringTaskRunnable springTaskRunnable = new SpringTaskRunnable(springTask.getBean(),springTask.getMethod(),springTask.getParams(),springTask.getTaskId());
 

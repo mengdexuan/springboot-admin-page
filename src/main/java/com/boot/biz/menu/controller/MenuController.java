@@ -40,7 +40,7 @@ public class MenuController extends BaseController {
             if (pid==null){
                 list = menuService.findAll();
             }else {
-                list = menuService.list("pid",(Object) pid,true);
+                list = menuService.listByFieldEqual("pid", pid);
             }
 
             return this.success(list);
@@ -66,7 +66,7 @@ public class MenuController extends BaseController {
 
             Menu one = menuService.get(id);
 
-            List<Menu> list = menuService.list("pid", (Object) id, true);
+            List<Menu> list = menuService.listByFieldEqual("pid",id);
 
             list.add(one);
 

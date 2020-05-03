@@ -45,17 +45,6 @@ public interface BaseService<T>{
 	@Transactional(rollbackFor = Exception.class)
 	void save(Iterable<T> entities);
 
-
-	/**
-	 * 根据Map获取实体
-	 * Map:
-	 * 		key			val
-	 * 		属性名称		属性值
-	 * @param map
-	 * @return
-	 */
-	T one(Map<String, Object> map, Class<T> bean);
-
 	/**
 	 * 构造 Specification 查询
 	 * @param specification
@@ -63,14 +52,6 @@ public interface BaseService<T>{
 	 */
 	T one(Specification<T> specification);
 
-	/**
-	 * 查询对象
-	 * @param property	属性名称
-	 * @param value		属性值
-	 * @param equalArr 	true:按属性值等于查询		false：按属性值不等于查询，不传则默认为 true
-	 * @return
-	 */
-	T one(String property, Object value,Boolean... equalArr);
 
 	/**
 	 * 查询对象（按属性值等于null查询）
@@ -113,7 +94,6 @@ public interface BaseService<T>{
 
 
 
-
 	/**
 	 * 查询列表（jpa in 的方式）
 	 * @param property	属性名称
@@ -121,16 +101,6 @@ public interface BaseService<T>{
 	 * @return
 	 */
 	List<T> listByFieldIn(String property, List<?> list);
-
-
-	/**
-	 * 查询列表（true:按属性值等于查询		false：按属性值不等于查询）
-	 * @param property	属性名称
-	 * @param val	属性值
-	 * @param equalArr 	true:按属性值等于查询		false：按属性值不等于查询，不传则默认为 true
-	 * @return
-	 */
-	List<T> list(String property, Object val, Boolean... equalArr);
 
 
 	/**
@@ -142,6 +112,14 @@ public interface BaseService<T>{
 	 */
 	List<T> listByFieldEqual(String property, Object val,Sort... sorts);
 
+	/**
+	 * 查询列表(按属性值like查询)
+	 * @param property
+	 * @param val
+	 * @param sorts
+	 * @return
+	 */
+	List<T> listByFieldLike(String property, Object val,Sort... sorts);
 
 	/**
 	 * 查询列表(按属性值不等于查询)
@@ -194,19 +172,6 @@ public interface BaseService<T>{
 	 * @return
 	 */
 	Page<T> list(T t, Pageable pageable);
-
-
-
-	/**
-	 * 根据Map获取实体
-	 * Map:
-	 * 		key			val
-	 * 		属性名称		属性值
-	 * @param map
-	 * @return
-	 */
-
-	List<T> list(Map<String, Object> map, Class<T> bean);
 
 
 	/**

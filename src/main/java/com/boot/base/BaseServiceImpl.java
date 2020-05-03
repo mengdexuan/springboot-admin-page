@@ -203,32 +203,31 @@ public class BaseServiceImpl<T, R extends BaseRepository<T>> implements BaseServ
 		return HelpMe.isNull(list)?null:list.get(0);
 	}
 
+
 	@Override
-	public T one(String property, Object value,Boolean... equalArr) {
-		Specification<T> specification;
+	public List<T> listByFieldLike(String property, Object val,Sort... sorts) {
+		Specification specification = new Specification<T>() {
+			@Override
+			public Predicate toPredicate(Root<T> root, CriteriaQuery<?> criteriaQuery, CriteriaBuilder criteriaBuilder) {
 
-		Boolean equal = true;
+				List<Predicate> predicates = new ArrayList<>();
 
-		if (HelpMe.isNotNull(equalArr)){
-			equal = equalArr[0];
-		}
+				Predicate p = criteriaBuilder.like(root.get(property), "%"+val+"%");
 
-		if (equal){
-			if (value==null){
-				specification = (root, query, builder) -> builder.isNull(root.get(property));
-			}else {
-				specification = (root, query, builder) -> builder.equal(root.get(property), value);
+				predicates.add(p);
+
+				return criteriaBuilder.and(predicates.toArray(new Predicate[predicates.size()]));
 			}
+		};
+
+		if (HelpMe.isNotNull(sorts)){
+			return repository.findAll(specification,sorts[0]);
 		}else {
-			if (value==null){
-				specification = (root, query, builder) -> builder.isNotNull(root.get(property));
-			}else {
-				specification = (root, query, builder) -> builder.notEqual(root.get(property), value);
-			}
+			return this.findAll(specification);
 		}
-
-		return this.one(specification);
 	}
+
+
 
 
 	@Override
@@ -254,47 +253,6 @@ public class BaseServiceImpl<T, R extends BaseRepository<T>> implements BaseServ
 		return this.findAll(specification);
 	}
 
-
-	@Override
-	public List<T> list(String property, Object val,Boolean... equalArr) {
-
-		Boolean equal = true;
-
-		if (HelpMe.isNotNull(equalArr)){
-			equal = equalArr[0];
-		}
-
-		Boolean finalEqual = equal;
-		Specification specification = new Specification<T>() {
-			@Override
-			public Predicate toPredicate(Root<T> root, CriteriaQuery<?> criteriaQuery, CriteriaBuilder criteriaBuilder) {
-
-				List<Predicate> predicates = new ArrayList<>();
-
-				Predicate p;
-
-				if (finalEqual){
-					if (val==null){
-						p = criteriaBuilder.isNull(root.get(property));
-					}else {
-						p = criteriaBuilder.equal(root.get(property), val);
-					}
-				}else {
-					if (val==null){
-						p = criteriaBuilder.isNotNull(root.get(property));
-					}else {
-						p = criteriaBuilder.notEqual(root.get(property), val);
-					}
-				}
-
-				predicates.add(p);
-
-				return criteriaBuilder.and(predicates.toArray(new Predicate[predicates.size()]));
-			}
-		};
-
-		return this.findAll(specification);
-	}
 
 
 
@@ -469,60 +427,7 @@ public class BaseServiceImpl<T, R extends BaseRepository<T>> implements BaseServ
 		return page;
 	}
 
-	/**
-	 * 根据Map获取实体
-	 * Map:
-	 * key			val
-	 * 属性名称		属性值
-	 *
-	 * @param map
-	 * @return
-	 */
-	@Override
-	public T one(Map<String, Object> map,Class<T> bean) {
-		List<T> list = this.list(map, bean);
-		if (HelpMe.isNotNull(list)){
-			return list.get(list.size()-1);
-		}
-		return null;
-	}
 
-	/**
-	 * 根据Map获取实体
-	 * Map:
-	 * key			val
-	 * 属性名称		属性值
-	 *
-	 * @param map
-	 * @return
-	 */
-	@Override
-	public List<T> list(Map<String, Object> map, Class<T> bean) {
-		T instance = null;
-		try {
-			instance = bean.newInstance();
-		} catch (InstantiationException e) {
-			e.printStackTrace();
-		} catch (IllegalAccessException e) {
-			e.printStackTrace();
-		}
-
-		Method[] methods = ReflectUtil.getMethodsDirectly(bean,false);
-
-		List<Method> methodList = Arrays.stream(methods).filter(method -> {
-			return method.getName().startsWith("set");
-		}).collect(Collectors.toList());
-
-
-		T finalInstance = instance;
-		methodList.stream().forEach(method -> {
-			ReflectUtil.invoke(finalInstance,method,new Object[]{null});
-		});
-
-		BeanUtil.fillBeanWithMap(map,instance,true);
-
-		return this.list(instance);
-	}
 
 	@Override
 	public void flush() {
@@ -589,7 +494,7 @@ public class BaseServiceImpl<T, R extends BaseRepository<T>> implements BaseServ
 
 				}else {
 					//新增操作，唯一性字段校验
-					List tempList = this.list(field.getName(), fieldVal,true);
+					List tempList = this.listByFieldEqual(field.getName(), fieldVal);
 					if (HelpMe.isNotNull(tempList)){
 						throw new GlobalServiceException(uniqueVal);
 					}

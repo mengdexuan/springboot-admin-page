@@ -37,7 +37,7 @@ public class SpringTaskRunnable implements Runnable{
 
 	@Override
 	public void run() {
-		SpringTask task = springTaskService.one("taskId", taskId);
+		SpringTask task = springTaskService.getByFieldEqual("taskId", taskId);
 		try {
 			ReflectionUtils.makeAccessible(method);
 			if (HelpMe.isNotNull(params)) {
