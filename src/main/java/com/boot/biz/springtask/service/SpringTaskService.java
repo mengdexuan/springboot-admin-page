@@ -73,4 +73,11 @@ public interface SpringTaskService extends BaseService<SpringTask> {
 	 */
 	<T> List<SpringTask> getTask(Class<T> type);
 
+	/**
+	 * 获取任务，调用的是 getTask方法，获取第 1 个值
+	 * @param type
+	 * @param <T>
+	 * @return
+	 */
+	<T> SpringTask getSingleTask(Class<T> type);
 }

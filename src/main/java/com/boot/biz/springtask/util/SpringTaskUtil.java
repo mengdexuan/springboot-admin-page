@@ -26,6 +26,12 @@ public class SpringTaskUtil {
 
 	//执行 cron 调度
 	public static void scheduleCronTask(String taskId,Runnable runnable,String cron){
+		ScheduledFuture future = cache.get(taskId);
+
+		if (future!=null){
+			return;
+		}
+
 		CronTrigger cronTrigger = new CronTrigger(cron);
 		if (taskScheduler!=null){
 			ScheduledFuture<?> scheduledFuture = taskScheduler.schedule(runnable, cronTrigger);

@@ -34,10 +34,14 @@ public @interface CronTask {
 	boolean delWhenSuccess();
 
 
+	//启动时，自动创建Task，默认 false
+	boolean autoCreate() default false;
+
+
 	/**
 	 * 任务描述信息
 	 * @return
 	 */
-	String remark();
+	String remark() default "";
 
 }

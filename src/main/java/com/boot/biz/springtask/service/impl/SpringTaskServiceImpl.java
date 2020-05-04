@@ -248,4 +248,15 @@ public class SpringTaskServiceImpl extends BaseServiceImpl<SpringTask,SpringTask
 
 		return springTaskList;
 	}
+
+	/**
+	 * 获取任务，调用的是 getTask方法，获取第 1 个值
+	 *
+	 * @param type
+	 * @return
+	 */
+	@Override
+	public <T> SpringTask getSingleTask(Class<T> type) {
+		return getTask(type).get(0);
+	}
 }
