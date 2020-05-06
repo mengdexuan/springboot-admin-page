@@ -2,16 +2,14 @@
 
 #检察应用是否存在，若不存在，则重启
 
-#单位(分钟)
-sleep_time=1
+#单位(秒)
+sleep_time=30
 dir_name=/home/tq/adminPage
 jar_name=springboot-admin-page-full.jar
 
-pid=`ps -ef | grep ${jar_name} | grep -v grep | awk '{print $2}'`
-
-
 while(true)
 do
+	pid=`ps -ef | grep ${jar_name} | grep -v grep | awk '{print $2}'`
 	if [ -n "$pid" ];then
 	echo "存在 pid 为 $pid 的应用：$jar_name"
 	else
