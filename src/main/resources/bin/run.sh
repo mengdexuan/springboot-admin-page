@@ -1,10 +1,15 @@
 #!/usr/bin/env bash
 
+#jar包所在的目录
 dir_name=/home/tq/adminPage
+
+#jar包名称
 jar_name=springboot-admin-page-full.jar
 
-echo "start $dir_name/$jar_name ..."
+#jdk安装目录
+java_dir=/opt/java8
 
+echo "start $dir_name/$jar_name ..."
 
 #-XX:MetaspaceSize=128m （元空间默认大小）
 #-XX:MaxMetaspaceSize=128m （元空间最大大小）
@@ -16,5 +21,5 @@ echo "start $dir_name/$jar_name ..."
 #-XX:+UseConcMarkSweepGC （指定使用的垃圾收集器，这里使用CMS收集器）
 #-XX:+PrintGCDetails （打印详细的GC日志）
 
-nohup  ${JAVA_HOME}/bin/java -XX:MetaspaceSize=128m -XX:MaxMetaspaceSize=128m -Xms1024m -Xmx1024m -Xss256k -XX:SurvivorRatio=8 -XX:+UseConcMarkSweepGC -jar ${dir_name}/${jar_name}>/dev/null --spring.config.location=${dir_name}/config/ --logging.config=${dir_name}/config/logback-spring.xml  2>&1 &
+nohup  ${java_dir}/bin/java -XX:MetaspaceSize=128m -XX:MaxMetaspaceSize=128m -Xms1024m -Xmx1024m -Xss256k -XX:SurvivorRatio=8 -XX:+UseConcMarkSweepGC -jar ${dir_name}/${jar_name}>/dev/null --spring.config.location=${dir_name}/config/ --logging.config=${dir_name}/config/logback-spring.xml  2>&1 &
 
