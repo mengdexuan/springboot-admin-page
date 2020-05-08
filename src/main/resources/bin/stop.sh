@@ -1,11 +1,7 @@
 #!/usr/bin/env bash
 
-#jar包所在的目录
-dir_name=/home/tq/adminPage
-
-#jar包名称
-jar_name=springboot-admin-page-full.jar
-
+source /home/tq/pbank/bin/var.sh
+	
 pid=`ps -ef | grep ${jar_name} | grep -v grep | awk '{print $2}'`
 if [ -n "$pid" ]
 then

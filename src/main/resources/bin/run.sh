@@ -1,13 +1,6 @@
 #!/usr/bin/env bash
 
-#jar包所在的目录
-dir_name=/home/tq/adminPage
-
-#jar包名称
-jar_name=springboot-admin-page-full.jar
-
-#jdk安装目录
-java_dir=/opt/java8
+source /home/tq/pbank/bin/var.sh
 
 echo "start $dir_name/$jar_name ..."
 
