@@ -2,6 +2,7 @@ package com.boot.biz.user;
 
 import cn.hutool.core.util.ReflectUtil;
 import com.boot.base.exception.GlobalServiceException;
+import com.boot.base.jwt.JwtUtil;
 import com.boot.base.util.HelpMe;
 import com.boot.biz.dict.service.DictService;
 import com.boot.biz.index.controller.IndexController;
@@ -53,8 +54,10 @@ public class LoginInterceptor implements HandlerInterceptor {
 				loginKey = httpServletRequest.getParameter("loginKey");
 			}
 
-			SysUser user = userService.loginUserByKey(loginKey);
-			if (user!=null){
+			Long userId = JwtUtil.validateTokenAndGetUserId(loginKey);
+
+			if (userId!=null){
+				SysUser user = userService.get(userId);
 				RequestUserHolder.add(user);
 			}else {
 				//用户未登录

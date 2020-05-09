@@ -21,28 +21,6 @@ public interface UserService extends BaseService<SysUser> {
 	String encryptionPwd(String pwd);
 
 	/**
-	 * 设置用户登录后的过期时间，单位分钟
-	 * @param minute
-	 */
-	void setCacheTimeout(long minute);
-
-
-	/**
-	 * 通过登录后的key，获取登录用户
-	 * @param key
-	 * @return
-	 */
-	SysUser loginUserByKey(String key);
-
-
-	/**
-	 * 登录成功后，将用户加入到cache中
-	 * @param key
-	 * @param sysUser
-	 */
-	void loginUser2Cache(String key, SysUser sysUser);
-
-	/**
 	 * 登录用户权限信息
 	 * @return
 	 */

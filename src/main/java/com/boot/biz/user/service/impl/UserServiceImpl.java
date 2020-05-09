@@ -59,55 +59,11 @@ public class UserServiceImpl extends BaseServiceImpl<SysUser,UserRepository> imp
 	@Autowired
 	SysConfig sysConfig;
 
-	//缓存默认大小 100
-	private static int cacheSize = 100;
-
-	//30*60*1000	缓存默认30分钟过期
-	private LRUCache<String, SysUser> cache;
-
-	@PostConstruct
-	private void init(){
-
-		cache = CacheUtil.newLRUCache(cacheSize, sysConfig.loginTimeOut*60*1000);
-
-		//过期检测
-		cache.prune();
-	}
 
 	//加密用户密码
 	public String encryptionPwd(String pwd){
 		return SecureUtil.md5(pwd);
 	}
-
-	//设置登录用户过期时间
-	public void setCacheTimeout(long minute){
-
-		Iterator<CacheObj<String, SysUser>> iterator = cache.cacheObjIterator();
-
-		LRUCache<String, SysUser> tempCache = CacheUtil.newLRUCache(cacheSize, minute * 60 * 1000);
-
-		while (iterator.hasNext()) {
-			CacheObj<String, SysUser> item = (CacheObj<String, SysUser>) iterator.next();
-			tempCache.put(item.getKey(),item.getValue());
-		}
-
-		cache.clear();
-		cache = null;
-		cache = tempCache;
-		cache.prune();
-	}
-
-
-	//通过Key，查询已登录的用户
-	public SysUser loginUserByKey(String key){
-		return cache.get(key);
-	}
-
-	//将登录成功的用户加入到缓存中
-	public void loginUser2Cache(String key,SysUser pbankUser){
-		cache.put(key,pbankUser);
-	}
-
 
 	/**
 	 * 登录用户权限信息

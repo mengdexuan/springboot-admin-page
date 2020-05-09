@@ -4,6 +4,7 @@ package com.boot.biz.user.controller;
 import com.boot.base.BaseController;
 import com.boot.base.Result;
 import com.boot.base.exception.GlobalServiceException;
+import com.boot.base.jwt.JwtUtil;
 import com.boot.base.util.HelpMe;
 import com.boot.biz.dict.service.DictService;
 import com.boot.biz.user.dto.UserAuthGroupDto;
@@ -84,8 +85,10 @@ public class UserController extends BaseController {
 			String dictVal = dictService.dictVal(SysConfig.err_code_10001);
 			throw new GlobalServiceException(Integer.parseInt(SysConfig.err_code_10001),dictVal);
 		}else {
-			persistenceObj.setKey(HelpMe.uuid());
-			userService.loginUser2Cache(persistenceObj.getKey(),persistenceObj);
+			long timeOut = Long.parseLong(dictService.dictVal(SysConfig.login_time_out));
+			long expirationTime = timeOut * 60 * 1000;
+			String token = JwtUtil.generateToken(persistenceObj.getId(),expirationTime);
+			persistenceObj.setKey(token);
 		}
 
 		return this.success(persistenceObj);
