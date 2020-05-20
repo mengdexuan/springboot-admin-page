@@ -8,7 +8,7 @@ import com.boot.biz.dict.service.DictService;
 import com.boot.biz.index.controller.IndexController;
 import com.boot.biz.user.entity.SysUser;
 import com.boot.biz.user.service.UserService;
-import com.boot.biz.validation.TestController;
+import com.boot.biz.test.TestController;
 import com.boot.config.SysConfig;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;

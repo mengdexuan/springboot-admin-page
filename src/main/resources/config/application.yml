@@ -6,7 +6,7 @@ spring:
     active: dev1
   datasource:
     type: com.alibaba.druid.pool.DruidDataSource
-    url: jdbc:mysql://localhost:3306/springboot-admin-page?characterEncoding=utf8
+    url: jdbc:mysql://localhost:3306/springboot-admin-page?characterEncoding=utf8&serverTimezone=Asia/Shanghai&useSSL=false&tinyInt1isBit=false
     username: root
     password: root
     driver-class-name: com.mysql.jdbc.Driver

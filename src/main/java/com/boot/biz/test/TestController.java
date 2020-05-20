@@ -1,4 +1,4 @@
-package com.boot.biz.validation;
+package com.boot.biz.test;
 
 import cn.hutool.crypto.SecureUtil;
 import com.boot.base.Result;
@@ -9,6 +9,7 @@ import com.boot.biz.springtask.entity.SpringTask;
 import com.boot.biz.springtask.service.SpringTaskService;
 import com.boot.biz.urllimit.service.UrlLimitService;
 import com.boot.biz.userauthgroup.service.UserAuthGroupService;
+import com.boot.biz.validation.ValidatedBean;
 import com.drew.imaging.ImageMetadataReader;
 import com.drew.imaging.ImageProcessingException;
 import com.drew.metadata.Directory;
