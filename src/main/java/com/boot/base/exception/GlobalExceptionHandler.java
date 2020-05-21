@@ -243,21 +243,8 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(NullPointerException.class)
     @ResponseStatus(HttpStatus.OK)
     public Result handleServiceException(NullPointerException e) {
-        log.error(ErrorStatus.SERVICE_EXCEPTION.getMessage() + ":" + e.getMessage(),e);
-
-        ByteArrayOutputStream b = new ByteArrayOutputStream();
-        PrintWriter pw = new PrintWriter(b);
-        e.printStackTrace(pw);
-        pw.close();
-
-        //打印空指针具体的堆栈信息
-        String errStack = b.toString();
-        try {
-            b.close();
-        } catch (IOException ex) {
-        }
-
-        return failure(ErrorStatus.SERVICE_EXCEPTION,errStack);
+        StackTraceElement trace = e.getStackTrace()[0];
+        return failure(ErrorStatus.SERVICE_EXCEPTION,trace);
     }
 
 
