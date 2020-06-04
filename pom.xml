@@ -189,44 +189,17 @@
 
     </dependencies>
 
+
     <build>
-        <finalName>springboot-admin-page</finalName>
         <plugins>
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
-                <configuration>
-                    <excludes>
-                        <exclude>
-                            <groupId>com.itangquan</groupId>
-                            <artifactId>test</artifactId>
-                        </exclude>
-                    </excludes>
-                    <classifier>full</classifier>
-                </configuration>
-            </plugin>
-            <!--打包时跳过测试-->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-surefire-plugin</artifactId>
-                <configuration>
-                    <skip>true</skip>
-                </configuration>
-            </plugin>
-
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-jar-plugin</artifactId>
-                <version>3.0.2</version>
-                <configuration>
-                    <excludes>
-                        <exclude>**/application.yml</exclude>
-                        <exclude>**/logback-spring.xml</exclude>
-                    </excludes>
-                </configuration>
             </plugin>
         </plugins>
     </build>
+
+
 
 
 </project>

@@ -14,7 +14,7 @@ import java.util.List;
  * @author mengdexuan on 2020/3/15 17:44.
  */
 @Slf4j
-@Component
+//@Component
 public class SpringTaskTest {
 
 	@Autowired
