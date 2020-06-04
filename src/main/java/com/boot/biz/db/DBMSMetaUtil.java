@@ -8,7 +8,6 @@ import com.boot.base.util.HelpMe;
 import com.boot.biz.db.dto.DbConnDto;
 import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
-import org.junit.Test;
 
 import java.sql.*;
 import java.util.*;
@@ -813,7 +812,6 @@ public class DBMSMetaUtil {
 		System.out.println("columns.size()=" + columns.size());
 	}
 
-	@Test
 	// 演示 DatabaseMetaData
 	public void demoDatabaseMetaData() {
 		try {

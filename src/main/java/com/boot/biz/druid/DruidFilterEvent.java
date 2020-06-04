@@ -1,6 +1,5 @@
 package com.boot.biz.druid;
 
-import cn.hutool.db.sql.SqlFormatter;
 import com.alibaba.druid.filter.FilterChain;
 import com.alibaba.druid.filter.FilterEventAdapter;
 import com.alibaba.druid.pool.DruidDataSource;
@@ -13,11 +12,11 @@ import com.alibaba.druid.sql.dialect.mysql.visitor.MySqlSchemaStatVisitor;
 import com.alibaba.druid.sql.parser.SQLStatementParser;
 import com.alibaba.druid.stat.TableStat;
 import com.boot.base.util.HelpMe;
+import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
-import org.testng.collections.Lists;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
