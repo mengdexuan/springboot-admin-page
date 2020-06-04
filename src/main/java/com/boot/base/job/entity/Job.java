@@ -1,4 +1,4 @@
-package com.boot.biz.springtask.entity;
+package com.boot.base.job.entity;
 
 import lombok.Data;
 import lombok.experimental.Accessors;
@@ -20,16 +20,12 @@ import java.util.Date;
 @Data
 @Accessors(chain = true)
 @Entity
-@Table(name = "spring_task")
-public class SpringTask {
+@Table(name = "sys_job")
+public class Job {
 
     @Id
     @GeneratedValue
     private Long id;
-    /**
-     * 任务ID,随机字符串
-     */
-    private String taskId;
     /**
      * 任务名称
      */

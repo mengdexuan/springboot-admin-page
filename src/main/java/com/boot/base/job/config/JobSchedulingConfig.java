@@ -1,6 +1,6 @@
-package com.boot.biz.springtask.config;
+package com.boot.base.job.config;
 
-import com.boot.biz.springtask.util.SpringTaskUtil;
+import com.boot.base.job.util.JobUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -17,24 +17,22 @@ import org.springframework.scheduling.config.ScheduledTaskRegistrar;
  */
 @EnableScheduling
 @Configuration
-public class SpringSchedulingConfigurer implements SchedulingConfigurer {
+public class JobSchedulingConfig implements SchedulingConfigurer {
 
+	@Autowired
+	JobUtil jobUtil;
 
 	@Override
 	public void configureTasks(ScheduledTaskRegistrar scheduledTaskRegistrar) {
 		scheduledTaskRegistrar.setTaskScheduler(threadPoolTaskScheduler());
-		SpringTaskUtil.scheduledTaskRegistrar = scheduledTaskRegistrar;
-		SpringTaskUtil.taskScheduler = scheduledTaskRegistrar.getScheduler();
+		jobUtil.setTaskScheduler(scheduledTaskRegistrar.getScheduler());
 	}
-
-
-
 
 	@Bean(destroyMethod = "shutdown")
 	public ThreadPoolTaskScheduler threadPoolTaskScheduler() {
 		ThreadPoolTaskScheduler scheduler = new ThreadPoolTaskScheduler();
-		scheduler.setThreadNamePrefix("springSchedulingThread-");
-		scheduler.setPoolSize(10);
+		scheduler.setThreadNamePrefix("JobSchedulingThread-");
+		scheduler.setPoolSize(20);
 		return scheduler;
 	}
 }

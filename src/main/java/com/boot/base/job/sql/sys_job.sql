@@ -16,14 +16,13 @@ Date: 2020-03-15 19:31:48
 SET FOREIGN_KEY_CHECKS=0;
 
 -- ----------------------------
--- Table structure for spring_task
+-- Table structure for sys_job
 -- ----------------------------
-DROP TABLE IF EXISTS `spring_task`;
-CREATE TABLE `spring_task` (
+DROP TABLE IF EXISTS `sys_job`;
+CREATE TABLE `sys_job` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
-  `task_id` varchar(64) DEFAULT NULL COMMENT '任务ID,随机字符串',
   `name` varchar(255) DEFAULT NULL COMMENT '任务名称',
-  `bean` varchar(255) DEFAULT NULL COMMENT 'spring bean名称',
+  `bean` varchar(255) DEFAULT NULL COMMENT 'bean名称',
   `method` varchar(64) DEFAULT NULL COMMENT '方法名',
   `params` longtext COMMENT '参数',
   `cron` varchar(20) DEFAULT NULL COMMENT 'cron表达式',
@@ -33,4 +32,5 @@ CREATE TABLE `spring_task` (
   `del_when_success` tinyint(1) DEFAULT NULL COMMENT '执行成功是否删除该任务 1：不删除    2：删除',
   `create_time` datetime DEFAULT NULL COMMENT '创建时间',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='spring定时任务';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='定时任务';
+

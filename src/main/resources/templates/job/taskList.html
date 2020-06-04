@@ -128,7 +128,7 @@
                 var id = $(this).val();
                 $.ajax({
                     type: "post",
-                    url: ctx + "/springTask/updateStatus",
+                    url: ctx + "/job/updateStatus",
                     dataType: "text",
                     async: false,
                     data: {
@@ -157,7 +157,7 @@
 
         $.ajax({
             type: "get",
-            url: ctx + "/springTask/get/"+dataId,
+            url: ctx + "/job/get/"+dataId,
             dataType: "json",
             async: true,
             success: function (data) {
@@ -181,13 +181,13 @@
     function errLog(jobId){
         $.ajax({
             type: "get",
-            url: ctx + "/springTask/getByJobId/"+jobId,
+            url: ctx + "/job/getByJobId/"+jobId,
             dataType: "json",
             async: true,
             success: function (data) {
                 if (data.success){
-                    if (data.data){
-                        var html = "<textarea class=\"form-control\">"+data.data+"</textarea>";
+                    if (data.msg){
+                        var html = "<textarea class=\"form-control\">"+data.msg+"</textarea>";
                         layer.open({
 							title: "错误日志",
                             type: 1,
@@ -216,7 +216,7 @@
 
         $.ajax({
             type: "post",
-            url: ctx + "/springTask/update",
+            url: ctx + "/job/update",
             dataType: "json",
             async: false,
             data: {
@@ -241,7 +241,7 @@
     function manual(id) {
         $.ajax({
             type: "post",
-            url: ctx + "/springTask/manual",
+            url: ctx + "/job/manual",
             dataType: "json",
             async: false,
             data: {
@@ -265,8 +265,8 @@
             btn: ['确认','取消']
         }, function(){
             $.ajax({
-                type: "post",
-                url: ctx + "/springTask/delete/"+id,
+                type: "delete",
+                url: ctx + "/job/delete/"+id,
                 dataType: "json",
                 async: true,
                 success: function (data) {

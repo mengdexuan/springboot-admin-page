@@ -1,11 +1,11 @@
-package com.boot.biz.springtask.annotation;
+package com.boot.base.job.annotation;
 
 import java.lang.annotation.*;
 
 /**
  * 注解在方法上，描述待执行的任务
  *
- * 使用方法，请参考 SpringTaskTest.java
+ * 使用方法，请参考 JobTest.java
  *
  * @author mengdexuan on 2019/5/16 15:43.
  */
@@ -13,13 +13,13 @@ import java.lang.annotation.*;
 @Target({ElementType.TYPE,ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-public @interface CronTask {
+public @interface JobCron {
 
 	/**
 	 * 任务名称
 	 * @return
 	 */
-	String taskName();
+	String name();
 
 	/**
 	 * 任务 cron 表达式

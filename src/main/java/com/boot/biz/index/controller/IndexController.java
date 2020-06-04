@@ -3,6 +3,8 @@ package com.boot.biz.index.controller;
 import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.io.resource.ResourceUtil;
 import cn.hutool.core.util.StrUtil;
+import com.boot.base.job.entity.Job;
+import com.boot.base.job.service.JobService;
 import com.boot.base.util.HelpMe;
 import com.boot.biz.authgroup.entity.AuthGroup;
 import com.boot.biz.authgroup.service.AuthGroupService;
@@ -20,8 +22,6 @@ import com.boot.biz.schedule.entity.ScheduleJob;
 import com.boot.biz.schedule.service.ScheduleJobService;
 import com.boot.biz.serverinfo.Server;
 import com.boot.biz.serverinfo.ServerController;
-import com.boot.biz.springtask.entity.SpringTask;
-import com.boot.biz.springtask.service.SpringTaskService;
 import com.boot.biz.urllimit.entity.UrlLimit;
 import com.boot.biz.urllimit.repository.UrlLimitRepository;
 import com.boot.biz.user.entity.SysUser;
@@ -66,7 +66,7 @@ public class IndexController {
 	ScheduleJobService scheduleJobService;
 
 	@Autowired
-	SpringTaskService springTaskService;
+	JobService jobService;
 
 	@Autowired
 	CamelContext camelContext;
@@ -231,7 +231,7 @@ public class IndexController {
 	@GetMapping(value = "/taskList")
 	public String taskList(Model model) {
 
-		List<SpringTask> taskList = springTaskService.findAll();
+		List<Job> taskList = jobService.findAll();
 
 		taskList.stream().forEach(item->{
 			item.setRemark(StrUtil.maxLength(item.getRemark(),10));

@@ -5,8 +5,6 @@ import com.boot.base.Result;
 import com.boot.base.ResultUtil;
 import com.boot.base.annotation.PrintTime;
 import com.boot.base.util.HelpMe;
-import com.boot.biz.springtask.entity.SpringTask;
-import com.boot.biz.springtask.service.SpringTaskService;
 import com.boot.biz.urllimit.service.UrlLimitService;
 import com.boot.biz.userauthgroup.service.UserAuthGroupService;
 import com.boot.biz.validation.ValidatedBean;
@@ -61,8 +59,6 @@ public class TestController {
 	@Autowired
 	UserAuthGroupService userAuthGroupService;
 
-	@Autowired
-	SpringTaskService springTaskService;
 
 	@Autowired
 	DataSource dataSource;
@@ -73,22 +69,6 @@ public class TestController {
 
 		Object obj = null;
 
-
-		SpringTask springTask = new SpringTask();
-
-		springTask.setTaskId(HelpMe.uuid());
-		springTask.setCron("0/1 * * * * *");
-		springTask.setStatus(1);
-		springTask.setBean("springTaskTest");
-		springTask.setMethod("run2");
-		springTask.setRemark("测试任务");
-		springTask.setName("测试名称");
-		springTask.setParams("abc");
-		springTask.setCreateTime(new Date());
-		springTask.setDelWhenSuccess(1);
-
-
-		springTaskService.addSpringTask(springTask);
 
 
 		return ResultUtil.buildSuccess(obj);
