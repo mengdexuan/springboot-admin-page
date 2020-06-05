@@ -1,15 +1,15 @@
 spring:
   datasource:
     type: com.alibaba.druid.pool.DruidDataSource
-    url: jdbc:mysql://192.168.4.192:3306/my_test_project?characterEncoding=utf8&serverTimezone=Asia/Shanghai&useSSL=false&tinyInt1isBit=false
+    url: jdbc:mysql://192.168.4.192:3306/my_test_project?characterEncoding=utf8&serverTimezone=Asia/Shanghai&useSSL=false&tinyInt1isBit=false&autoReconnect=true&failOverReadOnly=false
     username: root
     password: 123456
     driver-class-name: com.mysql.jdbc.Driver
     filters: stat
     maxActive: 20
-    initialSize: 1
+    initialSize: 10
     maxWait: 60000
-    minIdle: 1
+    minIdle: 10
     timeBetweenEvictionRunsMillis: 60000
     minEvictableIdleTimeMillis: 300000
     validationQuery: select 'x'
@@ -17,5 +17,5 @@ spring:
     testOnBorrow: false
     testOnReturn: false
     poolPreparedStatements: true
-    maxOpenPreparedStatements: 20
+    maxOpenPreparedStatements: 50
 

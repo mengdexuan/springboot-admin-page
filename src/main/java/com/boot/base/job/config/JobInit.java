@@ -30,7 +30,7 @@ public class JobInit implements CommandLineRunner {
 
 		for (Job job:list){
 			if (Job.Status.RUN.getValue()==job.getStatus().intValue()){
-				jobUtil.scheduleCronTask(job,jobService);
+				jobUtil.scheduleCronTask(job);
 			}
 		}
 	}

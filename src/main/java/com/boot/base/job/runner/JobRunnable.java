@@ -5,7 +5,9 @@ import cn.hutool.core.util.StrUtil;
 import cn.hutool.json.JSONUtil;
 import com.boot.base.job.entity.Job;
 import com.boot.base.job.service.JobService;
+import com.boot.base.util.HelpMe;
 import lombok.extern.slf4j.Slf4j;
+import net.bytebuddy.implementation.bytecode.assign.Assigner;
 import org.springframework.util.ReflectionUtils;
 
 import java.lang.reflect.Field;
@@ -30,11 +32,8 @@ public class JobRunnable implements Runnable{
 	public JobRunnable(Object bean, String methodName, String params, Long jobId,JobService jobService) throws NoSuchMethodException, SecurityException {
  		this.target = bean;
 		this.params = params;
-		if (StrUtil.isNotBlank(params)) {
-			this.method = target.getClass().getDeclaredMethod(methodName, String.class);
-		} else {
-			this.method = target.getClass().getDeclaredMethod(methodName);
-		}
+
+		this.method = ReflectUtil.getMethodByName(target.getClass(),methodName);
 
 		this.jobId = jobId;
 		this.jobService = jobService;
@@ -65,13 +64,15 @@ public class JobRunnable implements Runnable{
 				jobService.delJob(jobId);
 			}
 		} catch (Exception e) {
-			String errMsg = e.getMessage();
-
+			String errMsg = "";
 			try {
-				StackTraceElement element = ((InvocationTargetException) e).getTargetException().getStackTrace()[0];
-				String jsonStr = JSONUtil.toJsonStr(element);
-				errMsg += "	执行定时任务失败，详细信息："+jsonStr;
-
+				if (e instanceof InvocationTargetException){
+					StackTraceElement element = ((InvocationTargetException) e).getTargetException().getStackTrace()[0];
+					String jsonStr = JSONUtil.toJsonStr(element);
+					errMsg += "执行定时任务失败，详细信息："+jsonStr;
+				}else {
+					errMsg = e.getMessage();
+				}
 				log.error(errMsg);
 			}finally {
 				job.setErrLog(errMsg);

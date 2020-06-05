@@ -14,6 +14,7 @@ import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -39,7 +40,9 @@ public class JobServiceImpl extends BaseServiceImpl<Job, JobRepository> implemen
     ApplicationContext applicationContext;
 
     @Autowired
+    @Lazy
     JobUtil jobUtil;
+
     /***
      * 添加 cron 任务，相同的任务（指的是2条任务的：bean名称和method名称相同）可以重复添加
      * @param job
@@ -48,15 +51,12 @@ public class JobServiceImpl extends BaseServiceImpl<Job, JobRepository> implemen
     @Transactional(rollbackFor = Exception.class)
     public void addJob(Job job) {
         this.save(job);
+
         if (job.getStatus().intValue() == Job.Status.PAUSE.getValue()) {
 
         } else {
             //添加到 job 调度
-            try {
-                jobUtil.scheduleCronTask(job,this);
-            } catch (Exception e) {
-                log.error("添加到调度任务失败！", e);
-            }
+            jobUtil.scheduleCronTask(job);
         }
     }
 
@@ -123,7 +123,7 @@ public class JobServiceImpl extends BaseServiceImpl<Job, JobRepository> implemen
         Job job = this.get(id);
         job.setStatus(Job.Status.RUN.getValue());
 
-        jobUtil.scheduleCronTask(job,this);
+        jobUtil.scheduleCronTask(job);
 
         this.save(job);
     }
@@ -147,7 +147,7 @@ public class JobServiceImpl extends BaseServiceImpl<Job, JobRepository> implemen
 
         if (Job.Status.RUN.getValue() == job.getStatus().intValue()) {
             //再添加任务
-            jobUtil.scheduleCronTask(job,this);
+            jobUtil.scheduleCronTask(job);
         }
         this.save(job);
     }

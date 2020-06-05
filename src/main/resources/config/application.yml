@@ -6,16 +6,16 @@ spring:
     active: dev1
   datasource:
     type: com.alibaba.druid.pool.DruidDataSource
-    url: jdbc:mysql://localhost:3306/springboot-admin-page?characterEncoding=utf8&serverTimezone=Asia/Shanghai&useSSL=false&tinyInt1isBit=false
+    url: jdbc:mysql://localhost:3306/springboot-admin-page?characterEncoding=utf8&serverTimezone=Asia/Shanghai&useSSL=false&tinyInt1isBit=false&autoReconnect=true&failOverReadOnly=false
     username: root
     password: root
     driver-class-name: com.mysql.jdbc.Driver
     # 配置监控统计拦截的filters，去掉后监控界面sql无法统计，'wall'用于防火墙
     filters: stat,wall,log4j,filterEvent
     maxActive: 20
-    initialSize: 5
+    initialSize: 10
     maxWait: 60000
-    minIdle: 5
+    minIdle: 10
     timeBetweenEvictionRunsMillis: 60000
     minEvictableIdleTimeMillis: 300000
     validationQuery: select 'x'
@@ -24,8 +24,8 @@ spring:
     testOnReturn: false
     # 打开PSCache，并且指定每个连接上PSCache的大小
     poolPreparedStatements: true
-    maxPoolPreparedStatementPerConnectionSize: 20
-    maxOpenPreparedStatements: 20
+    maxPoolPreparedStatementPerConnectionSize: 50
+    maxOpenPreparedStatements: 50
     # 通过connectProperties属性来打开mergeSql功能；慢SQL记录
     connectionProperties: druid.stat.mergeSql=true;druid.stat.slowSqlMillis=5000
   jpa:

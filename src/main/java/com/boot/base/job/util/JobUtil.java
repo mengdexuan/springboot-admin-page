@@ -7,6 +7,7 @@ import com.google.common.collect.Maps;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.scheduling.support.CronTrigger;
 import org.springframework.stereotype.Component;
@@ -23,6 +24,9 @@ public class JobUtil {
 
     @Autowired
     ApplicationContext applicationContext;
+
+    @Autowired
+    JobService jobService;
 
     private TaskScheduler taskScheduler = null;
 
@@ -56,9 +60,14 @@ public class JobUtil {
     }
 
 
-    public void scheduleCronTask(Job job, JobService jobService) throws Exception {
-        JobRunnable runnable = new JobRunnable(applicationContext.getBean(job.getBean()),
-                job.getMethod(), job.getParams(), job.getId(), jobService);
+    public void scheduleCronTask(Job job) {
+        JobRunnable runnable = null;
+        try {
+            runnable = new JobRunnable(applicationContext.getBean(job.getBean()),
+                    job.getMethod(), job.getParams(), job.getId(), jobService);
+        } catch (NoSuchMethodException e) {
+            log.error("添加调度任务失败！",e);
+        }
 
         scheduleCronTask(job.getId(), runnable, job.getCron());
     }
