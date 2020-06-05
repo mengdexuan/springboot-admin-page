@@ -2,12 +2,14 @@ package com.boot.base.job.runner;
 
 import cn.hutool.core.util.ReflectUtil;
 import cn.hutool.core.util.StrUtil;
+import cn.hutool.json.JSONUtil;
 import com.boot.base.job.entity.Job;
 import com.boot.base.job.service.JobService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.ReflectionUtils;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 /**
@@ -63,9 +65,18 @@ public class JobRunnable implements Runnable{
 				jobService.delJob(jobId);
 			}
 		} catch (Exception e) {
-			log.error("执行定时任务失败！",e.getCause().getMessage());
-			job.setErrLog(e.getCause().getMessage());
-			jobService.save(job);
+			String errMsg = e.getMessage();
+
+			try {
+				StackTraceElement element = ((InvocationTargetException) e).getTargetException().getStackTrace()[0];
+				String jsonStr = JSONUtil.toJsonStr(element);
+				errMsg += "	执行定时任务失败，详细信息："+jsonStr;
+
+				log.error(errMsg);
+			}finally {
+				job.setErrLog(errMsg);
+				jobService.save(job);
+			}
 		}
 	}
 
