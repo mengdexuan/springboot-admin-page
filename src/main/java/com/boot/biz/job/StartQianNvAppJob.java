@@ -12,11 +12,11 @@ import org.springframework.stereotype.Component;
 @Component
 public class StartQianNvAppJob {
 
-	String appDir = "C:\\Program Files (x86)\\AliWorkbench\\AliWorkbench.exe";
+	String appDir = "D:\\Software\\QianNv\\start.bat";
 
-	@JobCron(name = "启动千牛",cron = "0/20 * * * * *",delWhenSuccess = false,autoCreate = true)
+	@JobCron(name = "启动千牛",cron = "0/40 * * * * *",delWhenSuccess = false,autoCreate = true)
 	public void run(){
-//		RuntimeUtil.exec(appDir);
+		RuntimeUtil.exec(appDir);
 		log.info("执行	{}	打开千牛 APP...",appDir);
 	}
 
