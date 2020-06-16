@@ -100,7 +100,7 @@
         var el = obj;
         setTimeout(function () {
             el.style.cssText = 'height:auto; padding:0';
-            el.style.cssText = 'height:' + el.scrollHeight + 'px';
+            el.style.cssText = 'height:' + (el.scrollHeight + 10) + 'px';
         }, 0);
     }
 </script>

@@ -12,7 +12,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class StartQianNvAppJob {
 
-	String appDir = "D:\\Software\\QianNv\\start.bat";
+	String appDir = "cmd.exe /c D:\\Software\\QianNv\\start.bat";
 
 	@JobCron(name = "启动千牛",cron = "0/40 * * * * *",delWhenSuccess = false,autoCreate = true)
 	public void run(){
