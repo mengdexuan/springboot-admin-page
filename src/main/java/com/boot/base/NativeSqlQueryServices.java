@@ -2,6 +2,7 @@ package com.boot.base;
 
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.collection.CollUtil;
+import cn.hutool.core.map.MapUtil;
 import com.boot.base.util.HelpMe;
 import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
@@ -35,20 +36,25 @@ public class NativeSqlQueryServices {
 	 * @param sql
 	 * @return
 	 */
-	public List<Map> query(String sql) {
+	public List<Map<String,Object>> query(String sql) {
 
 		Query query = em.createNativeQuery(sql);
 
 		//将查询结果封装到Map中
-		List<Map> list = query.unwrap(NativeQueryImpl.class)
+		List<Map<String,Object>> list = query.unwrap(NativeQueryImpl.class)
 				.setResultTransformer(Transformers.ALIAS_TO_ENTITY_MAP)
 				.list();
 
-		log.info("执行本地sql查询：{}  查询结果：{}",sql,list);
+		List<Map<String,Object>> result = Lists.newArrayList();
+		for (Map<String,Object> map:list){
+			map = MapUtil.toCamelCaseMap(map);
+			result.add(map);
+		}
 
-		return list;
+		log.info("执行本地sql查询：{}  查询结果：{}",sql,result);
+
+		return result;
 	}
-
 
 
 	/**
