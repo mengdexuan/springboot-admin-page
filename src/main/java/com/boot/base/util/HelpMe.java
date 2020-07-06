@@ -1459,6 +1459,24 @@ public class HelpMe {
 		return list;
 	}
 
+
+	/**
+	 * 将 list 转化为 sql in 的字符串返回。 若 list 值为 1，2 则返回结果是 '1','2'
+	 * @param list
+	 * @param <T>
+	 * @return
+	 */
+	public static <T> String swap2SqlIn(List<T> list){
+		List<String> strList = list.stream().map(item -> {
+			return "'" + item + "'";
+		}).collect(Collectors.toList());
+
+		String str = easyList2Str(strList);
+
+		return str;
+	}
+
+
 	public static void main(String[] args) {
 
 		String tableName = extractTableNameFromSql("select id,id,a from test  where id =2");
