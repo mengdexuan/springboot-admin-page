@@ -1,0 +1,596 @@
+﻿<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+	<div th:replace="back/include/_meta :: head"></div>
+	<title>springboot-admin-page v1.0</title>
+</head>
+<body>
+<!--_header 作为公共模版分离出去-->
+<div th:replace="back/include/_header :: header"></div>
+<!--/_header 作为公共模版分离出去-->
+
+<!--_menu 作为公共模版分离出去-->
+<div th:replace="back/include/_menu :: aside"></div>
+<div class="dislpayArrow hidden-xs"><a class="pngfix" href="javascript:void(0);" onClick="displaynavbar(this)"></a></div>
+<!--/_menu 作为公共模版分离出去-->
+
+<section class="Hui-article-box">
+	<div th:replace="back/include/_nav :: nav"></div>
+	<div class="Hui-article">
+		<article class="cl pd-20">
+			<div class="container-fluid">
+				<div class="row">
+					<div class="col-md-3" style="height:800px;overflow-y: scroll">
+						<div class="row" style="text-align: center">
+							<div class="col-md-12">
+								<input type="text" class="form-control" placeholder="目录搜索" id="searchDir" autoComplete='off'/>
+							</div>
+						</div>
+						<div class="row" style="text-align: center">
+							<div class="col-md-12">
+								<ul id="tree" class="ztree" style="width:100%; overflow:auto;"></ul>
+							</div>
+						</div>
+					</div>
+					<div class="col-md-9">
+						<div class="row">
+							<div class="col-md-4">
+								<form class="form-inline">
+									<label>当前目录
+										<small id="fileCount">(0)</small>
+										:</label>
+									<div class="form-group">
+										<div class="input-group">
+											<input id="currDir" disabled type="text" style="width: 200%" value=""
+												   class="form-control input-sm">
+										</div>
+									</div>
+								</form>
+							</div>
+							<div class="col-md-3">
+								<form class="form-inline">
+									<div class="form-group">
+										<div class="input-group">
+											<input type="hidden" id="dirId">
+											<input type="text" class="form-control input-sm" placeholder="文件夹名称">
+										</div>
+									</div>
+									<button type="button" onclick="createDir();" class="btn btn-success btn-sm">提交</button>
+								</form>
+							</div>
+							<div class="col-md-5">
+								<button type="button" onclick="parentDir();" class="btn btn-danger btn-sm">返回上级</button>
+								&nbsp;&nbsp;
+								<button type="button" onclick="delDirMulit();" class="btn btn-primary btn-sm">删除</button>
+								&nbsp;&nbsp;
+								<button type="button" onclick="showModel();" class="btn btn-warning btn-sm">上传</button>
+								&nbsp;&nbsp;
+								<a class="btn btn-success btn-sm" type="button" onclick="refresh()">刷新</a>
+							</div>
+						</div>
+						<br/>
+						<div class="row">
+							<div class="col-md-12">
+								<table class="table table-hover table-condensed table-striped">
+									<thead>
+									<th width="45%">
+										<input type="checkbox" id="selectAll"/>
+										文件(夹)名称
+									</th>
+									<th width="5%">权限</th>
+									<th width="10%">大小</th>
+									<th width="20%">最后修改时间</th>
+									<th width="20%">操作</th>
+									</thead>
+									<tbody id="tabBody">
+
+									</tbody>
+								</table>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</article>
+	</div>
+</section>
+
+<div id="myModal" style="display: none" class="modal fade" tabindex="-1" role="dialog">
+	<div class="modal-dialog" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+				<h4 class="modal-title">文件上传</h4>
+			</div>
+			<form id="form_1" th:action="@{/file/upload}" method="POST" enctype="multipart/form-data" target="upload">
+				<div class="modal-body">
+					<input type="file" id="file" name="file" multiple/>
+					<input type="hidden" name="currDir"/>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+					<button type="submit" class="btn btn-primary" id="upload">上传</button>
+				</div>
+			</form>
+			<iframe name="upload" style="display:none"></iframe>
+		</div><!-- /.modal-content -->
+	</div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+<!--_footer 作为公共模版分离出去-->
+<div th:replace="back/include/_footer :: footer"></div>
+<!--/_footer /作为公共模版分离出去-->
+
+
+<!--请在下方写此页面业务相关的脚本-->
+<script type="text/javascript" th:inline="javascript">
+
+    var treeObj;
+
+    $(document).ready(function () {
+
+        clickLi("fileList");
+
+        $.fn.zTree.init($("#tree"), setting);
+        treeObj = $.fn.zTree.getZTreeObj("tree");
+
+        dealWithCheckBox();
+
+        $('#searchDir').bind('input propertychange', function() {
+            var searchDir = $.trim($(this).val());
+            loadDirEle(searchDir);
+        });
+    });
+
+    var setting = {
+        data: {
+            simpleData: {
+                enable: true
+            }
+        },
+        async: {
+            enable: true,
+            url: ctx + "/file/async",
+            autoParam: ["id", "level"],
+            dataType:"jsonp",
+            jsonpCallback:"test",
+            type: "get"
+        },
+        callback: {
+            onClick: zTreeOnClick,
+            onExpand: zTreeOnClick
+        }
+    };
+
+
+    function parentDir() {
+        var currDir = $("#currDir").val();
+        // currDir = encodeURI(encodeURI(currDir));
+        if (currDir==""){
+            layer.msg("已是顶级目录！",{time:2000});
+        }else {
+            $.ajax({
+                url: ctx + "/file/parentDir",
+                data: {
+                    currDir: currDir
+                },
+                dataType: "text",
+                async: false,
+                success: function (parentDir) {
+                    loadDirEle(parentDir);
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    alert(XMLHttpRequest.responseText);
+                }
+            });
+        }
+    }
+
+
+    function selectEle(who){
+        $(who).parent().find("input[type='checkbox']").each(function () {
+            this.checked = !this.checked;
+        });
+    }
+
+
+    function loadEle(who) {
+        var rowData = $(who).find("input[id='rowData']").val();
+        var rowDataArr = rowData.split(',');
+        var dirId = rowDataArr[0];
+        var isDir = rowDataArr[1];
+        if (isDir=="true"){
+            loadDirEle(dirId);
+        }
+    }
+
+    function dealWithCheckBox(){
+        $("#selectAll").click(function(){
+            var selected = $(this).prop("checked");
+            if(selected){
+                $("input[name='item']").each(function(){
+                    $(this).prop("checked",true);
+                });
+            }else{
+                $("input[name='item']").each(function(){
+                    $(this).prop("checked",false);
+                });
+            }
+        });
+    }
+
+
+    function reloadNode(){
+        var nodes = treeObj.getSelectedNodes();
+        if (nodes.length>0) {
+            treeObj.reAsyncChildNodes(nodes[0], "refresh");
+            zTreeOnClick(null,null,nodes[0]);
+        }
+    }
+
+    function zTreeOnClick(event, treeId, treeNode) {
+        var dirId = treeNode.id;
+        loadDirEle(dirId);
+    }
+
+    function loadDirEle(currDir) {
+        $.ajax({
+            url: ctx + "/file/async",
+            data: {id: currDir, isParent: true},
+            dataType: "jsonp",
+            jsonpCallback:"test",
+            async: false,
+            success: function (treeList) {
+                var html = "";
+                var foldSrc = ctx + "/app/images/fold.png";
+                var fileSrc = ctx + "/app/images/file.png";
+
+                for (var i = 0; i < treeList.length; i++) {
+                    html += "<tr ondblclick='loadEle(this);'>";
+
+                    html += "<td style='cursor: pointer' onclick='selectEle(this);' ondblclick='loadEle(this);'>";
+
+                    html += "<label>";
+                    html += '<input name="item" type="checkbox" value="';
+                    html += treeList[i].id;
+                    html += '"/>';
+                    html += "</label>";
+
+                    if (treeList[i].isParent) {
+                        html += '<img style="height: 15px;" src="' +
+                            foldSrc +
+                            '"/>';
+                    } else {
+                        html += '<img style="height: 15px;" src="' +
+                            fileSrc +
+                            '"/>';
+                    }
+
+                    html += "&nbsp;&nbsp;";
+                    html += "<span>";
+                    html += treeList[i].name
+                    html += "</span>";
+                    html += "</td>";
+
+                    html += "<td>";
+                    html += treeList[i].access
+                    html += "</td>";
+
+                    html += "<td name='sizeStr'>";
+                    html += treeList[i].sizeStr
+                    html += "</td>";
+
+                    html += "<td>";
+                    html += treeList[i].lastModifiedTime
+                    html += "</td>";
+
+                    html += "<td>";
+                    html += '<span style="display: none">';
+                    html += treeList[i].isParent;
+                    html += '</span>';
+                    html += '<button type="button" onclick="updateDir(this);" class="btn btn-primary btn-xs">重命名</button>';
+                    html += "&nbsp;&nbsp;";
+                    html += '<button type="button" onclick="delDir(this);" class="btn btn-danger btn-xs">删除</button>';
+                    html += "&nbsp;&nbsp;";
+                    var dirId = treeList[i].id;
+                    html += '<input type="hidden" value="'+dirId+'"/>';
+                    html += '<button type="button" onclick="downEle(this);" ' +
+                        'class="btn btn-info btn-xs">下载</button>';
+                    if (treeList[i].canEdit){
+                        html += "&nbsp;&nbsp;";
+                        var dirId = encodeURI(encodeURI(treeList[i].id));
+                        var href = ctx + "/file/view?dirId="+dirId;
+                        html += '<a href="'+href+'" style="display: hidden" target="_blank"></a>';
+                        html += '<input type="hidden" value="'+treeList[i].id+'"/>';
+                        html += '<button type="button" onclick="toView(this);" class="btn btn-success btn-xs">编辑</button>';
+                    }
+                    if (treeList[i].isParent){
+                        html += "&nbsp;&nbsp;";
+                        html += '<button type="button" onclick="dirSize(this);" class="btn btn-success btn-xs">大小</button>';
+                    }
+
+                    html += '<input id="rowData" type="hidden" value="';
+                    html += treeList[i].id+","+treeList[i].isParent;
+                    html += '"/>';
+
+                    html += "</td>";
+                    html += "/<tr>";
+
+                }
+                $("#tabBody").empty();
+                $("#tabBody").html(html);
+                $("#currDir").val(currDir);
+                $("#fileCount").html("(" + treeList.length + ")");
+                $("#dirId").val("");
+                $("#dirId").next().val("");
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                $("#currDir").val("");
+                $("#fileCount").html("(0)");
+                $("#dirId").val("");
+                $("#dirId").next().val("");
+            }
+        });
+    }
+
+
+
+    function createDir() {
+        var currDir = $("#currDir").val();
+        if (!currDir) {
+            alert("当前目录为空！");
+            return;
+        }
+        var dirId = $("#dirId").val();
+        var fileName = $("#dirId").next().val();
+        if (!fileName) {
+            alert("目录名称为空！");
+            return;
+        }
+
+        $.ajax({
+            url: ctx + "/file/canEdit",
+            data: {
+                dirId: dirId,
+            },
+            dataType: "text",
+            async: true,
+            success: function (data) {
+                if ("false"==data){
+                    alert("没有权限！");
+                }else {
+                    downFun(dirId,currDir,fileName);
+                }
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+            }
+        });
+
+
+    }
+
+
+    function toView(who) {
+        var dirId = $(who).prev().val();
+        $.ajax({
+            url: ctx + "/file/canEdit",
+            data: {
+                dirId: dirId,
+            },
+            dataType: "text",
+            async: true,
+            success: function (data) {
+                if ("false"==data){
+                    alert("没有权限！");
+                }else {
+                    var $a = $(who).prev().prev();
+                    var a = $a[0];//转为 js 对象
+                    a.click();
+                }
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+            }
+        });
+    }
+
+    function downFun(dirId,currDir,fileName) {
+        if (dirId) {//修改
+            $.ajax({
+                url: ctx + "/file/createDir",
+                data: {
+                    currDir: currDir,
+                    fileName: fileName,
+                    dirId: dirId
+                },
+                jsonpCallback:"test",
+                dataType: "jsonp",
+                async: false,
+                success: function (data) {
+                    if ("false"==JSON.stringify(data)){
+                        alert("没有权限！");
+                    }else {
+                        alert("修改名称成功！");
+                        reloadNode();
+                    }
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    alert(XMLHttpRequest.responseText);
+                }
+            });
+        } else {//添加
+            $.ajax({
+                url: ctx + "/file/createDir",
+                data: {
+                    currDir: currDir,
+                    fileName: fileName
+                },
+                dataType: "jsonp",
+                jsonpCallback:"test",
+                async: false,
+                success: function (data) {
+                    if ("false"==JSON.stringify(data)){
+                        alert("没有权限！");
+                    }else {
+                        alert("创建目录成功！");
+                        reloadNode();
+                    }
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    alert(XMLHttpRequest.responseText);
+                }
+            });
+        }
+    }
+
+    function updateDir(who) {
+        var dirId = $(who).parent().parent().find("input:first").val();
+        $("#dirId").val(dirId);
+        var fileName = $(who).parent().parent().find("span:first").html();
+        var isParent = $(who).prev().html();
+        if (isParent == "true") {
+            $("#dirId").next().val(fileName);
+        } else {
+            if (fileName.indexOf('.') > -1) {
+                var name = fileName.substring(0, fileName.lastIndexOf('.'));//获取文件名
+                $("#dirId").next().val(name);
+            } else {
+                $("#dirId").next().val(fileName);
+            }
+
+        }
+    }
+
+
+    function delConfirm() {
+        return confirm("删除确认！");
+    }
+
+    function downEle(who) {
+        var dirId = $(who).prev().val();
+        $.ajax({
+            url: ctx + "/file/canEdit",
+            data: {
+                dirId: dirId,
+            },
+            dataType: "text",
+            async: true,
+            success: function (data) {
+                if ("false"==data){
+                    alert("没有权限！");
+                    return false;
+                }else {
+                    dirId = encodeURI(encodeURI(dirId));
+                    var url = ctx + "/file/download?dirId="+dirId;
+                    window.location.href = url;
+                    return true;
+                }
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+            }
+        });
+
+
+    }
+
+    function delDirMulit() {
+        var dirIdList = "";
+        $('input:checkbox:checked').each(function () {
+            dirIdList += $(this).val();
+            dirIdList += ",";
+        });
+        if (dirIdList) {
+            if (delConfirm()) {
+                $.ajax({
+                    url: ctx + "/file/delDir",
+                    data: {
+                        dirIdList: dirIdList,
+                    },
+                    dataType: "jsonp",
+                    jsonpCallback:"test",
+                    async: false,
+                    success: function (data) {
+                        if ("false"==JSON.stringify(data)){
+                            alert("没有权限！");
+                        }else {
+                            alert("删除成功！");
+                            reloadNode();
+                        }
+                    },
+                    error: function (XMLHttpRequest, textStatus, errorThrown) {
+                        alert(XMLHttpRequest.responseText);
+                    }
+                });
+            }
+        }
+    }
+
+    function dirSize(who) {
+        var dirId = $(who).parent().parent().find("input:first").val();
+        var tdSize = $(who).parent().parent().find("td[name='sizeStr']");
+
+        $.ajax({
+            url: ctx + "/file/dirSize",
+            data: {
+                dirId: dirId,
+            },
+            dataType: "text",
+            async: false,
+            success: function (data) {
+                tdSize.text(data);
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                alert(XMLHttpRequest.responseText);
+            }
+        });
+    }
+
+    function delDir(who) {
+        if (delConfirm()){
+            var dirId = $(who).parent().parent().find("input:first").val();
+            $.ajax({
+                url: ctx + "/file/delDir",
+                data: {
+                    dirIdList: dirId,
+                },
+                dataType: "jsonp",
+                jsonpCallback:"test",
+                async: false,
+                success: function (data) {
+                    if ("false"==JSON.stringify(data)){
+                        alert("没有权限！");
+                    }else {
+                        alert("删除成功！");
+                        reloadNode();
+                    }
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    alert(XMLHttpRequest.responseText);
+                }
+            });
+        }
+    }
+
+    function showModel(){
+        $('#myModal').modal('show');
+        $("#file").val("");
+    }
+
+    $('#upload').on('click', function() {
+
+        var currDir = $("#currDir").val();
+        $("input[name='currDir']").val(currDir);
+
+        alert("已在后台上传，请等待上传结果！");
+
+        $('#myModal').modal('hide');
+
+        reloadNode();
+    })
+
+
+
+
+</script>
+<!--/请在上方写此页面业务相关的脚本-->
+</body>
+</html>

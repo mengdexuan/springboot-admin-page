@@ -45,6 +45,7 @@ spring:
   #禁用thymeleaf缓存，修改 html 代码后，不需要重启就能生效
   thymeleaf:
     cache: false
+#    prefix: classpath:/templates/
 
   #上传文件大小
   servlet:

@@ -1,0 +1,156 @@
+﻿<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+	<div th:replace="back/include/_meta :: head"></div>
+	<title>springboot-admin-page v1.0</title>
+</head>
+<body>
+<!--_header 部分-->
+<div th:replace="back/include/_header :: header"></div>
+<!--/_header 部分-->
+
+<!--_menu 部分-->
+<div th:replace="back/include/_menu :: aside"></div>
+<div class="dislpayArrow hidden-xs"><a class="pngfix" href="javascript:void(0);" onClick="displaynavbar(this)"></a></div>
+<!--/_menu 部分-->
+
+<section class="Hui-article-box">
+	<div th:replace="back/include/_nav :: nav"></div>
+	<div class="Hui-article">
+		<article class="cl pd-20">
+
+			<div class="container-fluid">
+				<div class="row">
+					<div class="col-md-12">
+						<form class="form-inline" th:action="@{/requestFollowList}">
+							<div class="form-group">
+								<p class="form-control-static">请求URL</p>
+							</div>
+							<div class="form-group">
+								<div class="col-xs-4">
+									<input type="text" th:value="${tempObj.path}" class="form-control" name="path" id="path" placeholder="请求URL">
+								</div>
+							</div>
+							<div class="form-group">
+								<p class="form-control-static">响应状态</p>
+							</div>
+							<div class="form-group">
+								<div class="col-xs-4">
+									<input type="text" th:value="${tempObj.status}" class="form-control" id="status" name="status" placeholder="响应状态">
+								</div>
+							</div>
+							<button type="button" onclick="loadData();" class="btn btn-primary">查询</button>
+						</form>
+					</div>
+				</div>
+				</br>
+				<div class="row">
+					<div class="col-md-12">
+						<table id="tableData" class="table table-hover table-responsive table-condensed">
+							<thead>
+							<tr class="success">
+								<th>请求时间</th>
+								<th>请求方法</th>
+								<th>请求URL</th>
+								<th>响应状态</th>
+								<th>请求耗时</th>
+								<th>参数查看</th>
+							</tr>
+							</thead>
+							<tbody>
+							<tr th:each="requestFollow : ${requestFollowList}">
+								<td th:text="${#dates.format(requestFollow.createTime,'yyyy-MM-dd HH:mm:ss')}"></td>
+								<td th:if="${requestFollow.method=='GET'}">
+									<span class="label label-success">GET</span>
+								</td>
+								<td th:if="${requestFollow.method=='POST'}">
+									<span class="label label-primary">POST</span>
+								</td>
+								<td th:if="${requestFollow.method=='PUT'}">
+									<span class="label label-info">PUT</span>
+								</td>
+								<td th:if="${requestFollow.method=='DELETE'}">
+									<span class="label label-danger">DELETE</span>
+								</td>
+								<td th:if="${requestFollow.method=='HEAD'}">
+									<span class="label label-default">HEAD</span>
+								</td>
+								<td th:if="${requestFollow.method=='OPTIONS'}">
+									<span class="label label-default">OPTIONS</span>
+								</td>
+								<td th:if="${requestFollow.method=='PATCH'}">
+									<span class="label label-default">PATCH</span>
+								</td>
+								<td th:text="${requestFollow.path}"></td>
+								<td th:text="${requestFollow.status}"></td>
+								<td>
+									<span th:text="|${requestFollow.spendTime} ms|" class="label label-danger"></span>
+								</td>
+								<td>
+									<button type="button" th:onclick="'dataDetail(\''+${requestFollow.id}+'\',1);'" class="btn btn-info btn-xs">请求参数</button>
+									<button type="button" th:onclick="'dataDetail(\''+${requestFollow.id}+'\',2);'" class="btn btn-success btn-xs">响应结果</button>
+								</td>
+							</tr>
+							</tbody>
+						</table>
+					</div>
+				</div>
+			</div>
+
+		</article>
+	</div>
+</section>
+
+<!--_footer 部分-->
+<div th:replace="back/include/_footer :: footer"></div>
+<!--/_footer /部分-->
+
+<!--请在下方写此页面业务相关的脚本-->
+<script type="text/javascript" th:inline="javascript">
+    $(document).ready(function () {
+        clickLi("requestFollowList");
+    })
+
+
+	function loadData(){
+        var path = $("#path").val();
+        var status = $("#status").val();
+
+        var url = ctx + "/requestFollowList?1=1";
+        if (status===""){
+		}else {
+            url += "&status="+status;
+		}
+        if (path===""){
+        }else {
+            url += "&path="+path;
+        }
+
+        window.location = url;
+	}
+
+
+    function dataDetail(id,type){
+        $.ajax({
+            type: "get",
+            url: ctx + "/requestFollow/get/"+id,
+            dataType: "json",
+            async: false,
+            data: {
+            },
+            success: function (data) {
+                if (type==1){
+                    layer.alert(data.data.requestParam);
+                } else {
+                    layer.alert(data.data.responseMsg);
+                }
+            },
+            error: function (err) {
+            }
+        });
+    }
+
+</script>
+<!--/请在上方写此页面业务相关的脚本-->
+</body>
+</html>

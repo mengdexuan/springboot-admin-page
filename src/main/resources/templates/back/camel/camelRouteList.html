@@ -1,0 +1,189 @@
+﻿<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+	<div th:replace="back/include/_meta :: head"></div>
+	<title>springboot-admin-page v1.0</title>
+</head>
+<body>
+<!--_header 作为公共模版分离出去-->
+<div th:replace="back/include/_header :: header"></div>
+<!--/_header 作为公共模版分离出去-->
+
+<!--_menu 作为公共模版分离出去-->
+<div th:replace="back/include/_menu :: aside"></div>
+<div class="dislpayArrow hidden-xs"><a class="pngfix" href="javascript:void(0);" onClick="displaynavbar(this)"></a></div>
+<!--/_menu 作为公共模版分离出去-->
+
+<section class="Hui-article-box">
+	<div th:replace="back/include/_nav :: nav"></div>
+	<div class="Hui-article">
+		<article class="cl pd-20">
+			<div class="container-fluid">
+				<div class="row">
+					<div class="col-md-12">
+						<textarea class="form-control" id="routeDetail"></textarea>
+					</div>
+				</div>
+
+				<div class="row" style="margin-top: 10px;">
+					<div class="col-md-12">
+						<div class="table-responsive">
+							<table class="table table-hover table-bordered">
+								<thead>
+								<tr class="success">
+									<th width="5%">序号</th>
+									<th>路由id</th>
+									<th>路由状态</th>
+									<th>路由描述</th>
+									<th>创建时间</th>
+									<th>操作</th>
+								</tr>
+								</thead>
+								<tbody>
+								<tr th:each="camelRoute : ${camelRouteList}">
+									<td th:text="${camelRouteStat.count}"></td>
+									<td th:text="${camelRoute.routeId}"></td>
+									<td>
+										<div class="input-group">
+											<input type="checkbox" th:id="|statusSwitch_${camelRoute.routeId}|" th:value="${camelRoute.routeId}" checked/>
+										</div>
+									</td>
+									<td th:text="${camelRoute.description}"></td>
+									<td th:text="${#dates.format(camelRoute.createTime,'yyyy-MM-dd HH:mm:ss')}"></td>
+									<td>
+										<button class="btn btn-success" th:data-id="${camelRoute.routeId}" onclick="detail(this)">详情</button>
+										<button class="btn btn-danger" th:data-id="${camelRoute.routeId}" onclick="del(this)">删除</button>
+									</td>
+								</tr>
+								</tbody>
+							</table>
+						</div>
+					</div>
+				</div>
+			</div>
+		</article>
+	</div>
+</section>
+
+<!--_footer 作为公共模版分离出去-->
+<div th:replace="back/include/_footer :: footer"></div>
+<!--/_footer /作为公共模版分离出去-->
+
+<!--请在下方写此页面业务相关的脚本-->
+<script type="text/javascript" th:inline="javascript">
+
+
+    var camelRouteList = [[${camelRouteList}]];
+
+
+    $(document).ready(function () {
+        clickLi("camelRouteList");
+    })
+
+
+    for (camelRoute in camelRouteList) {
+        var id = camelRouteList[camelRoute].routeId;
+
+        $('#statusSwitch_' + id).bootstrapSwitch({
+            onText: "已启动",
+            offText: "已暂停",
+            onColor: "success",
+            offColor: "danger",
+            handleWidth: '70',
+            labelWidth: '50',
+            onSwitchChange: function (event, state) {
+                var id = $(this).val();
+                camelRouteTrigger(id);
+            }
+        })
+
+        if (camelRouteList[camelRoute].status == 'Started') {
+            $("#statusSwitch_" + id).bootstrapSwitch('state', true, true);
+        } else {
+            $("#statusSwitch_" + id).bootstrapSwitch('state', false, true);
+        }
+    }
+
+
+    function detail(btn) {
+        var id = $(btn).attr("data-id");
+        $.ajax({
+            type: "get",
+            url: ctx + "/camel/camelRoute/get/"+id,
+            dataType: "json",
+            async: true,
+            success: function (data) {
+                if (data.success){
+                    $("#routeDetail").text(data.data);
+                }else {
+                    layer.msg("获取失败！");
+                }
+            },
+            error: function (err) {
+
+            }
+        });
+
+    }
+
+
+    function del(btn) {
+        var id = $(btn).attr("data-id");
+
+        layer.confirm('确认删除？', {
+            btn: ['确认','取消']
+        }, function(){
+            $.ajax({
+                type: "delete",
+                url: ctx + "/camel/camelRoute/del/"+id,
+                dataType: "json",
+                async: true,
+                success: function (data) {
+                    if (data.success){
+                        refresh();
+                    }else {
+                        layer.msg("删除失败！");
+                    }
+                },
+                error: function (err) {
+
+                }
+            });
+        }, function(){
+
+        });
+    }
+
+
+    function camelRouteTrigger(routeId) {
+        /*layer.confirm('确认触发路由状态切换？', {
+            btn: ['确认','取消']
+        }, function(){
+
+        }, function(){
+
+        });*/
+
+
+        $.ajax({
+            type: "post",
+            url: ctx + "/camel/camelRoute/update",
+            dataType: "text",
+            async: false,
+            data: {
+                routeId: routeId
+            },
+            success: function (data) {
+                refresh();
+            },
+            error: function (err) {
+            }
+        });
+    }
+
+
+
+</script>
+<!--/请在上方写此页面业务相关的脚本-->
+</body>
+</html>

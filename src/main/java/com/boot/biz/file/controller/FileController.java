@@ -250,7 +250,7 @@ public class FileController {
 
 		model.addAttribute("content", content);
 
-		return "file/fileView";
+		return "back/file/fileView";
 	}
 
 

@@ -1,0 +1,114 @@
+﻿<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <div th:replace="back/include/_meta :: head"></div>
+    <title>springboot-admin-page v1.0</title>
+
+    <style>
+
+    </style>
+    <script type="text/javascript">
+        document.onkeydown = function (e) {
+            var ev = window.event || e;
+            var code = ev.keyCode || ev.which;
+            if (code == 116) {
+                if(ev.preventDefault) {
+                    ev.preventDefault();
+                } else {
+                    ev.keyCode = 0;
+                    ev.returnValue = false;
+                }
+            }
+        }
+    </script>
+</head>
+<body style="background-color: #cce8cf">
+<div class="container">
+    <div class="row" style="margin-top: 10px;">
+        <div class="col-md-offset-8">
+            <button class="btn btn-success" type="button" onclick="refresh()">刷新</button>
+            &nbsp;&nbsp;
+            <a class="btn btn-info" type="button" th:href= "@{/back/webShell(id=${sshInfo.id})}" target="_blank">复制</a>
+            &nbsp;&nbsp;
+            <a class="btn btn-primary" type="button" th:href= "@{/back/sftp(id=${sshInfo.id})}" target="_blank">SFTP</a>
+            &nbsp;&nbsp;
+            <button class="btn btn-danger" type="button" onclick="window.close()">关闭</button>
+        </div>
+    </div>
+    <div class="row" style="margin-top: 10px;">
+        <div class="col-md-12">
+            <div class="panel panel-danger">
+                <div class="panel-heading">
+                    <h4 class="panel-title"></h4>
+                </div>
+                <div class="panel-body" style="color: red;min-height:600px;background: black;padding: 0;overflow: hidden">
+                    <div id="content">
+                        <div id="term"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!--_footer 作为公共模版分离出去-->
+    <div th:replace="back/include/_footer :: footer"></div>
+    <!--/_footer /作为公共模版分离出去-->
+
+    <script type="text/javascript" th:src="@{/lib/xterm.js-2.4.0/term.js}"></script>
+
+    <script type="text/javascript" th:inline="javascript">
+
+        var sshInfo = [[${sshInfo}]];
+        $(".panel-title").text(sshInfo.username + "@" + sshInfo.hostname);
+
+        var url = ctx + "/sshShellHandler";
+
+        var sock = new SockJS(url);
+
+        sock.onopen = function(event) {
+            console.log("socket connection open ...");
+            sock.send(JSON.stringify(sshInfo));
+        };
+
+        var term = null;
+        sock.onmessage = function(evt) {
+
+            console.log("Received Message: " + evt.data);
+
+            if (evt.data == "firstConn") {
+                //创建Term的控制台
+                var $width = $('.panel-body').width();
+                var $height = $('.panel-body').height();
+                term = new Terminal({
+                    cols: Math.floor($width / 7.25),
+                    rows: Math.floor($height / 17.42),
+                    screenKeys: false,
+                    useStyle: true,
+                    cursorBlink: true,
+                    convertEol: true
+                });
+                term.open($("#term").empty()[0]);
+                term.on('data', function(data) {
+                    sock.send(data);
+                });
+            } else {
+                //写数据到term 控制台
+                term.write(evt.data);
+            }
+        };
+
+        sock.onclose = function(event) {
+        };
+
+        sock.onerror = function(event) {
+        };
+
+
+        //监听窗口关闭事件，当窗口关闭时，主动去关闭websocket连接，防止连接还没断开就关闭窗口，server端会抛异常。
+        window.onbeforeunload = function () {
+            sock.close();
+        }
+    </script>
+</div>
+</body>
+</html>

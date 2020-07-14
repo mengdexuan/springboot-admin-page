@@ -1,0 +1,228 @@
+﻿<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <div th:replace="back/include/_meta :: head"></div>
+    <title>springboot-admin-page v1.0</title>
+</head>
+<body>
+<!--_header 作为公共模版分离出去-->
+<div th:replace="back/include/_header :: header"></div>
+<!--/_header 作为公共模版分离出去-->
+
+<!--_menu 作为公共模版分离出去-->
+<div th:replace="back/include/_menu :: aside"></div>
+<!--/_menu 作为公共模版分离出去-->
+
+<div class="dislpayArrow hidden-xs"><a class="pngfix" href="javascript:void(0);" onClick="displaynavbar(this)"></a></div>
+
+
+<section class="Hui-article-box">
+    <nav class="breadcrumb"><i class="Hui-iconfont"></i> <a th:href="@{/back}" class="maincolor">首页</a>
+        <span class="c-999 en">&gt;</span>
+        <span class="c-666">我的桌面</span>
+        <label id="sysTime" style="margin-left: 55%;color: red"></label>
+        <a class="btn btn-success radius r" style="line-height:1.6em;margin-top:3px;float: right;"
+           href="javascript:location.replace(location.href);" title="刷新"><i class="Hui-iconfont">&#xe68f;</i></a></nav>
+    <div class="Hui-article">
+        <article class="cl pd-20">
+            <div class="row">
+                <div class="col-md-8">
+                    <h3><p class="f-20 text-success">基本统计信息</p></h3>
+                </div>
+                <div class="col-md-4">
+                    <a class="btn btn-success" type="button" th:href="@{/back/jump2Page(page='sys/log')}"
+                       title="系统日志">系统日志</a>&nbsp;&nbsp;
+                    <!--<button class="btn btn-danger" type="button" onclick="stopApp()">停止服务</button>-->
+                    <!--&nbsp;&nbsp;-->
+                    <!--<a class="btn btn-success" type="button" th:href="@{/test}">webSocket测试</a>-->
+                </div>
+            </div>
+
+
+            <div class="row">
+                <div class="col-md-6">
+                    <table class="table table-bordered">
+                        <thead>
+                        <tr>
+                            <th colspan="2" scope="col">CPU</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr>
+                            <td>核心数</td>
+                            <td th:text="${serverInfo.cpu.cpuNum}"></td>
+                        </tr>
+                        <tr>
+                            <td>用户使用率</td>
+                            <td th:text="|${serverInfo.cpu.used}%|"></td>
+                        </tr>
+                        <tr>
+                            <td>系统使用率</td>
+                            <td th:text="|${serverInfo.cpu.sys}%|"></td>
+                        </tr>
+                        <tr>
+                            <td>当前空闲率</td>
+                            <td th:text="|${serverInfo.cpu.free}%|"></td>
+                        </tr>
+                        <tr>
+                            <td>当前等待率</td>
+                            <td th:text="|${serverInfo.cpu.wait}%|"></td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="col-md-6">
+                    <table class="table table-bordered">
+                        <thead>
+                        <tr>
+                            <th colspan="3" scope="col">内存</th>
+                        </tr>
+                        <tr >
+                            <th>属性</th>
+                            <th>内存</th>
+                            <th>JVM</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr>
+                            <td>总内存</td>
+                            <td th:text="|${serverInfo.mem.total}G|"></td>
+                            <td th:text="|${serverInfo.jvm.total}M|"></td>
+                        </tr>
+                        <tr>
+                            <td>已用内存</td>
+                            <td th:text="|${serverInfo.mem.used}G|"></td>
+                            <td th:text="|${serverInfo.jvm.used}M|"></td>
+                        </tr>
+                        <tr>
+                            <td>剩余内存</td>
+                            <td th:text="|${serverInfo.mem.free}G|"></td>
+                            <td th:text="|${serverInfo.jvm.free}M|"></td>
+                        </tr>
+                        <tr>
+                            <td>使用率</td>
+                            <td th:text="|${serverInfo.mem.usage}%|"></td>
+                            <td th:text="|${serverInfo.jvm.usage}%|"></td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th colspan="4" scope="col">Java虚拟机信息</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Java名称</td>
+                        <td th:text="${serverInfo.jvm.name}"></td>
+                        <td>Java版本</td>
+                        <td th:text="${serverInfo.jvm.version}"></td>
+                    </tr>
+                    <tr>
+                        <td>启动时间</td>
+                        <td th:text="${serverInfo.jvm.startTime}"></td>
+                        <td>运行时长</td>
+                        <td th:text="${serverInfo.jvm.runTime}"></td>
+                    </tr>
+                    <tr>
+                        <td>安装路径</td>
+                        <td th:text="${serverInfo.jvm.home}"></td>
+                        <td>项目路径</td>
+                        <td th:text="${serverInfo.sys.userDir}"></td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <table class="table table-bordered">
+                <thead>
+                <tr>
+                    <th colspan="4" scope="col">服务器信息</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <td>服务器名称</td>
+                    <td th:text="${serverInfo.sys.computerName}"></td>
+                    <td>操作系统</td>
+                    <td th:text="${serverInfo.sys.osName}"></td>
+                </tr>
+                <tr>
+                    <td>服务器IP</td>
+                    <td th:text="${serverInfo.sys.computerIp}"></td>
+                    <td>系统架构</td>
+                    <td th:text="${serverInfo.sys.osArch}"></td>
+                </tr>
+                </tbody>
+            </table>
+
+            <table class="table table-bordered">
+                <thead>
+                <tr>
+                    <th colspan="7" scope="col">磁盘状态</th>
+                </tr>
+                <tr >
+                    <th>盘符路径</th>
+                    <th>文件系统</th>
+                    <th>盘符类型</th>
+                    <th>总大小</th>
+                    <th>可用大小</th>
+                    <th>已用大小</th>
+                    <th>已用百分比</th>
+                </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="sysFile : ${serverInfo.sysFiles}">
+                        <td th:text="${sysFile.dirName}"></td>
+                        <td th:text="${sysFile.typeName}"></td>
+                        <td th:text="${sysFile.sysTypeName}"></td>
+                        <td th:text="${sysFile.total}"></td>
+                        <td th:text="${sysFile.free}"></td>
+                        <td th:text="${sysFile.used}"></td>
+                        <td th:text="|${sysFile.usage}%|"></td>
+                    </tr>
+                </tbody>
+            </table>
+        </article>
+        <footer class="footer">
+        </footer>
+    </div>
+</section>
+
+
+
+<!--_footer 作为公共模版分离出去-->
+<div th:replace="back/include/_footer :: footer"></div>
+<!--/_footer /作为公共模版分离出去-->
+
+<script type="text/javascript">
+
+    function stopApp() {
+        layer.confirm('确认后将 kill 掉后台 java 进程！！！', {
+            btn: ['确认','取消']
+        }, function(index){
+            $.ajax({
+                type: "get",
+                url: ctx + "/exit",
+                dataType: "text",
+                async: true,
+                success: function (data) {
+                },
+                error: function (err) {
+                }
+            });
+            layer.close(index);
+        }, function(){
+
+        });
+    }
+
+</script>
+
+
+</body>
+</html>

@@ -44,7 +44,7 @@ public class SftpController {
 	@Autowired
 	ServerInfoService serverInfoService;
 
-	@GetMapping("/sftp")
+	@GetMapping("/back/sftp")
 	public String sftp(Model model, String id) {
 
 		log.info("进入 sftp 页面...");
@@ -57,10 +57,10 @@ public class SftpController {
 
 		model.addAttribute("sshInfo",one);
 
-		return "ssh/sftp";
+		return "back/ssh/sftp";
 	}
 
-	@GetMapping("/closeSftpClient")
+	@GetMapping("/back/closeSftpClient")
 	@ResponseBody
 	public String closeSftpClient(String id) {
 
@@ -81,7 +81,7 @@ public class SftpController {
 	}
 
 
-	@PostMapping("/batchDelSftpFile")
+	@PostMapping("/back/batchDelSftpFile")
 	@ResponseBody
 	public String batchDelSftpFile(String id,String splitStr,String fileNameStr) throws Exception{
 
@@ -120,7 +120,7 @@ public class SftpController {
 	}
 
 
-	@GetMapping("/connectSftp")
+	@GetMapping("/back/connectSftp")
 	@ResponseBody
 	public Object connectSftp(String id) {
 
@@ -161,7 +161,7 @@ public class SftpController {
 	}
 
 
-	@PostMapping("/execCommand")
+	@PostMapping("/back/execCommand")
 	@ResponseBody
 	public Object execCommand(String id, CommandBean commandBean, HttpServletRequest request) throws IOException {
 
@@ -250,7 +250,7 @@ public class SftpController {
 
 
 
-	@PostMapping("/downloadFile")
+	@PostMapping("/back/downloadFile")
 	@ResponseBody
 	public void downloadFile(String id, CommandBean commandBean, HttpServletResponse response) throws UnsupportedEncodingException {
 
@@ -270,7 +270,7 @@ public class SftpController {
 
 
 
-	@GetMapping("/uploadState")
+	@GetMapping("/back/uploadState")
 	@ResponseBody
 	public String uploadState(String id) throws UnsupportedEncodingException {
 

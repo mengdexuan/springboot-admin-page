@@ -19,7 +19,7 @@ import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.util.*;
 
-@RequestMapping("/db")
+@RequestMapping("/back/db")
 @Controller
 @Slf4j
 public class DatabaseController {
@@ -53,7 +53,7 @@ public class DatabaseController {
 
 		conn.close();
 
-		return "db/db";
+		return "back/db/db";
 	}
 
 

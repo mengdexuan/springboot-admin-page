@@ -44,7 +44,7 @@ import java.util.stream.Collectors;
  */
 @Slf4j
 @RestController
-@RequestMapping("/dbConn")
+@RequestMapping("/back/dbConn")
 public class DbConnController extends BaseController {
 
 
@@ -74,8 +74,8 @@ public class DbConnController extends BaseController {
 				DbConnDto dbConnDto = JSONUtil.toBean(item.getDataVal(),DbConnDto.class);
 
 				temp.setName(dbConnDto.getConnName());
-				temp.setIconOpen("app/images/mysql.png");
-				temp.setIconClose("app/images/mysql_close.png");
+				temp.setIconOpen("img/mysql.png");
+				temp.setIconClose("img/mysql_close.png");
 
 				return temp;
 			}).collect(Collectors.toList());
@@ -92,8 +92,8 @@ public class DbConnController extends BaseController {
 					temp.setIsParent(true);
 					temp.setName(dbName);
 					temp.setId(dbName+"|"+dbTree.getId());
-					temp.setIconOpen("app/images/db.png");
-					temp.setIconClose("app/images/db_close.png");
+					temp.setIconOpen("img/db.png");
+					temp.setIconClose("img/db_close.png");
 					list.add(temp);
 				}
 			}else if (dbTree.getLevel()==1){//数据库表
@@ -116,7 +116,7 @@ public class DbConnController extends BaseController {
 					temp.setIsParent(false);
 					temp.setName(tableName);
 					temp.setId(tableName+"|"+dbTree.getId());
-					temp.setIcon("app/images/table.png");
+					temp.setIcon("img/table.png");
 					list.add(temp);
 				}
 			}

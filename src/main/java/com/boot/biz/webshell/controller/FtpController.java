@@ -56,7 +56,7 @@ public class FtpController {
 	ServerInfoService serverInfoService;
 
 
-	@RequestMapping("/ftpServerList")
+	@RequestMapping("/back/ftpServerList")
 	public String sshServerList(Model model) {
 
 		log.info("ftpServerList页面");
@@ -70,11 +70,11 @@ public class FtpController {
 
 		model.addAttribute("infoList",infoList);
 
-		return "ssh/ftpServerList";
+		return "back/ssh/ftpServerList";
 	}
 
 
-	@GetMapping("/ftpPage")
+	@GetMapping("/back/ftpPage")
 	public String ftpPage(Model model,String id,String dir,Boolean parentDir) {
 
 		SshServerInfo info = new SshServerInfo();
@@ -141,12 +141,12 @@ public class FtpController {
 		model.addAttribute("ftpBean",ftpBean);
 		model.addAttribute("ftpInfo",ftpInfo);
 
-		return "ssh/ftp";
+		return "back/ssh/ftp";
 	}
 
 
 
-	@GetMapping("/closeFtpClient")
+	@GetMapping("/back/closeFtpClient")
 	@ResponseBody
 	public String closeFtp(String id) {
 
@@ -158,7 +158,7 @@ public class FtpController {
 
 
 
-	@PostMapping("/createFtpDir")
+	@PostMapping("/back/createFtpDir")
 	@ResponseBody
 	public String createFtpDir(String id,String dirName) {
 
@@ -172,7 +172,7 @@ public class FtpController {
 
 
 
-	@PostMapping("/downloadFtpFile")
+	@PostMapping("/back/downloadFtpFile")
 	@ResponseBody
 	public void downloadFtpFile(String id, String fileName, HttpServletResponse response) throws UnsupportedEncodingException {
 
@@ -192,7 +192,7 @@ public class FtpController {
 
 
 
-	@GetMapping("/delFtpFile")
+	@GetMapping("/back/delFtpFile")
 	@ResponseBody
 	public String delFtpFile(String id,String fileName,Boolean isDir) {
 
@@ -216,7 +216,7 @@ public class FtpController {
 	}
 
 
-	@PostMapping("/batchDelFtpFile")
+	@PostMapping("/back/batchDelFtpFile")
 	@ResponseBody
 	public String batchDelFtpFile(String id,String splitStr,String fileNameStr) {
 
@@ -251,7 +251,7 @@ public class FtpController {
 
 
 
-	@PostMapping(value = "/uploadFtpFile")
+	@PostMapping(value = "/back/uploadFtpFile")
 	@ResponseBody
 	public String uploadFtpFile(String id,HttpServletRequest request) throws IOException {
 
@@ -345,7 +345,7 @@ public class FtpController {
 	}
 
 
-	@GetMapping("/clearFtpUploadState")
+	@GetMapping("/back/clearFtpUploadState")
 	@ResponseBody
 	public String clearFtpUploadState(String fileName) {
 
@@ -357,7 +357,7 @@ public class FtpController {
 	}
 
 
-	@GetMapping("/ftpUploadState")
+	@GetMapping("/back/ftpUploadState")
 	@ResponseBody
 	public Map<String,Object> ftpUploadState(String fileName) {
 

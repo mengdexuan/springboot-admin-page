@@ -1,0 +1,825 @@
+﻿<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+	<div th:replace="back/include/_meta :: head"></div>
+	<title>springboot-admin-page v1.0</title>
+	<style>
+		.table-condensed>tbody>tr>td, .table-condensed>tbody>tr>th, .table-condensed>tfoot>tr>td, .table-condensed>tfoot>tr>th, .table-condensed>thead>tr>td, .table-condensed>thead>tr>th {
+			padding: 0px;
+		}
+		.panel-heading{
+			cursor: pointer;
+			padding: 5px 15px;
+		}
+		.panel-body {
+			padding: 5px;
+		}
+		.checkSpan {
+			background-color: #337ab7;
+			color: white;
+			font-size: 20px;
+		}
+	</style>
+</head>
+<body>
+<!--_header 部分-->
+<div th:replace="back/include/_header :: header"></div>
+<!--/_header 部分-->
+
+<!--_menu 部分-->
+<div th:replace="back/include/_menu :: aside"></div>
+<div class="dislpayArrow hidden-xs"><a class="pngfix" href="javascript:void(0);" onClick="displaynavbar(this)"></a></div>
+<!--/_menu 部分-->
+
+<section class="Hui-article-box">
+	<div th:replace="back/include/_nav :: nav"></div>
+	<div class="Hui-article">
+		<article class="cl pd-20">
+			<div class="container-fluid">
+				<div class="row">
+					<div class="col-md-3" style="height:800px;overflow-y: scroll">
+						<div class="row" style="text-align: center">
+							<div class="col-md-7"></div>
+							<div class="col-md-5">
+								<div class="btn-group" role="group">
+									<button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+										连接
+										<span class="caret"></span>
+									</button>
+									<ul class="dropdown-menu">
+										<li><a href="#" data-toggle="modal" data-target="#exampleModal">mysql</a></li>
+									</ul>
+								</div>
+							</div>
+						</div>
+						<div class="row" style="text-align: center">
+							<div class="col-md-12">
+								<ul id="tree" class="ztree" style="width:100%; overflow:auto;"></ul>
+							</div>
+						</div>
+					</div>
+					<div class="col-md-9" id="dataContainer">
+						<div>
+							<!-- Nav tabs -->
+							<ul class="nav nav-tabs" role="tablist">
+								<li role="presentation" class="active"><a href="#home" aria-controls="home" role="tab" data-toggle="tab">基本信息</a></li>
+								<li role="presentation"><a href="#profile" aria-controls="profile" role="tab" data-toggle="tab">SQL查询</a></li>
+							</ul>
+							<!-- Tab panes -->
+							<div class="tab-content">
+								<div role="tabpanel" class="tab-pane active" id="home">
+									<row class="row">
+										<div class="col-md-12">
+											<div class="panel panel-danger">
+												<div class="panel-heading" role="tab" href="#collapse_1" id="heading_1" data-toggle="collapse">
+													<h4 class="panel-title">
+														<a role="button" data-toggle="collapse" href="#collapse_1" aria-expanded="true"
+														   aria-controls="collapse_1">
+															表字段信息
+														</a>
+													</h4>
+												</div>
+												<div id="collapse_1" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="heading_1">
+													<div class="panel-body">
+														<div class="row">
+															<div class="col-md-12" id="fieldContainer">
+
+															</div>
+														</div>
+													</div>
+												</div>
+											</div>
+										</div>
+									</row>
+									<row class="row">
+										<div class="col-md-12">
+											<div class="panel panel-success">
+												<div class="panel-heading" role="tab" href="#collapse_3" id="heading_3" data-toggle="collapse">
+													<h4 class="panel-title">
+														<a role="button" data-toggle="collapse" href="#collapse_3" aria-expanded="true"
+														   aria-controls="collapse_3">
+															DDL信息
+														</a>
+													</h4>
+												</div>
+												<div id="collapse_3" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="heading_3">
+													<div class="panel-body">
+														<div class="row">
+															<div class="col-md-12">
+																<textarea onfocus="autoSize(this)" id="ddlContainer" class="form-control"></textarea>
+															</div>
+														</div>
+													</div>
+												</div>
+											</div>
+										</div>
+									</row>
+									<row class="row">
+										<div class="col-md-12" >
+											<div class="panel panel-primary">
+												<div class="panel-heading" role="tab" href="#collapse_2" id="heading_2" data-toggle="collapse">
+													<h4 class="panel-title">
+														<a role="button" data-toggle="collapse" href="#collapse_2" aria-expanded="true"
+														   aria-controls="collapse_2">
+															表信息
+														</a>
+													</h4>
+												</div>
+												<div id="collapse_2" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="heading_1">
+													<div class="panel-body">
+														<div class="row">
+															<div class="col-md-12" id="tableContainer">
+
+															</div>
+														</div>
+													</div>
+												</div>
+											</div>
+										</div>
+									</row>
+								</div>
+								<div role="tabpanel" class="tab-pane" id="profile">
+									<div class="row" style="margin-top: 1%">
+										<div class="col-md-6">
+											<form class="form-inline">
+												<div class="form-group">
+													<input type="file" id="sqlScriptFile" name="sqlScriptFile"/>
+												</div>
+												<button type="button" class="btn btn-success" id="uploadSqlScript">上传SQL脚本</button>
+											</form>
+										</div>
+										<div class="col-md-6">
+											<button type="button" fileName="" class="btn btn-danger" id="exeScript">执行SQL脚本</button>
+										</div>
+									</div>
+									<div class="row" style="margin-top: 1%">
+										<div class="col-md-12 well well-sm">
+											<label style="color: red">1.只有选择了相应的数据库后，才可以执行sql查询或执行sql脚本</label>
+											</br>
+											<label style="color: red">2.执行SQL脚本后，会立即删除上传的SQL脚本文件</label>
+										</div>
+									</div>
+									<div class="=row" style="margin-top: 1%">
+										<div class="col-md-12 well well-sm">
+											<span id="well" style="float: left"></span>
+											<span style="float: right">
+												<button class="btn btn-success" onclick="exeSqlScript(this)" id="exeSqlScript">
+													SQL查询
+												</button>
+												<button class="btn btn-warning" onclick="clearSqlScript();">清空</button>
+											</span>
+										</div>
+									</div>
+									<div class="=row">
+										<div class="col-md-12">
+											<label>SQL查询：</label>
+											<textarea class="form-control" rows="5" id="sqlScript" name="sqlScript"></textarea>
+										</div>
+									</div>
+									<div class="=row">
+										<div class="col-md-12">
+											<div id="sqlScriptResult" style="margin-top: 20px;">
+												<!--<ul class="nav nav-tabs" role="tablist">
+													<li role="presentation" class="active"><a href="#test1" aria-controls="test1" role="tab" data-toggle="tab">test1</a></li>
+													<li role="presentation"><a href="#test2" aria-controls="test2" role="tab" data-toggle="tab">test2</a></li>
+												</ul>
+												<div class="tab-content">
+													<div role="tabpanel" class="tab-pane active" id="test1">test1</div>
+													<div role="tabpanel" class="tab-pane" id="test2">test2</div>
+												</div>-->
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</article>
+	</div>
+</section>
+
+
+
+<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel">
+	<div class="modal-dialog" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+				<h4 class="modal-title" id="exampleModalLabel">新建mysql连接</h4>
+			</div>
+			<div class="modal-body">
+				<form id="dataForm">
+					<div class="form-group">
+						<label for="connName" class="control-label">连接名:</label>
+						<input type="text" class="form-control" name="connName" id="connName">
+						<input type="hidden" th:value="mysql" name="dbType" id="dbType">
+					</div>
+					<div class="form-group">
+						<label for="ip" class="control-label">主机名或IP地址:</label>
+						<input type="text" class="form-control" name="ip" id="ip">
+					</div>
+					<div class="form-group">
+						<label for="port" class="control-label">端口:</label>
+						<input type="text" class="form-control" name="port" id="port">
+					</div>
+					<div class="form-group">
+						<label for="userName" class="control-label">用户名:</label>
+						<input type="text" class="form-control" name="userName" id="userName">
+					</div>
+					<div class="form-group">
+						<label for="pwd" class="control-label">密码:</label>
+						<input type="password" class="form-control" name="pwd" id="pwd">
+					</div>
+				</form>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-danger" data-dismiss="modal">关闭</button>
+				<button type="button" onclick="saveData(1)" class="btn btn-info">验证</button>
+				<button type="button" onclick="saveData(2)" class="btn btn-success" data-dismiss="modal">连接</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+<div class="modal fade" id="exampleModal2" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel">
+	<div class="modal-dialog" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+				<h4 class="modal-title" id="exampleModalLabel2">修改表信息</h4>
+			</div>
+			<div class="modal-body">
+				<form id="dataForm2">
+					<div class="form-group">
+						<label for="tableName" class="control-label">表名:</label>
+						<input type="text" class="form-control" name="tableName" id="tableName">
+						<input type="hidden" name="id">
+					</div>
+					<div class="form-group">
+						<label for="tableComment" class="control-label">表注释:</label>
+						<input type="text" class="form-control" name="tableComment" id="tableComment">
+					</div>
+				</form>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-danger" data-dismiss="modal">关闭</button>
+				<button type="button" onclick="saveTableChange();" class="btn btn-success" data-dismiss="modal">保存</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+<!--_footer 部分-->
+<div th:replace="back/include/_footer :: footer"></div>
+<!--/_footer /部分-->
+
+<script type="text/javascript" th:src="@{/lib/jquery/1.9.1/ajaxfileupload.js}"></script>
+
+
+
+<!--请在下方写此页面业务相关的脚本-->
+<script type="text/javascript" th:inline="javascript">
+    var treeObj;
+
+    $(document).ready(function () {
+        clickLi("dbList");
+
+        $.fn.zTree.init($("#tree"), setting);
+        treeObj = $.fn.zTree.getZTreeObj("tree");
+    })
+
+
+    var setting = {
+        async: {
+            enable: true,
+            url: ctx + "/back/dbConn/async",
+            autoParam: ["id", "level","name"],
+            type: "get"
+        },
+        callback: {
+            onExpand: zTreeOnClick,
+            onCollapse: zTreeOnCollapse,
+            beforeRemove: zTreeBeforeRemove,
+        },
+        edit: {
+            enable: true,
+            showRenameBtn: false,
+            showRemoveBtn: setRemoveBtn,
+			removeTitle:'删除连接'
+        }
+    };
+
+
+
+    function zTreeBeforeRemove(treeId, treeNode) {
+       var id = treeNode.id;
+
+      layer.confirm('确认删除？', {
+            btn: ['确认','取消']
+        }, function(index){
+            $.ajax({
+                type: "post",
+                url: ctx + "/back/dbConn/delConn",
+                dataType: "json",
+                async: false,
+                data: {
+                    id:id
+                },
+                success: function (data) {
+
+                },
+                error: function (err) {
+                }
+            });
+            layer.close(index);
+            refresh();
+        }, function(){
+
+        });
+
+        return false;
+    }
+
+
+    function setRemoveBtn(treeId, treeNode) {
+        return treeNode.level==0;
+    }
+
+
+    function clearSqlScript() {
+        $("#sqlScript").val("");
+    }
+
+    function exeSqlScript(who) {
+		var id = $(who).attr("data-id");
+		var sql = $("#sqlScript").val();
+
+        //通过URL传递中文，需要编码两次
+        //通过ajax数据传递中文，只需编码一次
+        // sql = (encodeURI(sql));
+
+        $.ajax({
+            type: "post",
+            url: ctx + "/back/dbConn/exeSqlScript",
+            dataType: "json",
+            async: false,
+            data: {
+                id:id,
+                sql:sql
+            },
+            success: function (data) {
+                if (data.success){
+                    var html = "";
+                    var html2 = "";
+                    var arr = data.data;
+
+                    html += '<ul class="nav nav-tabs" role="tablist">';
+                    html2 += '<div class="tab-content">';
+                    $.each(arr,function(k){
+                        var queryResult = arr[k];
+
+                        html += '<li role="presentation"><a href="#queryResult_'+k+'" aria-controls="queryResult_'+k+'" role="tab" data-toggle="tab">结果'+(k+1)+'</a></li>';
+
+                        if (queryResult.hasErr){
+                            var temp = "";
+                            temp += '<div><label>sql语句：'+queryResult.sql+'</label></div>';
+                            temp += '<div><label>查询出错，错误信息如下：</label></div>';
+                            temp += '<div>'+queryResult.errMsg+'</div>';
+
+                            html2 += '<div role="tabpanel" class="tab-pane" id="queryResult_'+k+'">'+temp+'</div>';
+						}else {
+                            if (queryResult.hasResultSet){
+                                if (queryResult.hasDataList){
+                                    var temp = "";
+                                    temp += '<div><label>sql语句：'+queryResult.sql+'</label></div>';
+
+                                    var dataList = queryResult.dataList;
+                                    temp += '<table class="table table-striped table-hover table-condensed table-responsive">'
+
+									//处理表头
+                                    $.each(dataList,function (kk) {
+										var objMap = dataList[kk];
+                                        temp += '<tr>';
+                                        $.each(objMap,function (key,val) {
+                                            temp += '<th>';
+                                            temp += key;
+                                            temp += '</th>';
+                                        });
+                                        temp += '</tr>';
+                                        return false;//表头只有1行，返回false，结束当前each的循环
+                                    });
+
+                                    //处理表数据
+                                    $.each(dataList,function (kk) {
+                                        var objMap = dataList[kk];
+                                        temp += '<tr>';
+                                        $.each(objMap,function (key,val) {
+                                            temp += '<td>';
+                                            temp += val;
+                                            temp += '</td>';
+                                        });
+                                        temp += '</tr>';
+                                    });
+
+                                    temp += '</table>';
+                                    html2 += '<div role="tabpanel" class="tab-pane" id="queryResult_'+k+'">'+temp+'</div>';
+                                }else {
+                                    var temp = "";
+                                    temp += '<div><label>sql语句：'+queryResult.sql+'</label></div>';
+                                    temp += '<div><label>查询无数据</label></div>';
+                                    html2 += '<div role="tabpanel" class="tab-pane" id="queryResult_'+k+'">'+temp+'</div>';
+                                }
+                            }else {
+								//无结果集
+                                var temp = "";
+                                temp += '<div><label>sql语句：'+queryResult.sql+'</label></div>';
+                                temp += '<div><label>影响的行数：'+queryResult.updateCount+'</label></div>';
+
+                                html2 += '<div role="tabpanel" class="tab-pane" id="queryResult_'+k+'">'+temp+'</div>';
+                            }
+						}
+                    });
+
+                    html += '</ul>';
+                    html2 += '</div>';
+
+                    $("#sqlScriptResult").empty();
+                    $("#sqlScriptResult").append(html+html2);
+                    $('#sqlScriptResult a:first').tab('show')// Select first tab
+                }else {
+                    layer.msg(data.msg);
+				}
+            },
+            error: function (err) {
+            }
+        });
+    }
+
+    function showDbInfo(id) {
+        $.ajax({
+            type: "post",
+            url: ctx + "/back/dbConn/dbInfo",
+            dataType: "json",
+            async: false,
+            data: {
+                id:id,
+            },
+            success: function (data) {
+
+                var obj = data.data;
+
+                var str = "<h4>当前数据库：";
+                str += obj.ip
+                str += ":"
+                str += obj.port
+                str += "/"
+                str += obj.dbName;
+                str += "</h4>"
+
+                $("#well").html(str);
+                $("#exeSqlScript").attr("data-id",id);
+                $("#exeScript").attr("data-id",id);
+
+            },
+            error: function (err) {
+
+            }
+        });
+    }
+
+
+
+    function zTreeOnCollapse(event, treeId, treeNode) {
+        var id = treeNode.id;
+        var level = treeNode.level;
+
+        if (level==1){
+            $("#tableContainer").empty();
+        }
+    }
+
+    function zTreeOnClick(event, treeId, treeNode) {
+        var id = treeNode.id;
+        var level = treeNode.level;
+
+        if (level==1){
+            showDbInfo(id);
+
+            $.ajax({
+                type: "post",
+                url: ctx + "/back/dbConn/tableList",
+                dataType: "json",
+                async: false,
+                data: {
+                    id:id,
+					level:level
+				},
+                success: function (data) {
+                    if (data.success){
+						var html = '<table class="table table-striped table-hover table-condensed table-responsive">' +
+                            '<tr>' +
+                            '<th>序号</th>' +
+                            '<th>表名</th>' +
+                            '<th>自动递增值</th>' +
+                            '<th>数据长度</th>' +
+                            '<th>表类型</th>' +
+                            '<th>表注释</th>' +
+                            '<th>创建日期</th>' +
+                            '<th>操作</th>' +
+                            '</tr>';
+
+
+                        var arr = data.data;
+                        $.each(arr,function(k){
+
+                            html += "<tr>" +
+                                "<td>"+(k+1)+"</td>" +
+                                "<td>" +
+								"<img height='16px;' width='16px;' src='img/table.png'/>&nbsp;" +
+								'<span style="cursor: pointer" onclick="tableColumn(this,\''+arr[k].id+'\')">'+arr[k].tableName+'</span>'+
+								"</td>" +
+                                "<td>"+arr[k].autoIncrement+"</td>" +
+                                "<td>"+arr[k].dataLengthStr+"</td>" +
+                                "<td>"+arr[k].engine+"</td>" +
+                                "<td>"+arr[k].tableComment+"</td>" +
+                                "<td>"+arr[k].createTime+"</td>" +
+
+                                '<td>' +
+								'<button type="button" tableName="'+arr[k].tableName+'" tableComment="'+arr[k].tableComment+'" onclick="updateTable(this,\''+arr[k].id+'\')" class="btn btn-success btn-xs">修改</button>&nbsp;' +
+								'<button type="button" onclick="operTable(\''+arr[k].id+'\',2)" class="btn btn-primary btn-xs">复制</button>&nbsp;' +
+								'<button type="button" onclick="operTable(\''+arr[k].id+'\',1)" class="btn btn-danger btn-xs">删除</button>' +
+								'</td>' +
+
+                                "</tr>";
+                        });
+
+                        html += "</table>";
+                        $("#tableContainer").empty();
+                        $("#tableContainer").append(html);
+
+                    } else {
+                        layer.msg("操作失败！");
+                    }
+                },
+                error: function (err) {
+
+                }
+            });
+		}
+    }
+
+    $('#exampleModal').on('show.bs.modal', function (e) {
+        var modal = $(this);
+        modal.find("form")[0].reset();
+    })
+
+
+
+	function updateTable(who,id) {
+        var tableName = $(who).attr("tableName");
+        var tableComment = $(who).attr("tableComment");
+
+        $("input[name='id']").val(id);
+        $('#tableName').val(tableName);
+        $('#tableComment').val(tableComment);
+
+        $('#exampleModal2').modal('show');
+    }
+
+
+    function saveTableChange() {
+
+        var id = $("input[name='id']").val();
+        var tableName = $('#tableName').val();
+        var tableComment = $('#tableComment').val();
+
+        $.ajax({
+            type: "post",
+            url: ctx + "/back/dbConn/operTable",
+            dataType: "json",
+            async: false,
+            data: {
+                id:id,
+                tableName:tableName,
+                tableComment:tableComment,
+                type:3
+            },
+            success: function (data) {
+                if (data.success){
+                    layer.msg("操作成功！");
+                    reloadTreeNode();
+                } else {
+                    layer.msg("操作失败！");
+                }
+            },
+            error: function (err) {
+            }
+        });
+    }
+
+
+    function tableColumn(who,id) {
+        $.ajax({
+            type: "post",
+            url: ctx + "/back/dbConn/operTable",
+            dataType: "json",
+            async: false,
+            data: {
+                id:id,
+                type:4
+            },
+            success: function (data) {
+                if (data.success){
+
+                    $(who).parent().parent().parent().find("[class='checkSpan']").each(function () {
+						$(this).removeClass("checkSpan");
+                    });
+                    $(who).addClass("checkSpan");
+
+                    var html = "<table class='table table-striped table-hover table-condensed table-responsive'>" +
+                        "<tr>" +
+                        "<th>Field</th>" +
+                        "<th>Type</th>" +
+                        "<th>Null</th>" +
+                        "<th>Key</th>" +
+                        "<th>Extra</th>" +
+                        "<th>Comment</th>" +
+                        "</tr>";
+
+
+                    var arr = data.data.columnDescList;
+                    $.each(arr,function(k){
+
+                        html += "<tr>" +
+                            "<td>"+arr[k].field+"</td>" +
+                            "<td>"+arr[k].type+"</td>" +
+                            "<td>"+arr[k].nullable+"</td>" +
+                            "<td>"+arr[k].key+"</td>" +
+                            "<td>"+arr[k].extra+"</td>" +
+                            "<td>"+arr[k].comment+"</td>" +
+                            "</tr>";
+                    });
+
+                    html += "</table>";
+                    $("#fieldContainer").empty();
+                    $("#fieldContainer").append(html);
+
+                    $("#ddlContainer").empty();
+                    $("#ddlContainer").append(data.data.ddlInfo);
+                    $("#ddlContainer").focus();
+
+                } else {
+                    layer.msg("操作失败！");
+                }
+            },
+            error: function (err) {
+            }
+        });
+    }
+
+
+	function operTable(id,type) {
+        layer.confirm('确认操作？', {
+            btn: ['确认','取消']
+        }, function(index){
+            $.ajax({
+                type: "post",
+                url: ctx + "/back/dbConn/operTable",
+                dataType: "json",
+                async: false,
+                data: {
+                    id:id,
+					type:type
+                },
+                success: function (data) {
+                    if (data.success){
+                        layer.msg("操作成功！");
+                        reloadTreeNode();
+                    } else {
+                        layer.msg("操作失败！");
+                    }
+                },
+                error: function (err) {
+                }
+            });
+        }, function(){
+
+        });
+    }
+
+
+	function reloadTreeNode() {
+        var nodes = treeObj.getSelectedNodes();
+        if (nodes.length>0) {
+            treeObj.reAsyncChildNodes(nodes[0], "refresh");
+            zTreeOnClick(null, null, nodes[0]);
+        }
+    }
+
+
+    function saveData(type) {
+        var url = ctx + "/back/dbConn/add";
+        if (type==1){
+            url = ctx + "/back/dbConn/check";
+		}
+        var data = $("#dataForm").serializeArray();
+
+        var flag = false;
+        $.each(data,function (item) {
+            if (data[item].value != ""){
+                flag = true;
+            }
+        })
+        if (flag){
+            $.ajax({
+                type: "post",
+                url: url,
+                dataType: "json",
+                async: false,
+                data: data,
+                success: function (data) {
+                    if (data.success){
+                        if (type==1){
+							layer.msg("验证成功！");
+                        }else {
+                            refresh();
+                        }
+					} else {
+                        if (type==1){
+                            layer.msg("验证失败！");
+                        }else {
+                            layer.msg("操作失败！");
+                        }
+					}
+                },
+                error: function (err) {
+
+                }
+            });
+        }
+    }
+
+    function getFileName(fileName){
+        var arr = fileName.split('\\');//通过\分隔字符串，成字符串数组
+        return arr[arr.length-1];//取最后一个，就是文件名
+    }
+
+    $('#uploadSqlScript').click(function(){
+        $.ajaxFileUpload({
+            url: ctx+'/back/dbConn/uploadSqlScript',
+            type: 'post',
+            secureuri: false,
+            fileElementId: 'sqlScriptFile',
+            dataType: 'json',
+            elementIds: '',
+            success: function(data, status){
+                console.log(data);
+                var fileName = getFileName($("#sqlScriptFile").val());
+                if (data.success){
+                    layer.msg(fileName+" 上传成功！");
+                    $("#exeScript").attr("fileName",fileName);
+                } else {
+                    layer.msg(fileName+" 上传失败！");
+                }
+            },
+            error: function(data, status, e){
+                console.log(e);
+            }
+        });
+
+    });
+
+    $("#exeScript").click(function () {
+        var id = $(this).attr("data-id");
+        var fileName = $(this).attr("fileName");
+
+        $.ajax({
+            type: "post",
+            url: ctx+'/back/dbConn/exeScript',
+            dataType: "json",
+            async: false,
+            data: {
+                id:id,
+				fileName:fileName
+			},
+            success: function (data) {
+                console.log(data);
+                if (data.success){
+                    layer.msg("脚本执行成功！");
+                } else {
+                    alert(data.msg);
+                }
+            },
+            error: function (err) {
+
+            }
+        });
+
+    });
+
+</script>
+<!--/请在上方写此页面业务相关的脚本-->
+</body>
+</html>

@@ -2,6 +2,7 @@ package com.boot.biz.index.controller;
 
 import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.io.resource.ResourceUtil;
+import cn.hutool.core.util.RandomUtil;
 import cn.hutool.core.util.StrUtil;
 import com.boot.base.job.entity.Job;
 import com.boot.base.job.service.JobService;
@@ -112,21 +113,21 @@ public class IndexController {
 
 
 
-	@GetMapping("/jump2Page")
+	@GetMapping("/back/jump2Page")
 	public String jump2Page(String page) {
 
 		log.info("跳转至页面：{}",page);
 
-		return page;
+		return "back/"+page;
 	}
 
 
-	@RequestMapping("/test")
+	@RequestMapping("/back/test")
 	public String test(Model model) {
 
 		log.info("测试页面");
 
-		return "test/webSocketTest";
+		return "back/test/webSocketTest";
 	}
 
 
@@ -140,7 +141,7 @@ public class IndexController {
 
 
 
-	@RequestMapping("/")
+	@RequestMapping("/back")
 	public String index(Model model) {
 
 		log.info("首页被访问...");
@@ -150,7 +151,7 @@ public class IndexController {
 		model.addAttribute("sysTime", System.currentTimeMillis());
 		model.addAttribute("serverInfo", serverInfo);
 
-		return "index";
+		return "back/index";
 	}
 
 
@@ -170,27 +171,27 @@ public class IndexController {
 
 
 
-	@GetMapping(value = "/dbList")
+	@GetMapping(value = "/back/dbList")
 	public String dbList(Model model) {
 
-		return "db/dbList";
+		return "back/db/dbList";
 	}
 
 
 
-	@GetMapping(value = "/configFile")
+	@GetMapping(value = "/back/configFile")
 	public String configFile(Model model) {
 
 		List<ConfigFileDto> configFileList = configFileList();
 
 		model.addAttribute("configFileList",configFileList);
 
-		return "sys/configFile";
+		return "back/sys/configFile";
 	}
 
 
 
-	@GetMapping(value = "/requestFollowList")
+	@GetMapping(value = "/back/requestFollowList")
 	public String requestFollowList(RequestFollow requestFollow,Model model) {
 
 		Sort sort = new Sort(Sort.Direction.DESC, "createTime");
@@ -205,14 +206,14 @@ public class IndexController {
 		model.addAttribute("tempObj",requestFollow);
 		model.addAttribute("requestFollowList",requestFollowList);
 
-		return "requestFollow/requestFollowList";
+		return "back/requestFollow/requestFollowList";
 	}
 
 
 
 
 
-	@GetMapping(value = "/jobList")
+	@GetMapping(value = "/back/jobList")
 	public String jobList(Model model) {
 
 		List<ScheduleJob> jobList = scheduleJobService.findAll();
@@ -223,12 +224,12 @@ public class IndexController {
 
 		model.addAttribute("jobList",jobList);
 
-		return "job/jobList";
+		return "back/job/jobList";
 	}
 
 
 
-	@GetMapping(value = "/taskList")
+	@GetMapping(value = "/back/taskList")
 	public String taskList(Model model) {
 
 		List<Job> taskList = jobService.findAll();
@@ -239,13 +240,23 @@ public class IndexController {
 
 		model.addAttribute("taskList",taskList);
 
-		return "job/taskList";
+		return "back/job/taskList";
+	}
+
+
+	public static void main(String[] args) {
+
+		String str = RandomUtil.randomString(10);
+
+//		str = "mengd0ix034gt4";
+
+
+		System.out.println(str);
 	}
 
 
 
-
-	@GetMapping(value = "/authGroupList")
+	@GetMapping(value = "/back/authGroupList")
 	public String authGroupList(Model model) {
 
 		AuthGroup authGroup = new AuthGroup();
@@ -255,36 +266,36 @@ public class IndexController {
 
 		model.addAttribute("authGroupList",authGroupList);
 
-		return "authCenter/authGroupList";
+		return "back/authCenter/authGroupList";
 	}
 
 
 
-	@GetMapping(value = "/dictList")
+	@GetMapping(value = "/back/dictList")
 	public String dictList(Model model) {
 
 		List<Dict> dictList = dictService.findAll();
 
 		model.addAttribute("dictList",dictList);
 
-		return "dict/dictList";
+		return "back/dict/dictList";
 	}
 
 
 
 
-	@GetMapping(value = "/userList")
+	@GetMapping(value = "/back/userList")
 	public String userList(Model model) {
 
 		List<SysUser> userList = userService.findAll();
 
 		model.addAttribute("userList",userList);
 
-		return "authCenter/userList";
+		return "back/authCenter/userList";
 	}
 
 
-	@GetMapping(value = "/menuList")
+	@GetMapping(value = "/back/menuList")
 	public String menuList(Model model) {
 
 		List<Menu> menuList = menuService.listByFieldIsNull("pid");
@@ -294,11 +305,11 @@ public class IndexController {
 
 		model.addAttribute("menuList",menuList);
 
-		return "authCenter/menuList";
+		return "back/authCenter/menuList";
 	}
 
 
-	@GetMapping(value = "/urlLimitList")
+	@GetMapping(value = "/back/urlLimitList")
 	public String urlLimitList(Model model) {
 
 		Sort sort1 = new Sort(Sort.Direction.DESC, "urlLimit");
@@ -310,11 +321,11 @@ public class IndexController {
 
 		model.addAttribute("urlLimitList",urlLimitList);
 
-		return "urlLimit/urlLimitList";
+		return "back/urlLimit/urlLimitList";
 	}
 
 
-	@GetMapping(value = "/camelRouteList")
+	@GetMapping(value = "/back/camelRouteList")
 	public String camelRouteList(Model model) {
 
 		Sort sort = new Sort(Sort.Direction.ASC, "routeId");
@@ -323,7 +334,7 @@ public class IndexController {
 
 		model.addAttribute("camelRouteList",camelRouteList);
 
-		return "camel/camelRouteList";
+		return "back/camel/camelRouteList";
 	}
 
 

@@ -28,7 +28,7 @@ public class ServerInfoController {
 	ServerInfoService serverInfoService;
 
 
-	@RequestMapping("/sshServerList")
+	@RequestMapping("/back/sshServerList")
 	public String sshServerList(Model model) {
 
 		log.info("sshServerList页面");
@@ -42,12 +42,12 @@ public class ServerInfoController {
 
 		model.addAttribute("infoList",infoList);
 
-		return "ssh/sshServerList";
+		return "back/ssh/sshServerList";
 	}
 
 
 
-	@RequestMapping("/webShell")
+	@RequestMapping("/back/webShell")
 	public String webShell(Model model,String id) {
 
 		log.info("进入 webShell 页面...");
@@ -60,7 +60,7 @@ public class ServerInfoController {
 
 		model.addAttribute("sshInfo",one);
 
-		return "ssh/webShell";
+		return "back/ssh/webShell";
 	}
 
 
