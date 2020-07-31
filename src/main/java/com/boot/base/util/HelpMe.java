@@ -13,7 +13,6 @@ import com.google.common.io.Files;
 import com.google.common.io.Resources;
 import lombok.extern.slf4j.Slf4j;
 
-import javax.servlet.http.HttpServletRequest;
 import java.beans.BeanInfo;
 import java.beans.IntrospectionException;
 import java.beans.Introspector;
@@ -27,8 +26,8 @@ import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
 import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -530,6 +529,32 @@ public class HelpMe {
 			Iterable<String> result = Iterables.transform(list, function);
 			return Lists.newArrayList(result.iterator());
 		}
+	}
+
+
+	/**
+	 * distinct（）不提供按照属性对对象列表进行去重的直接实现。它是基于hashCode（）和equals（）工作的。如果我们想要按照对象的属性，对对象列表进行去重，我们可以通过这个方法来实现
+	 *
+	 * distinctByKey()方法返回一个使用ConcurrentHashMap 来维护先前所见状态的 Predicate 实例
+	 *
+	 * 使用示例如下：
+	 * 	List<Person> list = Lists.newArrayList();
+	 * 	list.add(new Person("a",1));
+	 * 	list.add(new Person("a",2));
+	 * 	list.add(new Person("b",2));
+	 *
+	 *  list = list.stream().filter(HelpMe.distinctByKey(p -> p.getName())).collect(Collectors.toList());
+	 *
+	 * 	会按 Person 对象的name属性去重
+	 *
+	 * @param keyExtractor
+	 * @param <T>
+	 * @return
+	 */
+
+	public static <T> Predicate<T> distinctByKey(Function<? super T, ?> keyExtractor) {
+		Map<Object,Boolean> seen = new ConcurrentHashMap<>();
+		return t -> seen.putIfAbsent(keyExtractor.apply(t), Boolean.TRUE) == null;
 	}
 
 
