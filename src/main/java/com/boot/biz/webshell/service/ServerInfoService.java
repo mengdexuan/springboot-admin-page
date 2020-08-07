@@ -2,7 +2,6 @@ package com.boot.biz.webshell.service;
 
 
 import com.boot.base.BaseService;
-import com.boot.biz.urllimit.entity.UrlLimit;
 import com.boot.biz.webshell.entity.SshServerInfo;
 import org.apache.catalina.util.ServerInfo;
 

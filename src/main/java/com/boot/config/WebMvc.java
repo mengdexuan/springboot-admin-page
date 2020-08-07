@@ -1,7 +1,5 @@
 package com.boot.config;
 
-import com.boot.biz.urllimit.UrlLimitInterceptor;
-import com.boot.biz.user.LoginInterceptor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
@@ -18,18 +16,11 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 public class WebMvc  implements WebMvcConfigurer {
 
 	@Autowired
-	UrlLimitInterceptor urlLimitInterceptor;
-	@Autowired
-	LoginInterceptor loginInterceptor;
-	@Autowired
 	SysConfig sysConfig;
 
 	@Override
 	public void addInterceptors(InterceptorRegistry registry) {
-		registry.addInterceptor(urlLimitInterceptor).addPathPatterns("/**");
-		if (sysConfig.loginInterceptor){
-			registry.addInterceptor(loginInterceptor).addPathPatterns("/**");
-		}
+
 	}
 
 
@@ -54,10 +45,6 @@ public class WebMvc  implements WebMvcConfigurer {
 	 */
 	@Override
 	public void addCorsMappings(CorsRegistry registry) {
-		/*registry.addMapping("/**")
-				.allowedOrigins("*")
-				.allowedMethods("GET", "HEAD", "POST", "PUT", "PATCH", "DELETE", "OPTIONS", "TRACE")
-				.maxAge(3600)
-				.allowCredentials(true);*/
+
 	}
 }

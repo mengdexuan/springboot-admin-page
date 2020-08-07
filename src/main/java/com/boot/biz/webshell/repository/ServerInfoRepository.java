@@ -2,7 +2,6 @@ package com.boot.biz.webshell.repository;
 
 
 import com.boot.base.BaseRepository;
-import com.boot.biz.urllimit.entity.UrlLimit;
 import com.boot.biz.webshell.entity.SshServerInfo;
 
 import java.util.List;

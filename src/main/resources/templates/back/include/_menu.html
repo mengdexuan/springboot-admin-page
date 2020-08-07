@@ -20,10 +20,8 @@
                     <ul>
                         <li id="sysLog"><a th:href="@{/back/jump2Page(page='sys/log')}" title="系统日志">系统日志</a></li>
                         <li id="swaggerUi">
-                            <!--<a target="_blank" th:href="@{'/swagger-ui.html'}" title="Swagger文档">Swagger文档</a>-->
                             <a target="_blank" th:href="@{'/doc.html'}" title="Swagger文档">Swagger文档</a>
                         </li>
-                        <li id="requestFollowList"><a th:href="@{/back/requestFollowList}" title="请求追踪">请求追踪</a></li>
                     </ul>
                 </dd>
             </dl>
@@ -61,17 +59,7 @@
                         class="Hui-iconfont menu_dropdown-arrow">&#xe6d5;</i></dt>
                 <dd>
                     <ul>
-                        <li id="jobList"><a th:href="@{/back/jobList}" title="quartz任务列表">quartz任务列表</a></li>
                         <li id="taskList"><a th:href="@{/back/taskList}" title="spring任务列表">spring任务列表</a></li>
-                    </ul>
-                </dd>
-            </dl>
-            <dl>
-                <dt><span class="glyphicon glyphicon-random"></span> <span>camel路由管理</span><i
-                        class="Hui-iconfont menu_dropdown-arrow">&#xe6d5;</i></dt>
-                <dd>
-                    <ul>
-                        <li id="camelRouteList"><a th:href="@{/back/camelRouteList}" title="camel路由管理">camel路由管理</a></li>
                     </ul>
                 </dd>
             </dl>
@@ -81,19 +69,7 @@
                 <dd>
                     <ul>
                         <li id="configFile"><a th:href="@{/back/configFile}" title="配置文件">配置文件</a></li>
-                        <li id="urlLimitList"><a th:href="@{/back/urlLimitList}" title="接口限流">接口限流</a></li>
                         <li id="dictList"><a th:href="@{/back/dictList}" title="数据字典">数据字典</a></li>
-                    </ul>
-                </dd>
-            </dl>
-            <dl>
-                <dt><span class="glyphicon glyphicon-lock"></span> <span>权限中心</span><i
-                        class="Hui-iconfont menu_dropdown-arrow">&#xe6d5;</i></dt>
-                <dd>
-                    <ul>
-                        <li id="userList"><a th:href="@{/back/userList}" title="用户管理">用户管理</a></li>
-                        <li id="authGroupList"><a th:href="@{/back/authGroupList}" title="权限组管理">权限组管理</a></li>
-                        <li id="menuList"><a th:href="@{/back/menuList}" title="菜单管理">菜单管理</a></li>
                     </ul>
                 </dd>
             </dl>

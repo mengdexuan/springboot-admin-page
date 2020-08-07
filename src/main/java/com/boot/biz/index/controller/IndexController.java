@@ -7,26 +7,12 @@ import cn.hutool.core.util.StrUtil;
 import com.boot.base.job.entity.Job;
 import com.boot.base.job.service.JobService;
 import com.boot.base.util.HelpMe;
-import com.boot.biz.authgroup.entity.AuthGroup;
-import com.boot.biz.authgroup.service.AuthGroupService;
-import com.boot.biz.camel.entity.CamelRoute;
-import com.boot.biz.camel.repository.CamelRouteRepository;
 import com.boot.biz.dict.entity.Dict;
 import com.boot.biz.dict.service.DictService;
 import com.boot.biz.index.dto.ConfigFileDto;
 import com.boot.biz.log.SysLogMessaging;
-import com.boot.biz.menu.entity.Menu;
-import com.boot.biz.menu.service.MenuService;
-import com.boot.biz.requestfollow.entity.RequestFollow;
-import com.boot.biz.requestfollow.service.RequestFollowService;
-import com.boot.biz.schedule.entity.ScheduleJob;
-import com.boot.biz.schedule.service.ScheduleJobService;
 import com.boot.biz.serverinfo.Server;
 import com.boot.biz.serverinfo.ServerController;
-import com.boot.biz.urllimit.entity.UrlLimit;
-import com.boot.biz.urllimit.repository.UrlLimitRepository;
-import com.boot.biz.user.entity.SysUser;
-import com.boot.biz.user.service.UserService;
 import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.camel.CamelContext;
@@ -63,8 +49,6 @@ public class IndexController {
 	@Autowired
 	Environment environment;
 
-	@Autowired
-	ScheduleJobService scheduleJobService;
 
 	@Autowired
 	JobService jobService;
@@ -75,12 +59,6 @@ public class IndexController {
 	@Autowired
 	DictService dictService;
 
-	@Autowired
-	UrlLimitRepository urlLimitRepository;
-
-	@Autowired
-	CamelRouteRepository camelRouteRepository;
-
 	@Value("${server.servlet.context-path}")
 	private String contextPath;
 
@@ -88,17 +66,6 @@ public class IndexController {
 	private Integer port;
 
 
-	@Autowired
-	MenuService menuService;
-
-	@Autowired
-	UserService userService;
-
-	@Autowired
-	AuthGroupService authGroupService;
-
-	@Autowired
-	RequestFollowService requestFollowService;
 
 	@Autowired
 	SysLogMessaging sysLogMessaging;
@@ -191,42 +158,6 @@ public class IndexController {
 
 
 
-	@GetMapping(value = "/back/requestFollowList")
-	public String requestFollowList(RequestFollow requestFollow,Model model) {
-
-		Sort sort = new Sort(Sort.Direction.DESC, "createTime");
-
-		//默认查询前 100 条
-		PageRequest pageRequest = PageRequest.of(0,100,sort);
-
-		Page<RequestFollow> page = requestFollowService.list(requestFollow, pageRequest);
-
-		List<RequestFollow> requestFollowList = page.getContent();
-
-		model.addAttribute("tempObj",requestFollow);
-		model.addAttribute("requestFollowList",requestFollowList);
-
-		return "back/requestFollow/requestFollowList";
-	}
-
-
-
-
-
-	@GetMapping(value = "/back/jobList")
-	public String jobList(Model model) {
-
-		List<ScheduleJob> jobList = scheduleJobService.findAll();
-
-		jobList.stream().forEach(item->{
-			item.setRemark(StrUtil.maxLength(item.getRemark(),10));
-		});
-
-		model.addAttribute("jobList",jobList);
-
-		return "back/job/jobList";
-	}
-
 
 
 	@GetMapping(value = "/back/taskList")
@@ -256,20 +187,6 @@ public class IndexController {
 
 
 
-	@GetMapping(value = "/back/authGroupList")
-	public String authGroupList(Model model) {
-
-		AuthGroup authGroup = new AuthGroup();
-//		authGroup.setType(2);
-
-		List<AuthGroup> authGroupList = authGroupService.list(authGroup);
-
-		model.addAttribute("authGroupList",authGroupList);
-
-		return "back/authCenter/authGroupList";
-	}
-
-
 
 	@GetMapping(value = "/back/dictList")
 	public String dictList(Model model) {
@@ -280,63 +197,6 @@ public class IndexController {
 
 		return "back/dict/dictList";
 	}
-
-
-
-
-	@GetMapping(value = "/back/userList")
-	public String userList(Model model) {
-
-		List<SysUser> userList = userService.findAll();
-
-		model.addAttribute("userList",userList);
-
-		return "back/authCenter/userList";
-	}
-
-
-	@GetMapping(value = "/back/menuList")
-	public String menuList(Model model) {
-
-		List<Menu> menuList = menuService.listByFieldIsNull("pid");
-		/*menuList = menuList.stream().filter(item->{
-			return item.getType()==2;
-		}).collect(Collectors.toList());*/
-
-		model.addAttribute("menuList",menuList);
-
-		return "back/authCenter/menuList";
-	}
-
-
-	@GetMapping(value = "/back/urlLimitList")
-	public String urlLimitList(Model model) {
-
-		Sort sort1 = new Sort(Sort.Direction.DESC, "urlLimit");
-		Sort sort2 = new Sort(Sort.Direction.ASC, "reqUrl");
-
-		Sort sort = sort1.and(sort2);
-
-		List<UrlLimit> urlLimitList = urlLimitRepository.findAll(sort);
-
-		model.addAttribute("urlLimitList",urlLimitList);
-
-		return "back/urlLimit/urlLimitList";
-	}
-
-
-	@GetMapping(value = "/back/camelRouteList")
-	public String camelRouteList(Model model) {
-
-		Sort sort = new Sort(Sort.Direction.ASC, "routeId");
-
-		List<CamelRoute> camelRouteList = camelRouteRepository.findAll(sort);
-
-		model.addAttribute("camelRouteList",camelRouteList);
-
-		return "back/camel/camelRouteList";
-	}
-
 
 
 

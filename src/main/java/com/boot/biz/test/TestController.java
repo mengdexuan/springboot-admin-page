@@ -7,8 +7,6 @@ import com.boot.base.Result;
 import com.boot.base.ResultUtil;
 import com.boot.base.annotation.PrintTime;
 import com.boot.biz.dict.entity.Dict;
-import com.boot.biz.urllimit.service.UrlLimitService;
-import com.boot.biz.userauthgroup.service.UserAuthGroupService;
 import com.boot.biz.validation.ValidatedBean;
 import com.drew.imaging.FileType;
 import com.drew.imaging.FileTypeDetector;
@@ -55,12 +53,6 @@ public class TestController {
 	@Autowired
 	CamelContext camelContext;
 
-
-	@Autowired
-	UrlLimitService urlLimitService;
-
-	@Autowired
-	UserAuthGroupService userAuthGroupService;
 
 
 	@Autowired
