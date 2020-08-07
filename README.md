@@ -23,6 +23,8 @@
 2. 使用 IDEA 打开 clone 下来的项目
 3. 在 IDEA 中 Maven Projects 的面板导入项目根目录下 的 `pom.xml` 文件
 4. Maven Projects 找不到的童鞋，可以勾上 IDEA 顶部工具栏的 View -> Tool Buttons ，然后 Maven Projects 的面板就会出现在 IDEA 的右侧
+5. 数据库脚本 sql/springboot-admin-page.sql，运行前请正确配置数据库连接
+
 
 ## 功能模块
 #### 首页
