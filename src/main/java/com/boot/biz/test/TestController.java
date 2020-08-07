@@ -1,13 +1,17 @@
 package com.boot.biz.test;
 
+import cn.hutool.core.io.FileUtil;
 import cn.hutool.crypto.SecureUtil;
+import com.boot.base.NativeSqlQueryServices;
 import com.boot.base.Result;
 import com.boot.base.ResultUtil;
 import com.boot.base.annotation.PrintTime;
-import com.boot.base.util.HelpMe;
+import com.boot.biz.dict.entity.Dict;
 import com.boot.biz.urllimit.service.UrlLimitService;
 import com.boot.biz.userauthgroup.service.UserAuthGroupService;
 import com.boot.biz.validation.ValidatedBean;
+import com.drew.imaging.FileType;
+import com.drew.imaging.FileTypeDetector;
 import com.drew.imaging.ImageMetadataReader;
 import com.drew.imaging.ImageProcessingException;
 import com.drew.metadata.Directory;
@@ -30,7 +34,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.sql.DataSource;
 import java.io.File;
 import java.io.IOException;
-import java.util.Date;
 import java.util.concurrent.Executor;
 
 /**
@@ -63,13 +66,19 @@ public class TestController {
 	@Autowired
 	DataSource dataSource;
 
+
+	@Autowired
+	NativeSqlQueryServices nativeSqlQueryServices;
+
 	@GetMapping("/test1")
 	@ResponseBody
 	public Result test1(HttpServletRequest request) throws Exception {
 
 		Object obj = null;
 
+		String sql = "select dict_name,dict_key from sys_dictionary";
 
+		obj = nativeSqlQueryServices.query(sql,Dict.class);
 
 		return ResultUtil.buildSuccess(obj);
 	}
@@ -140,14 +149,17 @@ public class TestController {
 
 
 	public static void main(String[] args) throws Exception{
+//		test();
 
+		FileType fileType = FileTypeDetector.detectFileType(FileUtil.getInputStream("C:\\Users\\18514\\Desktop\\test\\双流驾驶舱系统原型V1.0.docx"));
+
+		System.out.println(fileType.getName());
 	}
 
 
 
 	public static void test() throws ImageProcessingException,IOException {
-		File jpegFile = new File("C:\\Users\\18514\\Desktop\\test\\IMG_1070.JPG");
-
+		File jpegFile = new File("C:\\Users\\18514\\Desktop\\test\\2020-06-24 222643.JPG");
 
 
 		String md5 = SecureUtil.md5(jpegFile);
@@ -156,6 +168,7 @@ public class TestController {
 		System.out.println(md5);
 
 		Metadata metadata = ImageMetadataReader.readMetadata(jpegFile);
+
 		for (Directory directory : metadata.getDirectories()) {
 			for (Tag tag : directory.getTags()) {
 				//格式化输出[directory.getName()] - tag.getTagName() = tag.getDescription()

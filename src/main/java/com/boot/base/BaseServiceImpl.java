@@ -3,7 +3,6 @@ package com.boot.base;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.exceptions.UtilException;
 import cn.hutool.core.util.ReflectUtil;
-import com.boot.base.annotation.Unique;
 import com.boot.base.exception.GlobalServiceException;
 import com.boot.base.util.HelpMe;
 import com.google.common.collect.Lists;
@@ -39,18 +38,21 @@ public class BaseServiceImpl<T, R extends BaseRepository<T>> implements BaseServ
 	protected R repository;
 
 
+	@Override
 	public long count(T t){
 		Example<T> example = Example.of(t);
 		long count = repository.count(example);
 		return count;
 	}
 
+	@Override
 	public boolean exists(T t){
 		Example<T> example = Example.of(t);
 		boolean exists = repository.exists(example);
 		return exists;
 	}
 
+	@Override
 	public boolean existsById(Long id){
 		return repository.existsById(id);
 	}
@@ -162,14 +164,12 @@ public class BaseServiceImpl<T, R extends BaseRepository<T>> implements BaseServ
 	@Override
 	@Transactional(rollbackFor = Exception.class)
 	public void save(T t) {
-		uniqueCheck(t);
 		repository.save(t);
 	}
 
 	@Override
 	@Transactional(rollbackFor = Exception.class)
 	public T saveAndFlush(T t) {
-		uniqueCheck(t);
 		return repository.saveAndFlush(t);
 	}
 
@@ -460,49 +460,6 @@ public class BaseServiceImpl<T, R extends BaseRepository<T>> implements BaseServ
 		return repository.findAll(var1,var2);
 	}
 
-
-	/**
-	 * 唯一性字段校验
-	 */
-	private <T> void uniqueCheck(T t){
-
-		Field[] fields = ReflectUtil.getFields(t.getClass());
-
-		//主键值是否存在，存在：表示更新操作		不存在：表示新增操作
-		boolean primaryKeyValExist = false;
-
-		for (Field field:fields){
-			Id id = field.getAnnotation(Id.class);
-			if (id!=null){
-				Object val = ReflectUtil.getFieldValue(t, field);
-				if (val!=null){
-					primaryKeyValExist = true;
-				}
-				break;
-			}
-		}
-
-
-		for (Field field:fields){
-			Unique unique = field.getAnnotation(Unique.class);
-			if (unique!=null){
-				Object fieldVal = ReflectUtil.getFieldValue(t, field);
-				String uniqueVal = unique.value();
-
-				if (primaryKeyValExist){
-					//更新操作，唯一性字段校验
-
-				}else {
-					//新增操作，唯一性字段校验
-					List tempList = this.listByFieldEqual(field.getName(), fieldVal);
-					if (HelpMe.isNotNull(tempList)){
-						throw new GlobalServiceException(uniqueVal);
-					}
-				}
-			}
-		}
-
-	}
 
 
 }

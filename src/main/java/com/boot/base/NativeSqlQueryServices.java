@@ -57,6 +57,12 @@ public class NativeSqlQueryServices {
 	}
 
 
+	public Map<String,Object> get(String sql) {
+		List<Map<String,Object>> mapList = query(sql);
+		return HelpMe.isNotNull(mapList)?mapList.get(0):null;
+	}
+
+
 	/**
 	 * 执行本地sql查询
 	 * @param sql
@@ -84,6 +90,14 @@ public class NativeSqlQueryServices {
 
 		return result;
 	}
+
+
+
+	public <X> X get(String sql,Class<X> tClass) {
+		List<X> list = query(sql, tClass);
+		return HelpMe.isNotNull(list)?list.get(0):null;
+	}
+
 
 
 	/**

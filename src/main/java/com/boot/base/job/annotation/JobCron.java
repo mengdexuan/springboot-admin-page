@@ -28,10 +28,10 @@ public @interface JobCron {
 	String cron();
 
 	/**
-	 * 执行成功是否删除该任务  true:删除   false:不删除（继续下次执行）
+	 * 执行成功是否删除该任务  true:删除   false:不删除（继续下次执行）	默认 false
 	 * @return
 	 */
-	boolean delWhenSuccess();
+	boolean delWhenSuccess() default false;
 
 
 	//启动时，自动创建Task，默认 false
