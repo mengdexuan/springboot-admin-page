@@ -143,9 +143,10 @@ public class TestController {
 	public static void main(String[] args) throws Exception{
 //		test();
 
-		FileType fileType = FileTypeDetector.detectFileType(FileUtil.getInputStream("C:\\Users\\18514\\Desktop\\test\\双流驾驶舱系统原型V1.0.docx"));
 
-		System.out.println(fileType.getName());
+
+
+
 	}
 
 

@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
  * @author mengdexuan on 2020/5/4 15:11.
  */
 @Slf4j
-//@Component
+@Component
 public class AutoCreateJobTest {
 
 

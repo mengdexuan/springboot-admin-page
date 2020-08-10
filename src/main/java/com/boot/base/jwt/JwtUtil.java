@@ -16,10 +16,6 @@ import java.util.Map;
 public class JwtUtil {
 
 	/**
-	 * 失效时间： 1 天 =24*3600*1000 ms
-	 */
-	public static final long  EXPIRATION_TIME  =1*24*3600*1000;
-	/**
 	 * 私钥
 	 */
 	public static final String  SECRET  ="http://www.itangquan.com";
