@@ -256,12 +256,14 @@ public class BaseServiceImpl<T, R extends BaseRepository<T>> implements BaseServ
 
 
 
+	@Override
 	public T getByFieldEqual(String property,Object obj){
 		List<T> list = this.listByFieldEqual(property, obj);
 		return HelpMe.isNull(list)?null:list.get(0);
 	}
 
 
+	@Override
 	public T getByFieldNotEqual(String property,Object obj){
 		List<T> list = this.listByFieldNotEqual(property, obj);
 		return HelpMe.isNull(list)?null:list.get(0);

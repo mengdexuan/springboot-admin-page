@@ -1,24 +1,26 @@
 package com.boot.biz.test;
 
-import cn.hutool.core.io.FileUtil;
+import cn.hutool.core.util.StrUtil;
 import cn.hutool.crypto.SecureUtil;
 import com.boot.base.NativeSqlQueryServices;
 import com.boot.base.Result;
 import com.boot.base.ResultUtil;
 import com.boot.base.annotation.PrintTime;
-import com.boot.biz.dict.entity.Dict;
+import com.boot.biz.mail.service.MailService;
+import com.boot.biz.mail.service.dto.Email;
 import com.boot.biz.validation.ValidatedBean;
-import com.drew.imaging.FileType;
-import com.drew.imaging.FileTypeDetector;
 import com.drew.imaging.ImageMetadataReader;
 import com.drew.imaging.ImageProcessingException;
 import com.drew.metadata.Directory;
 import com.drew.metadata.Metadata;
 import com.drew.metadata.Tag;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.camel.CamelContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.ApplicationContext;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.jdbc.datasource.init.DatabasePopulatorUtils;
 import org.springframework.jdbc.datasource.init.ResourceDatabasePopulator;
@@ -30,8 +32,11 @@ import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandl
 
 import javax.servlet.http.HttpServletRequest;
 import javax.sql.DataSource;
+import java.awt.*;
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.Executor;
 
 /**
@@ -49,11 +54,15 @@ public class TestController {
 	@Autowired
 	RequestMappingHandlerMapping handlerMapping;
 
+	@Autowired
+	MailService mailService;
 
 	@Autowired
 	CamelContext camelContext;
 
 
+	@Autowired
+	ApplicationContext applicationContext;
 
 	@Autowired
 	DataSource dataSource;
@@ -65,16 +74,31 @@ public class TestController {
 	@GetMapping("/test1")
 	@ResponseBody
 	public Result test1(HttpServletRequest request) throws Exception {
-
 		Object obj = null;
 
-		String sql = "select dict_name,dict_key from sys_dictionary";
 
-		obj = nativeSqlQueryServices.query(sql,Dict.class);
+		Map<String, Object> bean = applicationContext.getBeansWithAnnotation(RestController.class);
+
+
+
+		obj = bean;
+
 
 		return ResultUtil.buildSuccess(obj);
 	}
 
+
+
+
+
+	@GetMapping(value = "/sendMailTest")
+	public Result sendMailTest() {
+
+		mailService.test(Lists.newArrayList("18514756315@163.com"));
+
+		return ResultUtil.buildSuccess();
+
+	}
 
 
 
