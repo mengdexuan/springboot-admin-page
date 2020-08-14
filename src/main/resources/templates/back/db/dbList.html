@@ -685,6 +685,8 @@
         layer.confirm('确认导出表结构及数据？', {
             btn: ['确认','取消']
         }, function(index){
+            id = id.replace('|',",");
+            id = id.replace('|',",");
             window.location.href = ctx + "/back/dbConn/exportTable/"+id;
             layer.close(index);
         }, function(){

@@ -306,7 +306,7 @@ public class DbConnController extends BaseController {
 
 		log.info("操作表，id:{}", id);
 
-		List<String> tempList = HelpMe.easySplit(id, '|');
+		List<String> tempList = HelpMe.easySplit(id);
 		String tableName = tempList.get(0);
 		String dbName = tempList.get(1);
 		String connId = tempList.get(2);
