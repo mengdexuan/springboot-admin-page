@@ -549,7 +549,8 @@
                                 '<td>' +
 								'<button type="button" tableName="'+arr[k].tableName+'" tableComment="'+arr[k].tableComment+'" onclick="updateTable(this,\''+arr[k].id+'\')" class="btn btn-success btn-xs">修改</button>&nbsp;' +
 								'<button type="button" onclick="operTable(\''+arr[k].id+'\',2)" class="btn btn-primary btn-xs">复制</button>&nbsp;' +
-								'<button type="button" onclick="operTable(\''+arr[k].id+'\',1)" class="btn btn-danger btn-xs">删除</button>' +
+								'<button type="button" onclick="operTable(\''+arr[k].id+'\',1)" class="btn btn-danger btn-xs">删除</button>&nbsp;' +
+								'<button type="button" onclick="exportTable(\''+arr[k].id+'\')" class="btn btn-warning btn-xs">导出</button>' +
 								'</td>' +
 
                                 "</tr>";
@@ -679,6 +680,17 @@
         });
     }
 
+
+    function exportTable(id) {
+        layer.confirm('确认导出表结构及数据？', {
+            btn: ['确认','取消']
+        }, function(index){
+            window.location.href = ctx + "/back/dbConn/exportTable/"+id;
+            layer.close(index);
+        }, function(){
+
+        });
+    }
 
 	function operTable(id,type) {
         layer.confirm('确认操作？', {
