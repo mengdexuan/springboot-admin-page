@@ -1,5 +1,6 @@
 package com.boot.config;
 
+import com.boot.biz.dict.entity.DictKey;
 import com.boot.biz.dict.service.DictService;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
@@ -19,11 +20,6 @@ import javax.annotation.PostConstruct;
 @Data
 public class SysConfig {
 
-	public static String err_code_10000 = "10000";//数据字典内置数据：登录超时错误码
-	public static String login_time_out = "login_time_out";//数据字典内置数据：登录超时时间，默认30分钟
-	public static String err_code_10001 = "10001";//数据字典内置数据：登录名或密码错误
-	public static String login_interceptor = "login_interceptor";//数据字典内置数据：登录拦截
-
 	@Autowired
 	private DictService dictService;
 
@@ -32,8 +28,8 @@ public class SysConfig {
 
 	@PostConstruct
 	private void init(){
-		String loginInterceptorTemp = dictService.dictVal(login_interceptor);
-		String loginTimeOutTemp = dictService.dictVal(login_time_out);
+		String loginInterceptorTemp = dictService.dictVal(DictKey.login_interceptor);
+		String loginTimeOutTemp = dictService.dictVal(DictKey.login_time_out);
 
 		loginInterceptor = Boolean.parseBoolean(loginInterceptorTemp);
 		loginTimeOut = Integer.parseInt(loginTimeOutTemp);

@@ -3,6 +3,7 @@ package com.boot.biz.dict.controller;
 
 import com.boot.base.Result;
 import com.boot.base.ResultUtil;
+import com.boot.base.util.SpringContextUtil;
 import com.boot.biz.dict.entity.Dict;
 import com.boot.biz.dict.service.DictService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -56,7 +57,26 @@ public class DictController {
          */
         @PostMapping(value = "/update")
         public Result<String> update(Dict dataCentralDict) {
+
+            Dict entity = dictService.getByFieldEqual("dictKey", dataCentralDict.getDictKey());
+
+            boolean changeVal = true;
+
+            if (entity.getDictValue().equals(dataCentralDict.getDictValue())){
+                // val 值没有被修改
+                changeVal = false;
+            }
+
             dictService.update(dataCentralDict);
+
+            dictService.reloadDictCache();
+
+            if (changeVal){
+                //发布数据字典更新事件
+                SpringContextUtil.applicationContext.publishEvent(dataCentralDict);
+            }
+
+
             return ResultUtil.buildSuccess();
         }
 

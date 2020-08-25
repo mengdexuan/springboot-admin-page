@@ -59,7 +59,7 @@ spring:
 
 
 server:
-  port: 2000 #项目端口
+  port: 2100 #项目端口
   servlet:
     context-path: /adminPage #项目名称
   tomcat:
