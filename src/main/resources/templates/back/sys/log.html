@@ -143,7 +143,7 @@
 
     function errorLog() {
         errorLogSocket = new SockJS(sysErrorLogUrl);
-        errorLogStompClient = Stomp.over(socket);
+        errorLogStompClient = Stomp.over(errorLogSocket);
         errorLogStompClient.heartbeat.outgoing = 10000;
         errorLogStompClient.heartbeat.incoming = 0;
         var headers = {token:""};
