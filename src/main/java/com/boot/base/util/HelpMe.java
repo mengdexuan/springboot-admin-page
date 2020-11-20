@@ -1061,6 +1061,19 @@ public class HelpMe {
 			return false;
 	}
 
+
+	/**
+	 * map 按 key 升序排序
+	 */
+	public static <T>  Map<String, T> sortByKey(Map<String, T> map) {
+		Map<String, T> result = new LinkedHashMap(map.size());
+		map.entrySet().stream()
+				.sorted(Map.Entry.comparingByKey())
+				.forEachOrdered(e -> result.put(e.getKey(), e.getValue()));
+		return result;
+	}
+
+
 	// 如果是空返回 true
 	public static boolean isNull(String str) {
 		return !isNotNull(str);

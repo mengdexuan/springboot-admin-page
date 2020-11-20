@@ -76,12 +76,11 @@ public class TestController {
 	public Result test1(HttpServletRequest request) throws Exception {
 		Object obj = null;
 
-
-		Map<String, Object> bean = applicationContext.getBeansWithAnnotation(RestController.class);
-
-
-
-		obj = bean;
+		log.info("error。。。");
+		log.warn("error。。。");
+		log.error("error。。。");
+		log.error("error。。。");
+		log.error("error。。。");
 
 
 		return ResultUtil.buildSuccess(obj);
