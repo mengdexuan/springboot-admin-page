@@ -2,6 +2,7 @@ package com.boot.biz.test;
 
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.crypto.SecureUtil;
+import cn.hutool.json.JSONUtil;
 import com.boot.base.NativeSqlQueryServices;
 import com.boot.base.Result;
 import com.boot.base.ResultUtil;
@@ -164,12 +165,22 @@ public class TestController {
 
 
 	public static void main(String[] args) throws Exception{
-//		test();
+		test2();
 
 
 
+	}
 
 
+	public static void test2() throws Exception{
+
+		String str = "abc";
+
+		Integer abc = 123;
+		byte[] test = abc.toString().getBytes();
+
+
+		System.out.println();
 	}
 
 
