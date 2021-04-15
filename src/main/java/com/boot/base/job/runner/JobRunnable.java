@@ -41,6 +41,7 @@ public class JobRunnable implements Runnable{
 		Field taskIdFiled = ReflectUtil.getField(target.getClass(), "id");
 
 		if (taskIdFiled!=null){
+			//给 job 类中的 id 字段设值（如果job类中存在id字段）
 			ReflectUtil.setFieldValue(target,taskIdFiled,jobId);
 		}
 	}

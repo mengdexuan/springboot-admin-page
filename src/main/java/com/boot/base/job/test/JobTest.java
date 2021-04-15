@@ -15,6 +15,11 @@ import java.util.List;
 //@Component
 public class JobTest {
 
+	/**
+	 * 本job的id，在 JobRunnable 中设置
+	 */
+	Long id;
+
 	@Autowired
 	JobService jobService;
 
@@ -26,6 +31,11 @@ public class JobTest {
 	@JobCron(name = "测试任务2",cron = "0/5 * * * * *",delWhenSuccess = false,remark = "这是测试任务2")
 	public void run2(String param){
 		log.info("run2，参数：{}",param);
+
+		boolean flag = true;
+		if (flag){
+			removeSelfJob();
+		}
 	}
 
 
@@ -45,6 +55,13 @@ public class JobTest {
 	}
 
 
+
+	/**
+	 * 删除自身 job ，不再进行下次调度
+	 */
+	private void removeSelfJob(){
+		jobService.delJob(id);
+	}
 
 
 

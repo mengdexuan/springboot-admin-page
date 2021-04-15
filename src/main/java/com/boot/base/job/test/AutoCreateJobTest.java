@@ -1,6 +1,7 @@
 package com.boot.base.job.test;
 
 import com.boot.base.job.annotation.JobCron;
+import com.boot.base.job.service.JobService;
 import com.boot.biz.mail.service.MailService;
 import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
@@ -15,6 +16,14 @@ import org.springframework.stereotype.Component;
 @Component
 public class AutoCreateJobTest {
 
+	/**
+	 * 本job的id，在 JobRunnable 中设置
+	 */
+	Long id;
+
+	@Autowired
+	JobService jobService;
+
 	@Autowired
 	MailService mailService;
 
@@ -27,6 +36,14 @@ public class AutoCreateJobTest {
 
 	}
 
+
+
+	/**
+	 * 删除自身 job ，不再进行下次调度
+	 */
+	private void removeSelfJob(){
+		jobService.delJob(id);
+	}
 
 
 }
