@@ -174,14 +174,13 @@ public class JobServiceImpl extends BaseServiceImpl<Job, JobRepository> implemen
 
 
     /**
-     * 解析1个Bean，提取并转换由 CronTask 注解标识的方法，生成 SpringTask
-     *
+     *	解析1个Bean，提取并转换由 CronJob 注解标识的方法，生成 SpringJob
      * @param type spring管理的1个Bean
      * @param <T>
-     * @return 返回 List<SpringTask> 任务列表（1个Bean中，可以有多个 CronTask 标注的方法）
+     * @return  返回 Job
      */
     @Override
-    public <T> List<Job> getJob(Class<T> type) {
+    public <T> Job getJob(Class<T> type) {
 
         //获取 spring bean 名称，默认类名首字母小写
         String beanName = StrUtil.lowerFirst(type.getSimpleName());
@@ -207,8 +206,8 @@ public class JobServiceImpl extends BaseServiceImpl<Job, JobRepository> implemen
                 count++;
             }
         }
-        if (count == 0) {
-            throw new RuntimeException(beanName + " 中不存在 CronTask 标注的方法！");
+        if (count != 1) {
+            throw new RuntimeException(beanName + " 中有且只允许存在1个 JobCron 标注的调度方法！");
         }
 
         List<Job> springTaskList = Lists.newArrayList();
@@ -240,17 +239,8 @@ public class JobServiceImpl extends BaseServiceImpl<Job, JobRepository> implemen
             }
         }
 
-        return springTaskList;
+        return springTaskList.get(0);
     }
 
-    /**
-     * 获取任务，调用的是 getTask方法，获取第 1 个值
-     *
-     * @param type
-     * @return
-     */
-    @Override
-    public <T> Job getSingleJob(Class<T> type) {
-        return getJob(type).get(0);
-    }
+
 }

@@ -40,10 +40,6 @@ public class JobRunnable implements Runnable{
 
 		Field taskIdFiled = ReflectUtil.getField(target.getClass(), "id");
 
-		if (taskIdFiled!=null){
-			//给 job 类中的 id 字段设值（如果job类中存在id字段）
-			ReflectUtil.setFieldValue(target,taskIdFiled,jobId);
-		}
 	}
 
 	@Override
@@ -52,9 +48,9 @@ public class JobRunnable implements Runnable{
 		try {
 			ReflectionUtils.makeAccessible(method);
 			if (StrUtil.isNotBlank(params)) {
-				method.invoke(target, params);
+				method.invoke(target, params,jobId);
 			} else {
-				method.invoke(target);
+				method.invoke(target,jobId);
 			}
 			if (manualTrigger){
 				log.info("手动触发任务执行，任务ID:{}，任务名称：{}",job.getId(),job.getName());

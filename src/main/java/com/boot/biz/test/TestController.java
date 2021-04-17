@@ -1,22 +1,21 @@
 package com.boot.biz.test;
 
-import cn.hutool.core.util.StrUtil;
+import cn.hutool.core.date.DateUtil;
 import cn.hutool.crypto.SecureUtil;
-import cn.hutool.json.JSONUtil;
 import com.boot.base.NativeSqlQueryServices;
 import com.boot.base.Result;
 import com.boot.base.ResultUtil;
 import com.boot.base.annotation.PrintTime;
+import com.boot.base.job.entity.Job;
+import com.boot.base.job.service.JobService;
+import com.boot.base.job.test.NoParamJobTest;
 import com.boot.biz.mail.service.MailService;
-import com.boot.biz.mail.service.dto.Email;
 import com.boot.biz.validation.ValidatedBean;
 import com.drew.imaging.ImageMetadataReader;
 import com.drew.imaging.ImageProcessingException;
 import com.drew.metadata.Directory;
 import com.drew.metadata.Metadata;
 import com.drew.metadata.Tag;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.camel.CamelContext;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,17 +26,13 @@ import org.springframework.jdbc.datasource.init.DatabasePopulatorUtils;
 import org.springframework.jdbc.datasource.init.ResourceDatabasePopulator;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.context.request.RequestContextHolder;
-import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.sql.DataSource;
-import java.awt.*;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.Executor;
 
 /**
@@ -68,36 +63,32 @@ public class TestController {
 	@Autowired
 	DataSource dataSource;
 
+	@Autowired
+	JobService jobService;
 
 	@Autowired
 	NativeSqlQueryServices nativeSqlQueryServices;
 
 	@GetMapping("/test1")
 	@ResponseBody
-	public Result test1(HttpServletRequest request) throws Exception {
+	public Result test1() throws Exception {
 		Object obj = null;
 
-		log.info("error。。。");
-		log.warn("error。。。");
-		log.error("error。。。");
-		log.error("error。。。");
-		log.error("error。。。");
+		Job job = jobService.getJob(NoParamJobTest.class);
 
+		jobService.addJob(job);
 
 		return ResultUtil.buildSuccess(obj);
 	}
 
 
-
-
-
 	@GetMapping(value = "/sendMailTest")
 	public Result sendMailTest() {
 
-		mailService.test(Lists.newArrayList("18514756315@163.com"));
+
+
 
 		return ResultUtil.buildSuccess();
-
 	}
 
 
@@ -125,16 +116,12 @@ public class TestController {
 
 
 
-	@RequestMapping("/test3")
+	@GetMapping("/test3")
 	@ResponseBody
-	public Result test3() {
+	public Result test3(Long jobId) {
 		Object obj = null;
 
-		HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder
-				.getRequestAttributes()).getRequest();
-
-
-
+		jobService.delJob(jobId);
 
 		return ResultUtil.buildSuccess(obj);
 	}
@@ -165,9 +152,8 @@ public class TestController {
 
 
 	public static void main(String[] args) throws Exception{
-		test2();
 
-
+		System.out.println(DateUtil.now());
 
 	}
 

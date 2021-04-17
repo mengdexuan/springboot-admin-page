@@ -71,16 +71,10 @@ public interface JobService extends BaseService<Job> {
 	 *	解析1个Bean，提取并转换由 CronJob 注解标识的方法，生成 SpringJob
 	 * @param type spring管理的1个Bean
 	 * @param <T>
-	 * @return  返回 List<SpringJob> 任务列表（1个Bean中，可以有多个 CronJob 标注的方法）
+	 * @return  返回 Job
 	 */
-	<T> List<Job> getJob(Class<T> type);
+	<T> Job getJob(Class<T> type);
 
-	/**
-	 * 获取任务，调用的是 getJob方法，获取第 1 个值
-	 * @param type
-	 * @param <T>
-	 * @return
-	 */
-	<T> Job getSingleJob(Class<T> type);
+
 
 }

@@ -9,17 +9,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 /**
- * 测试自动创建任务
+ * 测试自动创建任务，无需手动添加，项目启动后，自动添加到调度；这种类型的 job 要求是无参数的
  * @author mengdexuan on 2020/5/4 15:11.
  */
 @Slf4j
 @Component
 public class AutoCreateJobTest {
 
-	/**
-	 * 本job的id，在 JobRunnable 中设置
-	 */
-	Long id;
 
 	@Autowired
 	JobService jobService;
@@ -28,12 +24,14 @@ public class AutoCreateJobTest {
 	MailService mailService;
 
 	@JobCron(name = "自动创建任务",cron = "0/2 * * * * *",delWhenSuccess = false,autoCreate = true)
-	public void run(){
+	public void run(Long jobId){
 		log.info("AutoCreateJobTest run...");
 
-
-//		mailService.test(Lists.newArrayList("m18888041745@163.com"));
-
+		boolean flag = false;
+		if (flag){
+			//满足一定的条件后，不再进行调度
+			removeSelfJob(jobId);
+		}
 	}
 
 
@@ -41,8 +39,8 @@ public class AutoCreateJobTest {
 	/**
 	 * 删除自身 job ，不再进行下次调度
 	 */
-	private void removeSelfJob(){
-		jobService.delJob(id);
+	private void removeSelfJob(Long jobId){
+		jobService.delJob(jobId);
 	}
 
 
