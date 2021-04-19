@@ -31,7 +31,7 @@ public class JobSchedulingConfig implements SchedulingConfigurer {
 	@Bean(destroyMethod = "shutdown")
 	public ThreadPoolTaskScheduler threadPoolTaskScheduler() {
 		ThreadPoolTaskScheduler scheduler = new ThreadPoolTaskScheduler();
-		scheduler.setThreadNamePrefix("JobSchedulingThread-");
+		scheduler.setThreadNamePrefix("JobThread-");
 		scheduler.setPoolSize(20);
 		return scheduler;
 	}
