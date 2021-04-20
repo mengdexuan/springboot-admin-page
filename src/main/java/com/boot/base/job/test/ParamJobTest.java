@@ -52,9 +52,13 @@ public class ParamJobTest {
 	 * 删除自身 job ，不再进行下次调度
 	 */
 	private void removeSelfJob(Long jobId){
-		jobService.delJob(jobId);
+		try {
+			Job job = jobService.get(jobId);
+			log.info("删除 job : {}",job);
+			jobService.delJob(jobId);
+		}catch (Exception e){
+		}
 	}
-
 
 
 }

@@ -53,10 +53,14 @@ public class JobRunnable implements Runnable{
 				log.info("手动触发任务执行，任务ID:{}，任务名称：{}",job.getId(),job.getName());
 			}
 
-			//任务执行成功后，删除该任务
-			if (Job.DelWhenSuccess.YES.getValue()==job.getDelWhenSuccess().intValue()){
-				jobService.delJob(jobId);
+			try {
+				//任务执行成功后，删除该任务
+				if (Job.DelWhenSuccess.YES.getValue()==job.getDelWhenSuccess().intValue()){
+					jobService.delJob(jobId);
+				}
+			}catch (Exception e){
 			}
+
 		} catch (Exception e) {
 			String errMsg = "";
 			try {
@@ -68,6 +72,8 @@ public class JobRunnable implements Runnable{
 					errMsg = e.getMessage();
 				}
 				log.error(errMsg);
+			}catch (Exception err){
+				log.error("执行任务失败！",err);
 			}finally {
 				job.setErrLog(errMsg);
 				jobService.save(job);
