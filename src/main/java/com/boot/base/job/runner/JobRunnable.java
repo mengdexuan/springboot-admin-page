@@ -37,9 +37,6 @@ public class JobRunnable implements Runnable{
 
 		this.jobId = jobId;
 		this.jobService = jobService;
-
-		Field taskIdFiled = ReflectUtil.getField(target.getClass(), "id");
-
 	}
 
 	@Override
