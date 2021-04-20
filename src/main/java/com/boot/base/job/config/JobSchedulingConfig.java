@@ -32,7 +32,7 @@ public class JobSchedulingConfig implements SchedulingConfigurer {
 	public ThreadPoolTaskScheduler threadPoolTaskScheduler() {
 		ThreadPoolTaskScheduler scheduler = new ThreadPoolTaskScheduler();
 		scheduler.setThreadNamePrefix("JobThread-");
-		scheduler.setPoolSize(20);
+		scheduler.setPoolSize(30);
 		return scheduler;
 	}
 }
