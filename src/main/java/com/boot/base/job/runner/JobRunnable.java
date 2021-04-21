@@ -76,7 +76,10 @@ public class JobRunnable implements Runnable{
 				log.error("执行任务失败！",err);
 			}finally {
 				job.setErrLog(errMsg);
-				jobService.save(job);
+				try {
+					jobService.save(job);
+				} catch (Exception e1) {
+				}
 			}
 		}
 	}

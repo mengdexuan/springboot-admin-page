@@ -24,7 +24,7 @@ public class AutoCreateJobTest {
 	MailService mailService;
 
 	@JobCron(name = "自动创建任务",cron = "0/2 * * * * *",delWhenSuccess = false,autoCreate = true)
-	public void run(Long jobId){
+	public void run(Long jobId)throws Exception{
 		log.info("AutoCreateJobTest run...");
 
 		boolean flag = false;

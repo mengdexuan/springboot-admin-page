@@ -21,7 +21,7 @@ public class NoParamJobTest {
 	JobService jobService;
 
 	@JobCron(name = "测试任务1",cron = "0/3 * * * * *",delWhenSuccess = false,remark = "这是测试任务1")
-	public void run(Long jobId){
+	public void run(Long jobId)throws Exception{
 		log.info("run1...,jobId:{}",jobId);
 
 		boolean flag = false;

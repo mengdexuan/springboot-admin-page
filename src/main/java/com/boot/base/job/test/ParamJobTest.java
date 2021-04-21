@@ -23,7 +23,7 @@ public class ParamJobTest {
 
 
 	@JobCron(name = "测试任务2",cron = "0/2 * * * * *",delWhenSuccess = false,remark = "这是测试任务2")
-	public void run(String param,Long jobId){
+	public void run(String param,Long jobId)throws Exception{
 		log.info("param：{}, jobId:{}",param,jobId);
 
 		boolean flag = false;
