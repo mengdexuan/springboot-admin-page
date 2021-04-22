@@ -1065,11 +1065,37 @@ public class HelpMe {
 	/**
 	 * map 按 key 升序排序
 	 */
-	public static <T>  Map<String, T> sortByKey(Map<String, T> map) {
-		Map<String, T> result = new LinkedHashMap(map.size());
+	public static <K extends Comparable<? super K>, V>  Map<K, V> sortByKey(Map<K, V> map) {
+		Map<K, V> result = new LinkedHashMap(map.size());
 		map.entrySet().stream()
 				.sorted(Map.Entry.comparingByKey())
 				.forEachOrdered(e -> result.put(e.getKey(), e.getValue()));
+		return result;
+	}
+
+
+	/**
+	 * map 按 key 降序排序
+	 */
+	public static <K extends Comparable<? super K>, V>  Map<K, V> sortByKeyDesc(Map<K, V> map) {
+
+		List<K> list = Lists.newArrayList();
+
+		for (K k:map.keySet()){
+			list.add(k);
+		}
+
+		list = list.stream().sorted(Comparator.naturalOrder()).collect(Collectors.toList());
+
+		int size = list.size();
+
+		Map<K, V> result = new LinkedHashMap(map.size());
+
+		for (int i=size-1;i>=0;i--){
+			K key = list.get(i);
+			result.put(key,map.get(key));
+		}
+
 		return result;
 	}
 
