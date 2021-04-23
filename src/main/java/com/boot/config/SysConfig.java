@@ -26,6 +26,8 @@ public class SysConfig {
 	public Boolean loginInterceptor;
 	public Integer loginTimeOut;
 
+	public static String file_save_dir = "file_save_dir";//数据字典内置数据：文件存储目录
+
 	@PostConstruct
 	private void init(){
 		String loginInterceptorTemp = dictService.dictVal(DictKey.login_interceptor);
