@@ -1,4 +1,4 @@
-package com.boot.base.job.test;
+package com.boot.base.job.example;
 
 import com.boot.base.job.annotation.JobCron;
 import com.boot.base.job.entity.Job;
@@ -7,15 +7,13 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.util.List;
-
 /**
- * 无业务参数的调度任务
+ * 无业务参数的调度任务使用示例
  * @author mengdexuan on 2020/3/15 17:44.
  */
 @Slf4j
 @Component
-public class NoParamJobTest {
+public class NoParamJob {
 
 	@Autowired
 	JobService jobService;
@@ -39,7 +37,7 @@ public class NoParamJobTest {
 	 */
 //	@PostConstruct
 	private void init(){
-		Job job = jobService.getJob(NoParamJobTest.class);
+		Job job = jobService.getJob(NoParamJob.class);
 		//job 无参数，直接添加到调度
 		jobService.addJob(job);
 	}

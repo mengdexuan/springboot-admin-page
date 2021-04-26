@@ -1,4 +1,4 @@
-package com.boot.base.job.test;
+package com.boot.base.job.example;
 
 import com.boot.base.job.annotation.JobCron;
 import com.boot.base.job.entity.Job;
@@ -9,12 +9,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 /**
- * 测试自动创建任务，无需手动添加，项目启动后，自动添加到调度；这种类型的 job 要求是无参数的
+ * 自动创建任务	使用示例，无需手动添加，项目启动后，自动添加到调度；这种类型的 job 要求是无参数的
  * @author mengdexuan on 2020/5/4 15:11.
  */
 @Slf4j
 @Component
-public class AutoCreateJobTest {
+public class AutoCreateJob {
 
 
 	@Autowired

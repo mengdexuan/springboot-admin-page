@@ -8,7 +8,7 @@ import com.boot.base.ResultUtil;
 import com.boot.base.annotation.PrintTime;
 import com.boot.base.job.entity.Job;
 import com.boot.base.job.service.JobService;
-import com.boot.base.job.test.NoParamJobTest;
+import com.boot.base.job.example.NoParamJob;
 import com.boot.biz.mail.service.MailService;
 import com.boot.biz.validation.ValidatedBean;
 import com.drew.imaging.ImageMetadataReader;
@@ -32,7 +32,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.sql.DataSource;
 import java.io.File;
 import java.io.IOException;
-import java.util.List;
 import java.util.concurrent.Executor;
 
 /**
@@ -74,7 +73,7 @@ public class TestController {
 	public Result test1() throws Exception {
 		Object obj = null;
 
-		Job job = jobService.getJob(NoParamJobTest.class);
+		Job job = jobService.getJob(NoParamJob.class);
 
 		jobService.addJob(job);
 

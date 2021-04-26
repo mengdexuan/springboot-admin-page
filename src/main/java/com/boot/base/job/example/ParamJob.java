@@ -1,4 +1,4 @@
-package com.boot.base.job.test;
+package com.boot.base.job.example;
 
 import cn.hutool.core.date.DateUtil;
 import com.boot.base.job.annotation.JobCron;
@@ -8,15 +8,13 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.util.List;
-
 /**
- * 存在业务参数的调度任务
+ * 存在业务参数的调度任务使用示例
  * @author mengdexuan on 2020/3/15 17:44.
  */
 @Slf4j
 @Component
-public class ParamJobTest {
+public class ParamJob {
 
 	@Autowired
 	JobService jobService;
@@ -39,7 +37,7 @@ public class ParamJobTest {
 	 */
 //	@PostConstruct
 	private void init(){
-		Job job = jobService.getJob(ParamJobTest.class);
+		Job job = jobService.getJob(ParamJob.class);
 		//设置 job 需要的参数
 		job.setParams(DateUtil.now());
 		//添加到调度
