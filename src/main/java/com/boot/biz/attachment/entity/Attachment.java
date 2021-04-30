@@ -20,7 +20,7 @@ import java.util.Date;
 @Data
 @Accessors(chain = true)
 @Entity
-@Table(name = "attachment.sql")
+@Table(name = "attachment")
 public class Attachment {
 
     @Id
