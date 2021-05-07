@@ -59,24 +59,8 @@ public class IndexController {
 	@Autowired
 	DictService dictService;
 
-	@Value("${server.servlet.context-path}")
-	private String contextPath;
-
-	@Value("${server.port}")
-	private Integer port;
-
-
-
 	@Autowired
 	SysLogMessaging sysLogMessaging;
-
-	@PostConstruct
-	private void init(){
-		log.info("");
-		log.info("http://localhost:"+port+contextPath);
-		log.info("http://localhost:"+port+contextPath+"/doc.html");
-		log.info("");
-	}
 
 
 
