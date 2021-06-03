@@ -42,7 +42,6 @@ import java.util.concurrent.Executor;
 @RequestMapping("/test")
 public class TestController {
 
-	@Qualifier("taskExecutor")
 	@Autowired
 	Executor executor;
 

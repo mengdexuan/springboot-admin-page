@@ -1,13 +1,10 @@
 package com.boot.shutdown;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextClosedEvent;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Component;
-
-import java.util.concurrent.Executor;
-import java.util.concurrent.ThreadPoolExecutor;
 
 /**
  * 利用ApplicationListener<ContextClosedEvent> 来监听spring上下文关闭事件，
@@ -18,7 +15,7 @@ import java.util.concurrent.ThreadPoolExecutor;
 @Component
 public class ContextClosedHandler implements ApplicationListener<ContextClosedEvent> {
 	@Autowired
-	ThreadPoolExecutor executor;
+	ThreadPoolTaskExecutor executor;
 
 	@Override
 	public void onApplicationEvent(ContextClosedEvent event) {
