@@ -62,6 +62,7 @@ public class JobRunnable implements Runnable{
 			}
 
 		} catch (Exception e) {
+			log.error("执行定时任务失败！",e);
 			String errMsg = "";
 			try {
 				if (e instanceof InvocationTargetException){
