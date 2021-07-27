@@ -2,7 +2,6 @@ package com.boot.base.util;
 
 import cn.hutool.cron.pattern.CronPattern;
 import lombok.extern.slf4j.Slf4j;
-import org.quartz.CronExpression;
 
 /**
  * @author mengdexuan on 2019/6/26 14:47.
