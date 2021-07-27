@@ -106,34 +106,36 @@
 					<div class="col-md-12">
 						<table id="tableData" class="table table-hover table-responsive table-condensed">
 							<thead>
-								<tr class="success">
-									<th width="5%">序号</th>
-									<th width="20%">字典名称</th>
-									<th width="10%">字典key</th>
-									<th width="15%">字典val</th>
-									<th width="25%">字典备注</th>
-									<!--<th width="5%">状态</th>-->
-									<!--<th width="5%">排序</th>-->
-									<th width="15%">创建时间</th>
-									<th width="10%">操作</th>
-								</tr>
+							<tr class="success">
+								<th width="5%">序号</th>
+								<th width="20%">字典名称</th>
+								<th width="10%">字典key</th>
+								<th width="15%">字典val</th>
+								<th width="10%">父Key</th>
+								<th width="15%">字典备注</th>
+								<!--<th width="5%">状态</th>-->
+								<!--<th width="5%">排序</th>-->
+								<th width="15%">创建时间</th>
+								<th width="10%">操作</th>
+							</tr>
 							</thead>
 
 							<tbody>
-								<tr th:each="dict : ${dictList}">
-									<td th:text="${dictStat.count}"></td>
-									<td th:text="${dict.dictName}"></td>
-									<td th:text="${dict.dictKey}"></td>
-									<td th:text="${dict.dictValue}"></td>
-									<td th:text="${dict.dictNote}"></td>
-									<!--<td th:text="${dict.enable==1?'可用':'不可用'}"></td>-->
-									<!--<td th:text="${dict.orderNo}"></td>-->
-									<td th:text="${#dates.format(dict.createTime,'yyyy-MM-dd HH:mm:ss')}"></td>
-									<td>
-										<button type="button" class="btn btn-warning btn-sm" th:onclick="'editData(\''+${dict.id}+'\');'">修改</button>
-										<button type="button" class="btn btn-danger btn-sm" th:onclick="'delData(\''+${dict.id}+'\');'">删除</button>
-									</td>
-								</tr>
+							<tr th:each="dict : ${dictList}">
+								<td th:text="${dictStat.count}"></td>
+								<td th:text="${dict.dictName}"></td>
+								<td th:text="${dict.dictKey}"></td>
+								<td th:text="${dict.dictValue}"></td>
+								<td th:text="${dict.pKey}"></td>
+								<td th:text="${dict.dictNote}"></td>
+								<!--<td th:text="${dict.enable==1?'可用':'不可用'}"></td>-->
+								<!--<td th:text="${dict.orderNo}"></td>-->
+								<td th:text="${#dates.format(dict.createTime,'yyyy-MM-dd HH:mm:ss')}"></td>
+								<td>
+									<button type="button" class="btn btn-warning btn-sm" th:onclick="'editData(\''+${dict.id}+'\');'">修改</button>
+									<button type="button" class="btn btn-danger btn-sm" th:onclick="'delData(\''+${dict.id}+'\');'">删除</button>
+								</td>
+							</tr>
 							</tbody>
 						</table>
 					</div>
