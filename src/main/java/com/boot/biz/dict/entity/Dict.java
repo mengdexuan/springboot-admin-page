@@ -31,6 +31,10 @@ public class Dict {
      */
     private String dictName;
     /**
+     * 父字典key
+     */
+    private String pKey;
+    /**
      * 字典key
      */
     private String dictKey;

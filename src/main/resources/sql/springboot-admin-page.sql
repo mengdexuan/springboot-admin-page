@@ -511,14 +511,13 @@ CREATE TABLE `sys_dictionary` (
   `dict_key` varchar(255) NOT NULL COMMENT '字典key',
   `dict_value` varchar(2000) NOT NULL COMMENT '字典值',
   `dict_note` varchar(500) DEFAULT NULL COMMENT '备注',
-  `enable` smallint(1) DEFAULT NULL COMMENT '是否可用：0：不可用  1：可用',
+  `enable` int(1) DEFAULT NULL COMMENT '是否可用：0：不可用  1：可用',
   `order_no` int(11) DEFAULT NULL COMMENT '排序字段',
-  `pid` bigint(20) DEFAULT NULL COMMENT '父级ID',
+  `p_key` varchar(255) DEFAULT NULL COMMENT '父级字典key',
   `create_time` datetime NOT NULL COMMENT '更新时间',
   PRIMARY KEY (`id`) USING BTREE,
   UNIQUE KEY `m_key_unique` (`dict_key`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8 COMMENT='数据字典';
-
+) ENGINE=InnoDB AUTO_INCREMENT=14 DEFAULT CHARSET=utf8 COMMENT='数据字典';
 -- ----------------------------
 -- Records of sys_dictionary
 -- ----------------------------

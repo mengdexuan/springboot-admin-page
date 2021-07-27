@@ -9,6 +9,7 @@ import com.boot.biz.dict.service.DictService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -39,7 +40,14 @@ public class DictController {
          */
         @PostMapping(value = "/add")
         public Result<String> add(Dict dataCentralDict) {
+            dataCentralDict.setOrderNo(1);
+            dataCentralDict.setEnable(1);
+            dataCentralDict.setCreateTime(new Date());
+
             dictService.save(dataCentralDict);
+
+            dictService.reloadDictCache();
+
             return ResultUtil.buildSuccess();
         }
 
@@ -49,6 +57,7 @@ public class DictController {
         @PostMapping(value = "/delete/{id}")
         public Result<String> delete(@PathVariable("id") Long id) {
             dictService.delete(id);
+            dictService.reloadDictCache();
             return ResultUtil.buildSuccess();
         }
 

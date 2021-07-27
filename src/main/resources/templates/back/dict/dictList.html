@@ -76,6 +76,34 @@
 				</br>
 				<div class="row">
 					<div class="col-md-12">
+						<form class="form-inline">
+							<div class="form-group">
+								<label for="dictName_add">名称</label>
+								<input type="text" class="form-control" id="dictName_add" placeholder="名称">
+							</div>
+							<div class="form-group">
+								<label for="dictKey_add">Key</label>
+								<input type="text" class="form-control" id="dictKey_add" placeholder="Key">
+							</div>
+							<div class="form-group">
+								<label for="dictValue_add">Val</label>
+								<input type="text" class="form-control" id="dictValue_add" placeholder="Val">
+							</div>
+							<div class="form-group">
+								<label for="pKey_add">ParentKey</label>
+								<input type="text" class="form-control" id="pKey_add" placeholder="父Key">
+							</div>
+							<div class="form-group">
+								<label for="dictNote_add">备注</label>
+								<input type="text" class="form-control" id="dictNote_add" placeholder="备注">
+							</div>
+							<button type="button" class="btn btn-info" th:onclick="'add();'">添加</button>
+						</form>
+					</div>
+				</div>
+				</br>
+				<div class="row">
+					<div class="col-md-12">
 						<table id="tableData" class="table table-hover table-responsive table-condensed">
 							<thead>
 								<tr class="success">
@@ -83,10 +111,10 @@
 									<th width="20%">字典名称</th>
 									<th width="10%">字典key</th>
 									<th width="15%">字典val</th>
-									<th width="20%">字典备注</th>
-									<th width="5%">是否可用</th>
-									<th width="5%">排序</th>
-									<th width="10%">创建时间</th>
+									<th width="25%">字典备注</th>
+									<!--<th width="5%">状态</th>-->
+									<!--<th width="5%">排序</th>-->
+									<th width="15%">创建时间</th>
 									<th width="10%">操作</th>
 								</tr>
 							</thead>
@@ -98,12 +126,12 @@
 									<td th:text="${dict.dictKey}"></td>
 									<td th:text="${dict.dictValue}"></td>
 									<td th:text="${dict.dictNote}"></td>
-									<td th:text="${dict.enable==1?'可用':'不可用'}"></td>
-									<td th:text="${dict.orderNo}"></td>
+									<!--<td th:text="${dict.enable==1?'可用':'不可用'}"></td>-->
+									<!--<td th:text="${dict.orderNo}"></td>-->
 									<td th:text="${#dates.format(dict.createTime,'yyyy-MM-dd HH:mm:ss')}"></td>
 									<td>
 										<button type="button" class="btn btn-warning btn-sm" th:onclick="'editData(\''+${dict.id}+'\');'">修改</button>
-										<!--<button type="button" class="btn btn-danger btn-sm" th:onclick="'delData(\''+${dict.id}+'\');'">删除</button>-->
+										<button type="button" class="btn btn-danger btn-sm" th:onclick="'delData(\''+${dict.id}+'\');'">删除</button>
 									</td>
 								</tr>
 							</tbody>
@@ -132,6 +160,40 @@
 
     $(document).ready(function () {
     })
+
+
+    function add() {
+
+        var dictName = $('#dictName_add').val();
+        var dictKey = $('#dictKey_add').val();
+        var dictValue = $('#dictValue_add').val();
+        var pKey = $('#pKey_add').val();
+        var dictNote = $('#dictNote_add').val();
+
+        $.ajax({
+            type: "post",
+            url: ctx + "/dict/add",
+            dataType: "text",
+            async: false,
+            data: {
+                dictName: dictName,
+                dictKey: dictKey,
+                dictValue: dictValue,
+                pKey: pKey,
+                dictNote: dictNote
+            },
+            success: function (data) {
+                if (JSON.parse(data).success){
+                    refresh();
+                }else {
+                    layer.msg("添加失败！");
+                }
+            },
+            error: function (err) {
+                console.log(err);
+            }
+        });
+    }
 
 
 
