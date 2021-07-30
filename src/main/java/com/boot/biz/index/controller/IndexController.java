@@ -222,9 +222,12 @@ public class IndexController {
 		}).collect(Collectors.toList());
 
 
-		fileList = fileList.stream().map(item->{
-			return item.split("file:./")[1];
-		}).collect(Collectors.toList());
+		try {
+			fileList = fileList.stream().map(item->{
+				return item.split(":")[1];
+			}).collect(Collectors.toList());
+		} catch (Exception e) {
+		}
 
 
 		if (HelpMe.isNotNull(fileList)){
