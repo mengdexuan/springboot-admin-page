@@ -33,8 +33,9 @@ public class JobAutoCreateBeanPostProcessor implements BeanPostProcessor {
         for (Method method : methods) {
             JobCron cronTask = method.getAnnotation(JobCron.class);
             if (cronTask != null && cronTask.autoCreate()) {
-                Job task = jobService.getJob(bean.getClass());
-                jobService.addJobOnce(task);
+                Job job = jobService.getJob(bean.getClass());
+                job.setAutoCreate(0);
+                jobService.addJobOnce(job);
             }
         }
         return bean;

@@ -32,6 +32,7 @@
 									<th>cron表达式</th>
 									<th>任务状态</th>
 									<th>创建时间</th>
+									<th>自动创建</th>
 									<th>任务描述</th>
 									<th>操作</th>
 								</tr>
@@ -47,6 +48,7 @@
 										</div>
 									</td>
 									<td th:text="${#dates.format(job.createTime,'yyyy-MM-dd HH:mm:ss')}"></td>
+									<td><span th:if="${job.autoCreate == 0}">是</span><span th:if="${job.autoCreate != 0}">否</span></td>
 									<td th:text="${job.remark}"></td>
 									<td>
 										<button class="btn btn-success" th:data-val="${job.id}" onclick="showModal(this)">修改</button>

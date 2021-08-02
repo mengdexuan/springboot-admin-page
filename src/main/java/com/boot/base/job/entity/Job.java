@@ -62,6 +62,12 @@ public class Job {
      * 执行成功是否删除该任务 1：不删除    2：删除
      */
     private Integer delWhenSuccess;
+
+    /**
+     * 0：项目启动后自动创建的任务   非0：非自动创建的任务
+     */
+    private Integer autoCreate;
+
     /**
      * 创建时间
      */
