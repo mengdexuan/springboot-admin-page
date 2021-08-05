@@ -175,7 +175,7 @@ public class IndexController {
 	@GetMapping(value = "/back/dictList")
 	public String dictList(Model model) {
 
-		List<Dict> dictList = dictService.findAll();
+		List<Dict> dictList = dictService.findAll(Sort.by(Sort.Order.asc("orderNo")));
 
 		model.addAttribute("dictList",dictList);
 

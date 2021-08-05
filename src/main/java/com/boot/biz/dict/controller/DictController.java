@@ -7,6 +7,7 @@ import com.boot.base.util.SpringContextUtil;
 import com.boot.biz.dict.entity.Dict;
 import com.boot.biz.dict.service.DictService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Date;
@@ -32,7 +33,7 @@ public class DictController {
          */
         @GetMapping(value = "/list")
         public Result<List<Dict>> list() {
-            return ResultUtil.buildSuccess(dictService.findAll());
+            return ResultUtil.buildSuccess(dictService.findAll(Sort.by(Sort.Order.asc("orderNo"))));
         }
 
         /**
