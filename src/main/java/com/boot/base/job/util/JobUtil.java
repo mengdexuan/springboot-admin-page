@@ -2,6 +2,8 @@ package com.boot.base.job.util;
 
 import cn.hutool.core.date.DateTime;
 import cn.hutool.core.date.DateUtil;
+import cn.hutool.core.util.RandomUtil;
+import cn.hutool.core.util.StrUtil;
 import com.boot.base.job.entity.Job;
 import com.boot.base.job.runner.JobRunnable;
 import com.boot.base.job.service.JobService;
@@ -106,6 +108,37 @@ public class JobUtil {
 
         return false;
     }
+
+
+    /**
+     * 获得指定范围内的随机的秒级别的cron表达式，
+     * @param min 最小数（包含） >0
+     * @param max 最大数（不包含）<60
+     * @return
+     */
+    public static String getSecondCron(int min, int max) {
+        String cron = "0/{second} * * * * *";
+        Map<String,Integer> map = Maps.newHashMap();
+        map.put("second",RandomUtil.randomInt(min,max));
+        cron = StrUtil.format(cron,map);
+        return cron;
+    }
+
+
+    /**
+     * 获得指定范围内的随机的分钟级别的cron表达式，
+     * @param min 最小数（包含） >0
+     * @param max 最大数（不包含）<60
+     * @return
+     */
+    public static String getMinuteCron(int min, int max) {
+        String cron = "0 */{minute} * * * ?";
+        Map<String,Integer> map = Maps.newHashMap();
+        map.put("minute",RandomUtil.randomInt(min,max));
+        cron = StrUtil.format(cron,map);
+        return cron;
+    }
+
 
 
 }
