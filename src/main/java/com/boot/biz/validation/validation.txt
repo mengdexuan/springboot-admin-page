@@ -68,3 +68,24 @@ private BigDecimal wage;
 @ScriptAssert(lang= ,script=, alias=)
 
 @URL(protocol=,host=, port=,regexp=, flags=)
+
+
+@Null：参数为null
+@NotNull：不能为null
+@NotBlank：字符串不能为null或者trim()后不能为空
+@NotEmpty：验证字符串或集合/数组不能为空
+@AssertFalse：必须是false
+@AssertTrue：必须是true
+@Pattern(regexp="") ：必须满足正则条件
+@Size(max = 18, min = 4)：验证字符串/数组/集合长度范围
+@Max：最大值上限
+@Min：最小值下限
+@DecimalMax("11.5")：传入字符串构建一个BigDecimal，规定值要小于这个值
+@DecimalMin：用来限制浮点数大小
+@Range(min=2, max=4)：检查数字是否在此范围
+@Past：限定日期必须是过去的日期
+@Future：限定日期必须是未来日期
+@Email：验证邮箱地址（示例：yoni123@136）
+@URL(protocol=,host=,port=,regexp=,flags=)：验证URL
+
+

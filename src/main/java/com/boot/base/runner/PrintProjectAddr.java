@@ -28,7 +28,7 @@ public class PrintProjectAddr implements CommandLineRunner {
     @Override
     public void run(String... args) throws Exception {
         log.info("");
-        log.info("http://localhost:"+port+contextPath);
+        log.info("http://localhost:"+port+contextPath+"/back");
         log.info("http://localhost:"+port+contextPath+"/doc.html");
         log.info("");
     }

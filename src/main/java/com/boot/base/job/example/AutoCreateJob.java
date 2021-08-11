@@ -3,10 +3,9 @@ package com.boot.base.job.example;
 import com.boot.base.job.annotation.JobCron;
 import com.boot.base.job.entity.Job;
 import com.boot.base.job.service.JobService;
-import com.boot.biz.mail.service.MailService;
+import com.boot.biz.mail.send.MailSendService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 /**
@@ -32,7 +31,7 @@ public class AutoCreateJob {
 	JobService jobService;
 
 	@Autowired
-	MailService mailService;
+	MailSendService mailSendService;
 
 	@JobCron(name = "自动创建任务",cron = "0/2 * * * * *",delWhenSuccess = false,autoCreate = true)
 	public void run(Long jobId)throws Exception{

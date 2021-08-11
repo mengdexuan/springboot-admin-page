@@ -1,10 +1,9 @@
-package com.boot.biz.mail.service.dto;
+package com.boot.biz.mail.send.dto;
 
 import lombok.Data;
 
 import java.io.File;
 import java.io.Serializable;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 

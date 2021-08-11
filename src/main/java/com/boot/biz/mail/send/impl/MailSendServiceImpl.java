@@ -1,11 +1,11 @@
-package com.boot.biz.mail.service.impl;
+package com.boot.biz.mail.send.impl;
 
 
 import cn.hutool.core.util.NumberUtil;
 import cn.hutool.core.util.StrUtil;
 import com.boot.base.util.HelpMe;
-import com.boot.biz.mail.service.MailService;
-import com.boot.biz.mail.service.dto.Email;
+import com.boot.biz.mail.send.MailSendService;
+import com.boot.biz.mail.send.dto.Email;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import lombok.extern.slf4j.Slf4j;
@@ -24,7 +24,7 @@ import java.util.Map;
 
 @Slf4j
 @Service
-public class MailServiceImpl implements MailService {
+public class MailSendServiceImpl implements MailSendService {
 
 	@Value("${spring.mail.username}")
 	public String USER_NAME;//发送者

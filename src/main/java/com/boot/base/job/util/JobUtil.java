@@ -11,6 +11,7 @@ import com.google.common.collect.Maps;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.scheduling.support.CronTrigger;
 import org.springframework.stereotype.Component;
@@ -30,6 +31,7 @@ public class JobUtil {
     ApplicationContext applicationContext;
 
     @Autowired
+    @Lazy
     JobService jobService;
 
     private TaskScheduler taskScheduler = null;

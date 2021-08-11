@@ -9,7 +9,7 @@ import com.boot.base.annotation.PrintTime;
 import com.boot.base.job.entity.Job;
 import com.boot.base.job.service.JobService;
 import com.boot.base.job.example.NoParamJob;
-import com.boot.biz.mail.service.MailService;
+import com.boot.biz.mail.send.MailSendService;
 import com.boot.biz.validation.ValidatedBean;
 import com.drew.imaging.ImageMetadataReader;
 import com.drew.imaging.ImageProcessingException;
@@ -19,7 +19,6 @@ import com.drew.metadata.Tag;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.camel.CamelContext;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.jdbc.datasource.init.DatabasePopulatorUtils;
@@ -49,7 +48,7 @@ public class TestController {
 	RequestMappingHandlerMapping handlerMapping;
 
 	@Autowired
-	MailService mailService;
+	MailSendService mailSendService;
 
 	@Autowired
 	CamelContext camelContext;

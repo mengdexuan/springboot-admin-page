@@ -1,11 +1,11 @@
-package com.boot.biz.mail.service;
+package com.boot.biz.mail.send;
 
 
-import com.boot.biz.mail.service.dto.Email;
+import com.boot.biz.mail.send.dto.Email;
 
 import java.util.List;
 
-public interface MailService {
+public interface MailSendService {
 	/**
 	 * 纯文本
 	 */

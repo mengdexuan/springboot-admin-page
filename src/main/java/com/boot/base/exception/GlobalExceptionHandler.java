@@ -4,7 +4,6 @@ import cn.hutool.core.util.StrUtil;
 import cn.hutool.json.JSONUtil;
 import com.boot.base.Result;
 import com.boot.base.ResultUtil;
-import org.hibernate.validator.internal.engine.path.PathImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -154,7 +153,7 @@ public class GlobalExceptionHandler {
         log.error(ErrorStatus.ILLEGAL_DATA.getMessage() + ":" + e.getMessage(),e);
         List<Map<String, Object>> fields = new ArrayList<>();
         for (ConstraintViolation<?> cv : e.getConstraintViolations()) {
-            String fieldName = ((PathImpl) cv.getPropertyPath()).getLeafNode().asString();
+            String fieldName = cv.getLeafBean().toString();
             String message = cv.getMessage();
             Map<String, Object> field = new HashMap<>();
             field.put("field", fieldName);
