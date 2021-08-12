@@ -6,7 +6,7 @@ import lombok.Data;
  * @author mengdexuan on 2021/8/11 12:25.
  */
 @Data
-public class MsgDto {
+public class MailMsg {
 
 	//邮件主题
 	private String subject;
@@ -28,7 +28,7 @@ public class MsgDto {
 
 	@Override
 	public String toString() {
-		return "MsgDto{" +
+		return "MailMsg{" +
 				"subject='" + subject + '\'' +
 				", from='" + from + '\'' +
 				", receiveAddress='" + receiveAddress + '\'' +

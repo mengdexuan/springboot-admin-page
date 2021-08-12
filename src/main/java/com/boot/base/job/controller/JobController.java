@@ -13,6 +13,8 @@ import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 /**
  * <p>
  * spring定时任务 控制器
@@ -36,6 +38,7 @@ public class JobController extends BaseController {
 	public Result list() {
 		return this.success(jobService.findAll());
 	}
+
 
 
 
@@ -140,6 +143,28 @@ public class JobController extends BaseController {
 
 		return this.success();
 	}
+
+
+
+	@PostMapping(value = "/statusTrigger")
+	@ApiOperation("切换已存在的所有任务状态")
+	public Result<String> statusTrigger(Integer status) {
+
+		List<Job> list = jobService.findAll();
+
+		for (Job job:list){
+			job.setStatus(status);
+		}
+
+		jobService.save(list);
+
+		for (Job job:list){
+			jobService.updateStatus(job);
+		}
+
+		return this.success();
+	}
+
 
 
 

@@ -9,7 +9,6 @@ import org.springframework.stereotype.Service;
 
 import javax.mail.*;
 import javax.mail.internet.MimeMessage;
-import java.io.IOException;
 import java.util.List;
 import java.util.Properties;
 import java.util.concurrent.TimeUnit;
@@ -27,27 +26,26 @@ public class MailReceiveService {
 	@Value("${spring.mail.password}")
 	public String pwd;
 
-	MailConn mailConn = null;
+	Store store = null;
 
 	/**
-	 * 邮箱连接获取后，一段时间后需要释放，原因是：
-	 *
-	 * 一个连接打开后无法持续接收到新邮件，必须是新邮件已发送了，然后再打开另一个连接才能收到
+	 * 邮件连接缓存
 	 */
-	Cache<String, MailConn> cache = Caffeine.newBuilder()
-			.expireAfterWrite(20, TimeUnit.SECONDS)
+	Cache<String, Store> cache = Caffeine.newBuilder()
+			.expireAfterWrite(30, TimeUnit.MINUTES)
 			.maximumSize(10)
 			.build();
 
-
 	/**
 	 * 获取新邮件
+	 *
 	 * @return
 	 */
-	public List<MsgDto> receive(){
-		open();
+	public List<MailMsg> receive() {
+		initStore();
 
-		Folder folder = mailConn.getFolder();
+		Folder folder = openFolder(store);
+
 		Message[] msgArr = null;
 
 		try {
@@ -55,13 +53,14 @@ public class MailReceiveService {
 			int delMsgCount = folder.getDeletedMessageCount();
 			int msgCount = folder.getMessageCount();
 
-			log.info("msgCount:{},delMsgCount:{},newMsgCount:{}",msgCount,delMsgCount,newMsgCount);
+//			log.info("msgCount:{},delMsgCount:{},newMsgCount:{}", msgCount, delMsgCount, newMsgCount);
 
-			if (msgCount>0){
+			if (msgCount > 0) {
 				List<Message> tempList = Lists.newArrayList();
 				Message[] arr = folder.getMessages();
-				for (Message item:arr){
-					if (!item.getFlags().contains(Flags.Flag.DELETED)){
+				for (Message item : arr) {
+					if (item.getFlags().contains(Flags.Flag.DELETED)) {
+					} else {
 						tempList.add(item);
 					}
 				}
@@ -70,76 +69,102 @@ public class MailReceiveService {
 				tempList.toArray(msgArr);
 			}
 		} catch (MessagingException e) {
-			log.error("获取邮件失败！",e);
+			log.error("获取邮件失败！", e);
 		}
 
-		List<MsgDto> msgDtoList = Lists.newArrayList();
+		List<MailMsg> mailMsgList = Lists.newArrayList();
 
-		if (msgArr!=null){
-			for (Message item:msgArr){
+		if (msgArr != null) {
+			for (Message item : msgArr) {
 				try {
 					MimeMessage msg = (MimeMessage) item;
 
-					MsgDto dto = new MsgDto();
+					MailMsg dto = new MailMsg();
 					dto.setSize(msg.getSize());
 					dto.setContainAttachment(MailUtil.isContainAttachment(msg));
 					dto.setFrom(MailUtil.getFrom(msg));
-					dto.setReceiveAddress(MailUtil.getReceiveAddress(msg,null));
-					dto.setSentDate(MailUtil.getSentDate(msg,null));
+					dto.setReceiveAddress(MailUtil.getReceiveAddress(msg, null));
+					dto.setSentDate(MailUtil.getSentDate(msg, null));
 					dto.setSubject(MailUtil.getSubject(msg));
 
 					StringBuffer sb = new StringBuffer();
-					MailUtil.getMailTextContent(msg,sb);
+					MailUtil.getMailTextContent(msg, sb);
 
 					dto.setContent(sb.toString());
 
-					msgDtoList.add(dto);
-				}catch (Exception e){
-					log.error("解析邮件失败！",e);
+					mailMsgList.add(dto);
+				} catch (Exception e) {
+					log.error("解析邮件失败！", e);
 				}
 			}
 		}
 
 
 		try {
-			MailUtil.markedMsg(Flags.Flag.DELETED,msgArr);
+			MailUtil.markedMsg(Flags.Flag.DELETED, msgArr);
 		} catch (Exception e) {
-			log.error("标记邮件删除失败！",e);
+			log.error("标记邮件删除失败！", e);
 		}
 
-		return msgDtoList;
+		closeFolder(folder);
+
+		return mailMsgList;
+	}
+
+
+	private Folder openFolder(Store store) {
+		Folder folder = null;
+		try {
+			// 获得收件箱
+			folder = store.getFolder("INBOX");
+			/* Folder.READ_ONLY：只读权限
+			 * Folder.READ_WRITE：可读可写（可以修改邮件的状态）
+			 */
+			folder.open(Folder.READ_WRITE); //打开收件箱
+		} catch (Exception e) {
+			log.error("获取 folder 失败！", e);
+		}
+		return folder;
+	}
+
+	private void closeFolder(Folder folder) {
+		try {
+			folder.close(true);
+		} catch (MessagingException e) {
+		}
 	}
 
 
 
-	private void close(){
+	private void closeStore() {
 		//释放资源
-		if(mailConn!=null){
+		if (store != null) {
 			try {
-				mailConn.getFolder().close(true);
-				mailConn.getStore().close();
-//				log.info("释放邮件服务器连接...");
+				store.close();
 			} catch (Exception e) {
 			}
+			log.info("释放邮件服务器连接...");
 		}
 	}
 
 
-	private void open(){
-		mailConn = cache.get(userName,new Function<String, MailConn>() {
+	/**
+	 * 初始化邮件 store ，如果缓存中不存在，则再次获取连接（会自动放入缓存）
+	 */
+	private void initStore() {
+		store = cache.get(userName, new Function<String, Store>() {
 			@Override
-			public MailConn apply(String name) {
-				close();
-//				log.info("{} 重新获取邮件服务器连接...",name);
-				return getMailConn();
+			public Store apply(String name) {
+				//获取新连接之前，将之前的释放掉
+				closeStore();
+				return getConn();
 			}
 		});
-//		System.out.println(mailConn.getStore().hashCode());
 	}
 
 
-	private MailConn getMailConn(){
-		MailConn mailConn = new MailConn();
+	private Store getConn() {
+		Store store = null;
 
 		String port = "110";   // 端口号
 		String servicePath = "pop3.163.com";   // 服务器地址
@@ -153,22 +178,18 @@ public class MailReceiveService {
 		try {
 			// 创建Session实例对象
 			Session session = Session.getInstance(props);
-			Store store = session.getStore("pop3");
+			store = session.getStore("pop3");
 			store.connect(userName, pwd); //163邮箱程序登录属于第三方登录所以这里的密码是163给的授权密码而并非普通的登录密码
-
-			// 获得收件箱
-			Folder folder = store.getFolder("INBOX");
-			/* Folder.READ_ONLY：只读权限
-			 * Folder.READ_WRITE：可读可写（可以修改邮件的状态）
-			 */
-			folder.open(Folder.READ_WRITE); //打开收件箱
-
-			mailConn.setFolder(folder);
-			mailConn.setStore(store);
-		}catch (Exception e){
-			log.error("获取邮件服务器连接失败！",e);
+		} catch (Exception e) {
+			log.error("获取邮件服务器连接失败！", e);
 		}
 
-		return mailConn;
+		log.info("获取邮件服务器连接...");
+
+		return store;
 	}
+
+
+
+
 }

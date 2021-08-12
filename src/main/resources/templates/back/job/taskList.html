@@ -23,6 +23,14 @@
 			<div class="container-fluid">
 				<div class="row cl" style="margin-top: 10px;">
 					<div class="col-md-12">
+						<div class="btn-group" role="group">
+							<button type="button" class="btn btn-danger" onclick="statusTrigger(2)">全部暂停</button>
+							<button type="button" class="btn btn-success" onclick="statusTrigger(1)">全部启动</button>
+						</div>
+					</div>
+				</div>
+				<div class="row cl" style="margin-top: 10px;">
+					<div class="col-md-12">
 						<div class="table-responsive">
 							<table class="table table-hover table-bordered">
 								<thead>
@@ -51,10 +59,12 @@
 									<td><span th:if="${job.autoCreate == 0}">是</span><span th:if="${job.autoCreate != 0}">否</span></td>
 									<td th:text="${job.remark}"></td>
 									<td>
-										<button class="btn btn-success" th:data-val="${job.id}" onclick="showModal(this)">修改</button>
-										<button class="btn btn-warning" th:onclick="'errLog(\''+${job.id}+'\');'">错误日志</button>
-										<button class="btn btn-primary" th:onclick="'manual(\''+${job.id}+'\');'">手动触发1次</button>
-										<button class="btn btn-danger" th:onclick="'del(\''+${job.id}+'\');'">删除</button>
+										<div class="btn-group" role="group">
+											<button class="btn btn-success" th:data-val="${job.id}" onclick="showModal(this)">修改</button>
+											<button class="btn btn-warning" th:onclick="'errLog(\''+${job.id}+'\');'">错误日志</button>
+											<button class="btn btn-primary" th:onclick="'manual(\''+${job.id}+'\');'">手动触发1次</button>
+											<button class="btn btn-danger" th:onclick="'del(\''+${job.id}+'\');'">删除</button>
+										</div>
 									</td>
 								</tr>
 								</tbody>
@@ -151,6 +161,27 @@
             $("#statusSwitch_" + id).bootstrapSwitch('state', false, true);
         }
     }
+
+
+    // 任务状态  1.运行  2.暂停
+    function statusTrigger(status) {
+        $.ajax({
+            type: "post",
+            url: ctx + "/job/statusTrigger?status="+status,
+            dataType: "json",
+            async: true,
+            success: function (data) {
+                if (data.success){
+                    refresh();
+                }else {
+                    layer.msg("操作失败！")
+                }
+            },
+            error: function (err) {
+            }
+        });
+    }
+
 
     function showModal(who) {
         $('#modal_1').modal('show');

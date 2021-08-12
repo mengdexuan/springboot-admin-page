@@ -22,6 +22,11 @@ public interface JobService extends BaseService<Job> {
 	 */
 	void addJob(Job job);
 
+	/**
+	 * 更新任务
+	 * @param job
+	 */
+	void updateStatus(Job job);
 
 	/**
 	 * 添加 cron 任务，相同的任务（指的是2条任务的：bean名称和method名称相同）只可以添加1条记录，不会重复添加
