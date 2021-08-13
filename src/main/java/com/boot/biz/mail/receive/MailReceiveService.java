@@ -5,6 +5,7 @@ import com.github.benmanes.caffeine.cache.Caffeine;
 import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Service;
 
 import javax.mail.*;
@@ -19,7 +20,7 @@ import java.util.function.Function;
  */
 @Slf4j
 @Service
-public class MailReceiveService {
+public class MailReceiveService implements CommandLineRunner {
 
 	@Value("${spring.mail.username}")
 	public String userName;
@@ -28,13 +29,40 @@ public class MailReceiveService {
 
 	Store store = null;
 
+	@Override
+	public void run(String... args) throws Exception {
+		try {
+			store = getConn();
+		} catch (Exception e) {
+			log.error("获取邮件连接失败！",e);
+		}
+	}
+
+
 	/**
 	 * 邮件连接缓存
 	 */
-	Cache<String, Store> cache = Caffeine.newBuilder()
+	/*Cache<String, Store> cache = Caffeine.newBuilder()
 			.expireAfterWrite(30, TimeUnit.MINUTES)
 			.maximumSize(10)
-			.build();
+			.build();*/
+
+	/**
+	 * 初始化邮件 store ，如果缓存中不存在，则再次获取连接（会自动放入缓存）
+	 */
+	/*private void initStore() {
+		store = cache.get(userName, new Function<String, Store>() {
+			@Override
+			public Store apply(String name) {
+				//获取新连接之前，将之前的释放掉
+				closeStore();
+				return getConn();
+			}
+		});
+	}*/
+
+
+
 
 	/**
 	 * 获取新邮件
@@ -42,7 +70,6 @@ public class MailReceiveService {
 	 * @return
 	 */
 	public List<MailMsg> receive() {
-		initStore();
 
 		Folder folder = openFolder(store);
 
@@ -148,19 +175,7 @@ public class MailReceiveService {
 	}
 
 
-	/**
-	 * 初始化邮件 store ，如果缓存中不存在，则再次获取连接（会自动放入缓存）
-	 */
-	private void initStore() {
-		store = cache.get(userName, new Function<String, Store>() {
-			@Override
-			public Store apply(String name) {
-				//获取新连接之前，将之前的释放掉
-				closeStore();
-				return getConn();
-			}
-		});
-	}
+
 
 
 	private Store getConn() {
