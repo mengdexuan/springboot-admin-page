@@ -1,5 +1,6 @@
 package com.boot.base.job.entity;
 
+import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
@@ -29,10 +30,12 @@ public class Job {
     /**
      * 任务名称
      */
+    @ApiModelProperty("任务名称")
     private String name;
     /**
      * spring bean名称
      */
+    @ApiModelProperty("bean名称")
     private String bean;
     /**
      * 方法名
