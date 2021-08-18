@@ -16,7 +16,7 @@ import java.util.stream.Collectors;
  * @author mengdexuan on 2021/8/10 23:05.
  */
 @Slf4j
-@Component
+//@Component
 public class MailReceiveJob {
 
 	@Autowired
