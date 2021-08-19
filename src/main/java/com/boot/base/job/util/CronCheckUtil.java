@@ -1,4 +1,4 @@
-package com.boot.base.util;
+package com.boot.base.job.util;
 
 import cn.hutool.cron.pattern.CronPattern;
 import lombok.extern.slf4j.Slf4j;

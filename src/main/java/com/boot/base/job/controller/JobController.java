@@ -6,7 +6,7 @@ import com.boot.base.Result;
 import com.boot.base.exception.GlobalServiceException;
 import com.boot.base.job.entity.Job;
 import com.boot.base.job.service.JobService;
-import com.boot.base.util.CronCheckUtil;
+import com.boot.base.job.util.CronCheckUtil;
 import com.boot.base.util.HelpMe;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
