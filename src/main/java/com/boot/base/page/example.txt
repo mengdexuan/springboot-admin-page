@@ -1,0 +1,147 @@
+分页查询示例
+
+
+
+--------------------------------------------------------------------------------
+
+查询实体：
+
+@Data
+@Accessors(chain = true)
+@ApiModel("任务查询")
+public class TaskQueryDto {
+
+	@ApiModelProperty("1：未出库 2：在途 3:已完成 ")
+	private Integer taskStatus;
+	/**
+	 * 出入库银行名称，便于按名称查询调款数据
+	 */
+	@ApiModelProperty("出入库银行名称，便于按名称查询调款数据")
+	private String bankName;
+
+	@ApiModelProperty("任务类型：1：跨行调款 2：代理任务 3：向人行交款 4：从人行取款  5：上缴残损券")
+	private List<Integer> taskTypeList;
+
+	/**
+	 * 任务时间
+	 */
+	@ApiModelProperty("任务时间--开始")
+	private String taskTimeBegin;
+
+	@ApiModelProperty("任务时间--结束")
+	private String taskTimeEnd;
+
+	@ApiModelProperty("银行编码")
+	private String bankCode;
+
+
+	@ApiModelProperty("入库银行编码")
+	private String inBank;
+
+	/**
+	 * 出库银行编码
+	 */
+	@ApiModelProperty("出库银行编码")
+	private String outBank;
+
+
+}
+
+
+--------------------------------------------------------------------------------
+controller:
+
+@GetMapping(value = "/pageList")
+	@ApiOperation("分页查询调款任务")
+	public Result<PageRecord> pageList(PageInfo pageInfo, TaskQueryDto dto) {
+
+		PageRecord pageRecord = taskService.pageList(pageInfo, dto);
+
+		return this.success(pageRecord);
+	}
+
+
+--------------------------------------------------------------------------------
+
+
+service:
+
+@Override
+	public PageRecord pageList(PageInfo pageInfo, TaskQueryDto dto) {
+
+		Sort sort = Sort.by(Sort.Direction.DESC,"taskTime");
+
+		Pageable pageable = PageRequest.of(pageInfo.getPageNo()-1, pageInfo.getPageSize(),sort);
+
+		Specification specification = new Specification<Task>() {
+			@Override
+			public Predicate toPredicate(Root<Task> root, CriteriaQuery<?> criteriaQuery, CriteriaBuilder criteriaBuilder) {
+
+				List<Predicate> predicates = new ArrayList<>();
+				if(HelpMe.isNotNull(dto.getTaskTimeBegin())){
+					String beginTimeStr = dto.getTaskTimeBegin()+" 00:00:00";
+					DateTime beginTime = DateUtil.parse(beginTimeStr, HelpMe.yyyy_MM_dd_HH_mm_ss);
+					predicates.add(criteriaBuilder.greaterThanOrEqualTo(root.get("taskTime"), beginTime));
+				}
+				if(HelpMe.isNotNull(dto.getTaskTimeEnd())){
+					String endTimeStr = dto.getTaskTimeEnd()+" 23:59:59";
+					DateTime endTime = DateUtil.parse(endTimeStr, HelpMe.yyyy_MM_dd_HH_mm_ss);
+					predicates.add(criteriaBuilder.lessThanOrEqualTo(root.get("taskTime"), endTime));
+				}
+				if (HelpMe.isNotNull(dto.getBankCode())){
+					predicates.add(criteriaBuilder.like(root.get("bankCode"), "%"+dto.getBankCode()+"%"));
+				}
+				if (HelpMe.isNotNull(dto.getInBank())){
+					predicates.add(criteriaBuilder.equal(root.get("inBank"), dto.getInBank()));
+				}
+				if (HelpMe.isNotNull(dto.getOutBank())){
+					predicates.add(criteriaBuilder.equal(root.get("outBank"), dto.getOutBank()));
+				}
+				if (HelpMe.isNotNull(dto.getTaskStatus())){
+					predicates.add(criteriaBuilder.equal(root.get("taskStatus"), dto.getTaskStatus()));
+				}
+				if (HelpMe.isNotNull(dto.getTaskTypeList())){
+					Expression<String> exp = root.<String>get("taskType");
+					Predicate p = exp.in(dto.getTaskTypeList());
+					predicates.add(p);
+				}
+				if (HelpMe.isNotNull(dto.getBankName())){
+					predicates.add(criteriaBuilder.like(root.get("bankName"), "%"+dto.getBankName()+"%"));
+				}
+
+				return criteriaBuilder.and(predicates.toArray(new Predicate[predicates.size()]));
+			}
+		};
+
+		Page<Task> page = repository.findAll(specification, pageable);
+
+		PageRecord<Task> pageRecord = PageRecordTrans.page2PageRecord(page);
+
+		return pageRecord;
+
+	}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
