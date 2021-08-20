@@ -20,23 +20,12 @@ import java.util.function.Function;
  */
 @Slf4j
 @Service
-public class MailReceiveService implements CommandLineRunner {
+public class MailReceiveService {
 
 	@Value("${spring.mail.username}")
 	public String userName;
 	@Value("${spring.mail.password}")
 	public String pwd;
-
-	Store store = null;
-
-	@Override
-	public void run(String... args) throws Exception {
-		try {
-			store = getConn();
-		} catch (Exception e) {
-			log.error("获取邮件连接失败！",e);
-		}
-	}
 
 
 	/**
@@ -62,6 +51,7 @@ public class MailReceiveService implements CommandLineRunner {
 	}*/
 
 
+	Store store = null;
 
 
 	/**
@@ -70,6 +60,10 @@ public class MailReceiveService implements CommandLineRunner {
 	 * @return
 	 */
 	public List<MailMsg> receive() {
+
+		if (store==null){
+			store = getConn();
+		}
 
 		Folder folder = openFolder(store);
 
@@ -86,6 +80,7 @@ public class MailReceiveService implements CommandLineRunner {
 				List<Message> tempList = Lists.newArrayList();
 				Message[] arr = folder.getMessages();
 				for (Message item : arr) {
+
 					if (item.getFlags().contains(Flags.Flag.DELETED)) {
 					} else {
 						tempList.add(item);
@@ -134,6 +129,7 @@ public class MailReceiveService implements CommandLineRunner {
 		}
 
 		closeFolder(folder);
+//		closeStore(store);
 
 		return mailMsgList;
 	}
@@ -148,27 +144,34 @@ public class MailReceiveService implements CommandLineRunner {
 			 * Folder.READ_WRITE：可读可写（可以修改邮件的状态）
 			 */
 			folder.open(Folder.READ_WRITE); //打开收件箱
+
+			log.info("打开 folder ...");
 		} catch (Exception e) {
 			log.error("获取 folder 失败！", e);
 		}
 		return folder;
 	}
 
+
+
 	private void closeFolder(Folder folder) {
 		try {
 			folder.close(true);
-		} catch (MessagingException e) {
+		} catch (Exception e) {
+			log.error("关闭 folder 失败！",e);
 		}
+		log.info("关闭 folder ...");
 	}
 
 
 
-	private void closeStore() {
+	private void closeStore(Store store) {
 		//释放资源
 		if (store != null) {
 			try {
 				store.close();
 			} catch (Exception e) {
+				log.error("关闭 store 失败！",e);
 			}
 			log.info("释放邮件服务器连接...");
 		}

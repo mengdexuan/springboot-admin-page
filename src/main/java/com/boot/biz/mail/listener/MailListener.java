@@ -6,6 +6,9 @@ import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 /**
  * 监听新邮件的到来并处理
  * @author mengdexuan on 2021/8/11 16:37.
@@ -19,7 +22,11 @@ public class MailListener {
 	@EventListener
 	public void listener(MailMsgWrapper wrapper){
 
-		log.info("listener_1:{}",wrapper);
+		List<String> subjectList = wrapper.getMailMsgList().stream().map(item -> {
+			return item.getSubject()+","+item.getSentDate();
+		}).collect(Collectors.toList());
+
+		log.info("listener_1:{}",subjectList);
 
 	}
 
@@ -27,8 +34,11 @@ public class MailListener {
 	@EventListener
 	public void listener2(MailMsgWrapper wrapper){
 
-		log.info("listener_2:{}",wrapper);
+		List<String> subjectList = wrapper.getMailMsgList().stream().map(item -> {
+			return item.getSubject()+","+item.getSentDate();
+		}).collect(Collectors.toList());
 
+		log.info("listener_2:{}",subjectList);
 	}
 
 

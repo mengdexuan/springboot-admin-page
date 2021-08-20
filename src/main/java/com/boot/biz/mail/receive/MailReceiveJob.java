@@ -16,7 +16,7 @@ import java.util.stream.Collectors;
  * @author mengdexuan on 2021/8/10 23:05.
  */
 @Slf4j
-//@Component
+@Component
 public class MailReceiveJob {
 
 	@Autowired
@@ -26,7 +26,7 @@ public class MailReceiveJob {
 	ApplicationContext applicationContext;
 
 
-	@JobCron(name = "定时收取邮件",cron = "0/3 * * * * *",delWhenSuccess = false,autoCreate = true)
+	@JobCron(name = "定时收取邮件",cron = "0 */1 * * * ?",delWhenSuccess = false,autoCreate = true)
 	public void run(Long jobId)throws Exception{
 
 		List<MailMsg> msgList = mailReceiveService.receive();

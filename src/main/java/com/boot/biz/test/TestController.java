@@ -1,7 +1,10 @@
 package com.boot.biz.test;
 
 import cn.hutool.core.date.DateUtil;
+import cn.hutool.core.thread.ThreadUtil;
 import cn.hutool.crypto.SecureUtil;
+import cn.hutool.extra.mail.MailAccount;
+import cn.hutool.extra.mail.MailUtil;
 import com.boot.base.NativeSqlQueryServices;
 import com.boot.base.Result;
 import com.boot.base.ResultUtil;
@@ -27,6 +30,10 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
 
+import javax.mail.Folder;
+import javax.mail.Message;
+import javax.mail.Session;
+import javax.mail.Store;
 import javax.servlet.http.HttpServletRequest;
 import javax.sql.DataSource;
 import java.io.File;
@@ -150,7 +157,34 @@ public class TestController {
 
 	public static void main(String[] args) throws Exception{
 
-		System.out.println(DateUtil.now());
+
+//		host: smtp.163.com    #客户端授权码
+//		username: mengdexuan_test@163.com   #发件人邮箱
+//		password: YAIMDENAYOULWVWH  #客户端授权码
+//		port: 465
+
+		MailAccount account = new MailAccount();
+		account.setHost("mail.pop3.host");
+		account.setUser("mengdexuan_test@163.com");
+		account.setPass("YAIMDENAYOULWVWH");
+		account.setPort(110);
+		account.setAuth(true);
+
+		Session session = MailUtil.getSession(account, true);
+		Store store = session.getStore("pop3");
+		store.connect(account.getHost(),account.getUser(),account.getPass());
+
+		while (true){
+
+			Folder folder = store.getFolder("INBOX");
+
+			Message[] msg = folder.getMessages();
+
+			com.boot.biz.mail.receive.MailUtil.parseMessage(msg);
+
+			ThreadUtil.safeSleep(2000);
+		}
+
 
 	}
 

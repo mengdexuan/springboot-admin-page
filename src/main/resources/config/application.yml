@@ -53,15 +53,18 @@ spring:
       max-file-size: 10240MB
       max-request-size: 10240MB
   mail:
-    host: smtp.163.com    #客户端授权码
+    host: smtp.163.com    #发送邮件服务器
     username: mengdexuan_test@163.com   #发件人邮箱
     password: YAIMDENAYOULWVWH  #客户端授权码
     port: 465
     test-connection: true
     properties:
       mail.smtp.socketFactory.class: javax.net.ssl.SSLSocketFactory
-
-
+    receive:
+      host: imap.126.com    #接收邮件服务器
+      username: mengdexuan_test@126.com   #收件人邮箱
+      password: WNTMIXTVLLHSGGTG  #客户端授权码
+      port: 143
 
 server:
   port: 2100 #项目端口
