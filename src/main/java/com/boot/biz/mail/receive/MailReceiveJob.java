@@ -26,7 +26,7 @@ public class MailReceiveJob {
 	ApplicationContext applicationContext;
 
 
-	@JobCron(name = "定时收取邮件",cron = "0 */1 * * * ?",delWhenSuccess = false,autoCreate = true)
+	@JobCron(name = "定时收取邮件",cron = "0/5 * * * * *",delWhenSuccess = false,autoCreate = true)
 	public void run(Long jobId)throws Exception{
 
 		List<MailMsg> msgList = mailReceiveService.receive();

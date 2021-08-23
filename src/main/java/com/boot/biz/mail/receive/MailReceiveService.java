@@ -1,36 +1,79 @@
 package com.boot.biz.mail.receive;
 
-import com.github.benmanes.caffeine.cache.Cache;
-import com.github.benmanes.caffeine.cache.Caffeine;
+import cn.hutool.core.date.DatePattern;
 import com.google.common.collect.Lists;
+import com.sun.mail.imap.IMAPFolder;
+import com.sun.mail.imap.IMAPStore;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Service;
 
-import javax.mail.*;
+import javax.mail.Flags;
+import javax.mail.Folder;
+import javax.mail.Message;
+import javax.mail.Session;
 import javax.mail.internet.MimeMessage;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Properties;
-import java.util.concurrent.TimeUnit;
-import java.util.function.Function;
 
 /**
  * @author mengdexuan on 2021/8/10 18:24.
  */
 @Slf4j
 @Service
-public class MailReceiveService {
+public class MailReceiveService implements CommandLineRunner {
 
-	@Value("${spring.mail.username}")
-	public String userName;
-	@Value("${spring.mail.password}")
-	public String pwd;
+	@Value("${spring.mail.receive.protocol}")
+	private String protocol;
+
+	@Value("${spring.mail.receive.host}")
+	private String host;
+
+	@Value("${spring.mail.receive.port}")
+	private String port;
+
+	@Value("${spring.mail.receive.username}")
+	private String username;
+
+	@Value("${spring.mail.receive.password}")
+	private String password;
+
+	IMAPStore store = null;
+	IMAPFolder folder = null;
 
 
-	/**
-	 * 邮件连接缓存
-	 */
+	@Override
+	public void run(String... args) throws Exception {
+
+		Properties props = new Properties();
+		props.setProperty("mail.store.protocol", protocol);
+		props.setProperty("mail.imap.host", host);
+		props.setProperty("mail.imap.port", port);
+
+		HashMap IAM = new HashMap();
+//带上IMAP ID信息，由key和value组成，例如name，version，vendor，support-email等。
+		IAM.put("name", "myname");
+		IAM.put("version", "1.0.0");
+		IAM.put("vendor", "myclient");
+		IAM.put("support-email", username);
+		Session session = Session.getInstance(props);
+
+		store = (IMAPStore) session.getStore(protocol);
+		store.connect(username, password);
+
+		store.id(IAM);
+		folder = (IMAPFolder) store.getFolder("Inbox");
+		folder.open(Folder.READ_WRITE);
+
+		log.info("mail conn success...");
+	}
+
+
+/**
+ * 邮件连接缓存
+ */
 	/*Cache<String, Store> cache = Caffeine.newBuilder()
 			.expireAfterWrite(30, TimeUnit.MINUTES)
 			.maximumSize(10)
@@ -51,9 +94,6 @@ public class MailReceiveService {
 	}*/
 
 
-	Store store = null;
-
-
 	/**
 	 * 获取新邮件
 	 *
@@ -61,150 +101,53 @@ public class MailReceiveService {
 	 */
 	public List<MailMsg> receive() {
 
-		if (store==null){
-			store = getConn();
-		}
-
-		Folder folder = openFolder(store);
-
-		Message[] msgArr = null;
+		List<Message> tempList = Lists.newArrayList();
+		List<MailMsg> mailMsgList = Lists.newArrayList();
 
 		try {
-			int newMsgCount = folder.getNewMessageCount();
-			int delMsgCount = folder.getDeletedMessageCount();
 			int msgCount = folder.getMessageCount();
+			int newMsgCount = folder.getNewMessageCount();
 
-//			log.info("msgCount:{},delMsgCount:{},newMsgCount:{}", msgCount, delMsgCount, newMsgCount);
+//			int delMsgCount = folder.getDeletedMessageCount();
+//			int unreadMessageCount = folder.getUnreadMessageCount();
+//			log.info("msgCount:{},newMsgCount:{},unreadMessageCount:{}", msgCount, newMsgCount, unreadMessageCount);
 
-			if (msgCount > 0) {
-				List<Message> tempList = Lists.newArrayList();
-				Message[] arr = folder.getMessages();
-				for (Message item : arr) {
-
-					if (item.getFlags().contains(Flags.Flag.DELETED)) {
-					} else {
-						tempList.add(item);
-					}
-				}
-				msgArr = new Message[tempList.size()];
-
-				tempList.toArray(msgArr);
+			for (int i = 1, j = msgCount; i <= newMsgCount; i++) {
+				Message msg = folder.getMessage(j--);
+				//设为已读
+				msg.setFlag(Flags.Flag.SEEN, true);
+				tempList.add(msg);
 			}
-		} catch (MessagingException e) {
+
+		} catch (Exception e) {
 			log.error("获取邮件失败！", e);
 		}
 
-		List<MailMsg> mailMsgList = Lists.newArrayList();
 
-		if (msgArr != null) {
-			for (Message item : msgArr) {
-				try {
-					MimeMessage msg = (MimeMessage) item;
+		for (Message item : tempList) {
+			try {
+				MimeMessage msg = (MimeMessage) item;
 
-					MailMsg dto = new MailMsg();
-					dto.setSize(msg.getSize());
-					dto.setContainAttachment(MailUtil.isContainAttachment(msg));
-					dto.setFrom(MailUtil.getFrom(msg));
-					dto.setReceiveAddress(MailUtil.getReceiveAddress(msg, null));
-					dto.setSentDate(MailUtil.getSentDate(msg, null));
-					dto.setSubject(MailUtil.getSubject(msg));
+				MailMsg dto = new MailMsg();
+				dto.setSize(msg.getSize());
+				dto.setContainAttachment(MailUtil.isContainAttachment(msg));
+				dto.setFrom(MailUtil.getFrom(msg));
+				dto.setReceiveAddress(MailUtil.getReceiveAddress(msg, null));
+				dto.setSentDate(msg.getSentDate());
+				dto.setSubject(MailUtil.getSubject(msg));
 
-					StringBuffer sb = new StringBuffer();
-					MailUtil.getMailTextContent(msg, sb);
+				StringBuffer sb = new StringBuffer();
+				MailUtil.getMailTextContent(msg, sb);
 
-					dto.setContent(sb.toString());
+				dto.setContent(sb.toString());
 
-					mailMsgList.add(dto);
-				} catch (Exception e) {
-					log.error("解析邮件失败！", e);
-				}
+				mailMsgList.add(dto);
+			} catch (Exception e) {
+				log.error("解析邮件失败！", e);
 			}
 		}
-
-
-		try {
-			MailUtil.markedMsg(Flags.Flag.DELETED, msgArr);
-		} catch (Exception e) {
-			log.error("标记邮件删除失败！", e);
-		}
-
-		closeFolder(folder);
-//		closeStore(store);
 
 		return mailMsgList;
-	}
-
-
-	private Folder openFolder(Store store) {
-		Folder folder = null;
-		try {
-			// 获得收件箱
-			folder = store.getFolder("INBOX");
-			/* Folder.READ_ONLY：只读权限
-			 * Folder.READ_WRITE：可读可写（可以修改邮件的状态）
-			 */
-			folder.open(Folder.READ_WRITE); //打开收件箱
-
-			log.info("打开 folder ...");
-		} catch (Exception e) {
-			log.error("获取 folder 失败！", e);
-		}
-		return folder;
-	}
-
-
-
-	private void closeFolder(Folder folder) {
-		try {
-			folder.close(true);
-		} catch (Exception e) {
-			log.error("关闭 folder 失败！",e);
-		}
-		log.info("关闭 folder ...");
-	}
-
-
-
-	private void closeStore(Store store) {
-		//释放资源
-		if (store != null) {
-			try {
-				store.close();
-			} catch (Exception e) {
-				log.error("关闭 store 失败！",e);
-			}
-			log.info("释放邮件服务器连接...");
-		}
-	}
-
-
-
-
-
-	private Store getConn() {
-		Store store = null;
-
-		String port = "110";   // 端口号
-		String servicePath = "pop3.163.com";   // 服务器地址
-
-		// 准备连接服务器的会话信息
-		Properties props = new Properties();
-		props.setProperty("mail.store.protocol", "pop3");       // 使用pop3协议
-		props.setProperty("mail.pop3.port", port);           // 端口
-		props.setProperty("mail.pop3.host", servicePath);       // pop3服务器
-
-		try {
-			// 创建Session实例对象
-			Session session = Session.getInstance(props);
-			store = session.getStore("pop3");
-			store.connect(userName, pwd); //163邮箱程序登录属于第三方登录所以这里的密码是163给的授权密码而并非普通的登录密码
-		} catch (Exception e) {
-			log.error("获取邮件服务器连接失败！", e);
-		}
-
-		log.info("获取邮件服务器连接...");
-
-		return store;
 	}
 
 
