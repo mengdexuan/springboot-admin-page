@@ -3,9 +3,16 @@
 <head>
     <div th:replace="back/include/_meta :: head"></div>
     <title>springboot-admin-page v1.0</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/wavesurfer.js/1.4.0/wavesurfer.min.js"></script>
 </head>
 <body>
 <div class="container-fluid" style="margin-top: 2%">
+    <div class="row" style="margin-top: 10px;">
+        <div class="col-md-12" id="contentId" style="height: 300px;background-color: grey">
+
+        </div>
+    </div>
+
     <div class="row" style="margin-top: 10px;">
         <div class="col-md-6">
             <ul id="ul">
@@ -29,8 +36,23 @@
 
 
 <script type="text/javascript" th:inline="javascript">
+
+    var wavesurfer = WaveSurfer.create({
+        // Use the id or class-name of the element you created, as a selector
+        container: '#contentId',
+        // The color can be either a simple CSS color or a Canvas gradient
+        waveColor: 'grey',
+        progressColor: 'hsla(200, 100%, 30%, 0.5)',
+        cursorColor: '#fff',
+        // This parameter makes the waveform look like SoundCloud's player
+        barWidth: 3
+    });
+
+    wavesurfer.load('http://localhost:2100/adminPage/test/download');
+
+
     // SockJS与原生的WebSocket的方法基本是一致的，
-    // 所以只需要将 new WebSocket(url); 换成 new SockJS(url); 就可以了
+    // 所以只需要将 new WebSocket(url); 换成 new Smail conn successockJS(url); 就可以了
     var url = ctx + "/echo";
 
     var sock = new SockJS(url);

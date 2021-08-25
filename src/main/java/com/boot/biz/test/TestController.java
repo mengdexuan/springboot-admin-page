@@ -1,7 +1,10 @@
 package com.boot.biz.test;
 
-import cn.hutool.core.date.DateUtil;
+import cn.hutool.core.io.IoUtil;
+import cn.hutool.core.io.StreamProgress;
+import cn.hutool.core.io.resource.ClassPathResource;
 import cn.hutool.core.thread.ThreadUtil;
+import cn.hutool.core.util.RandomUtil;
 import cn.hutool.crypto.SecureUtil;
 import cn.hutool.extra.mail.MailAccount;
 import cn.hutool.extra.mail.MailUtil;
@@ -9,9 +12,7 @@ import com.boot.base.NativeSqlQueryServices;
 import com.boot.base.Result;
 import com.boot.base.ResultUtil;
 import com.boot.base.annotation.PrintTime;
-import com.boot.base.job.entity.Job;
 import com.boot.base.job.service.JobService;
-import com.boot.base.job.example.NoParamJob;
 import com.boot.biz.mail.send.MailSendService;
 import com.boot.biz.validation.ValidatedBean;
 import com.drew.imaging.ImageMetadataReader;
@@ -19,6 +20,7 @@ import com.drew.imaging.ImageProcessingException;
 import com.drew.metadata.Directory;
 import com.drew.metadata.Metadata;
 import com.drew.metadata.Tag;
+import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.camel.CamelContext;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,10 +36,14 @@ import javax.mail.Folder;
 import javax.mail.Message;
 import javax.mail.Session;
 import javax.mail.Store;
+import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.sql.DataSource;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.util.List;
 import java.util.concurrent.Executor;
 
 /**
@@ -73,14 +79,59 @@ public class TestController {
 	@Autowired
 	NativeSqlQueryServices nativeSqlQueryServices;
 
+
+	@GetMapping(value = "/download")
+	public void download(HttpServletResponse response, String audioPath) throws Exception {
+
+		ClassPathResource file = getTempFile();
+
+		String filename = file.getName();
+		filename = java.net.URLEncoder.encode(filename, "UTF-8");
+
+		response.setHeader("Content-Disposition", "filename=" + filename);
+		response.setCharacterEncoding("utf-8");
+		ServletOutputStream out = response.getOutputStream();
+
+		InputStream in = file.getStream();
+
+//		IoUtil.copyByNIO(in, out, 1024, (StreamProgress) null);
+//		IoUtil.close(in);
+//		IoUtil.close(out);
+
+		byte[] b = new byte[1024];
+		int len;
+		//从输入流中读取一定数量的字节，并将其存储在缓冲区字节数组中，读到末尾返回-1
+		while ((len = in.read(b)) > 0) {
+			out.write(b, 0, len);
+		}
+		in.close();
+		out.close();
+	}
+
+
+	//临时文件
+	private ClassPathResource getTempFile(){
+		List<ClassPathResource> tempList = Lists.newLinkedList();
+
+		ClassPathResource classPathResource = new ClassPathResource("audio/川井憲次大団円.mp3");
+		ClassPathResource classPathResource2 = new ClassPathResource("audio/纯音乐温馨时刻.wma");
+
+		tempList.add(classPathResource);
+		tempList.add(classPathResource2);
+
+		int index = RandomUtil.randomInt(0, 2);
+
+		return tempList.get(index);
+	}
+
+
 	@GetMapping("/test1")
 	@ResponseBody
 	public Result test1() throws Exception {
 		Object obj = null;
 
-		Job job = jobService.getJob(NoParamJob.class);
 
-		jobService.addJob(job);
+
 
 		return ResultUtil.buildSuccess(obj);
 	}

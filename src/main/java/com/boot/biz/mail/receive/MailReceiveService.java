@@ -46,6 +46,10 @@ public class MailReceiveService implements CommandLineRunner {
 
 	@Override
 	public void run(String... args) throws Exception {
+//		init();
+	}
+
+	private void init()throws Exception{
 
 		Properties props = new Properties();
 		props.setProperty("mail.store.protocol", protocol);
