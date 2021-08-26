@@ -66,7 +66,6 @@ public class TestController {
 	@Autowired
 	CamelContext camelContext;
 
-
 	@Autowired
 	ApplicationContext applicationContext;
 
