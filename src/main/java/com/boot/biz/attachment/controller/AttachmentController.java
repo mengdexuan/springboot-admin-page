@@ -119,7 +119,7 @@ public class AttachmentController extends BaseController {
         String filename = file.getName();
         filename = java.net.URLEncoder.encode(filename, "UTF-8");
 
-        response.setHeader("Content-Disposition", "attachment.sql;filename=" + filename);
+        response.setHeader("Content-Disposition", "filename=" + filename);
         response.setCharacterEncoding("utf-8");
         ServletOutputStream out = response.getOutputStream();
 

@@ -1,7 +1,5 @@
 package com.boot.biz.test;
 
-import cn.hutool.core.io.IoUtil;
-import cn.hutool.core.io.StreamProgress;
 import cn.hutool.core.io.resource.ClassPathResource;
 import cn.hutool.core.thread.ThreadUtil;
 import cn.hutool.core.util.RandomUtil;
@@ -15,8 +13,8 @@ import com.boot.base.annotation.PrintTime;
 import com.boot.base.job.service.JobService;
 import com.boot.biz.mail.send.MailSendService;
 import com.boot.biz.validation.ValidatedBean;
-import com.drew.imaging.ImageMetadataReader;
 import com.drew.imaging.ImageProcessingException;
+import com.drew.imaging.wav.WavMetadataReader;
 import com.drew.metadata.Directory;
 import com.drew.metadata.Metadata;
 import com.drew.metadata.Tag;
@@ -205,7 +203,7 @@ public class TestController {
 
 
 
-	public static void main(String[] args) throws Exception{
+	public static void main1(String[] args) throws Exception{
 
 
 //		host: smtp.163.com    #客户端授权码
@@ -252,16 +250,15 @@ public class TestController {
 
 
 
-	public static void test() throws ImageProcessingException,IOException {
-		File jpegFile = new File("C:\\Users\\18514\\Desktop\\test\\2020-06-24 222643.JPG");
-
+	public static void main(String[] args) throws ImageProcessingException,IOException {
+		File jpegFile = new File("C:\\Users\\18514\\Desktop\\test5\\audio\\a.wav");
 
 		String md5 = SecureUtil.md5(jpegFile);
 
 //		a50064d8e91cc367aa27b6203d01cb86
 		System.out.println(md5);
 
-		Metadata metadata = ImageMetadataReader.readMetadata(jpegFile);
+		Metadata metadata = WavMetadataReader.readMetadata(jpegFile);
 
 		for (Directory directory : metadata.getDirectories()) {
 			for (Tag tag : directory.getTags()) {
