@@ -61,6 +61,7 @@ spring:
     properties:
       mail.smtp.socketFactory.class: javax.net.ssl.SSLSocketFactory
     receive:
+      enable: false
       protocol: imap
       host: imap.126.com    #接收邮件服务器
       username: mengdexuan_test@126.com   #收件人邮箱

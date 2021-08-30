@@ -40,13 +40,18 @@ public class MailReceiveService implements CommandLineRunner {
 	@Value("${spring.mail.receive.password}")
 	private String password;
 
+	@Value("${spring.mail.receive.enable}")
+	private Boolean enable;
+
 	IMAPStore store = null;
 	IMAPFolder folder = null;
 
 
 	@Override
 	public void run(String... args) throws Exception {
-//		init();
+		if (enable){
+			init();
+		}
 	}
 
 	private void init()throws Exception{
