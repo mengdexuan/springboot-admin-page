@@ -108,7 +108,7 @@
 							<thead>
 							<tr class="success">
 								<th width="5%">序号</th>
-								<th width="20%">字典名称</th>
+								<th width="15%">字典名称</th>
 								<th width="10%">字典key</th>
 								<th width="15%">字典val</th>
 								<th width="10%">父Key</th>
@@ -116,7 +116,7 @@
 								<!--<th width="5%">状态</th>-->
 								<!--<th width="5%">排序</th>-->
 								<th width="15%">创建时间</th>
-								<th width="10%">操作</th>
+								<th width="15%">操作</th>
 							</tr>
 							</thead>
 
@@ -133,6 +133,7 @@
 								<td th:text="${#dates.format(dict.createTime,'yyyy-MM-dd HH:mm:ss')}"></td>
 								<td>
 									<button type="button" class="btn btn-warning btn-sm" th:onclick="'editData(\''+${dict.id}+'\');'">修改</button>
+									<button type="button" class="btn btn-success btn-sm" th:onclick="'copyData(\''+${dict.id}+'\');'">复制</button>
 									<button type="button" class="btn btn-danger btn-sm" th:onclick="'delData(\''+${dict.id}+'\');'">删除</button>
 								</td>
 							</tr>
@@ -256,6 +257,31 @@
             }
         });
     }
+
+
+    function copyData(id) {
+        layer.confirm('复制1条配置？', {
+            btn: ['确认','取消']
+        }, function(index){
+            $.ajax({
+                type: "post",
+                url: ctx + "/dict/copy/" + id,
+                dataType: "json",
+                async: false,
+                data: {
+                },
+                success: function (data) {
+                    layer.close(index);
+                    refresh();
+                },
+                error: function (err) {
+                }
+            });
+        }, function(){
+
+        });
+    }
+
 
 
     function delData(id) {
