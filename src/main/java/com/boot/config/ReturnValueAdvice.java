@@ -40,13 +40,16 @@ public class ReturnValueAdvice  implements ResponseBodyAdvice<Object> {
 
 		NativeWebRequest webRequest = new ServletWebRequest(request);
 
-		Map<String, String> map = (Map<String, String>) webRequest.getAttribute(HandlerMapping.URI_TEMPLATE_VARIABLES_ATTRIBUTE, RequestAttributes.SCOPE_REQUEST);
+		Map<String, String> pathMap = (Map<String, String>) webRequest.getAttribute(HandlerMapping.URI_TEMPLATE_VARIABLES_ATTRIBUTE, RequestAttributes.SCOPE_REQUEST);
 
-		String json = JSONUtil.toJsonStr(o);
-		String param = request.getQueryString();
+		String responseBody = JSONUtil.toJsonStr(o);
+		String queryParam = request.getQueryString();
 
-		log.info("请求地址：{}，请求(url中)参数：{}，请求(@PathVariable)参数：{}，响应体：{}",
-				request.getRequestURI(),param,map,json);
+		Object requestBody = request.getAttribute("requestBody");
+		String url = request.getRequestURI();
+
+		log.info("请求地址：{}，请求(url中)参数：{}，请求(@PathVariable)参数：{}，(post)请求体：{}，响应体：{}",
+				url,queryParam,pathMap,requestBody,responseBody);
 
 		return o;
 	}

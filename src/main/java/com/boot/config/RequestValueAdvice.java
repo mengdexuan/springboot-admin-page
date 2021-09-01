@@ -42,9 +42,11 @@ public class RequestValueAdvice implements RequestBodyAdvice {
 		ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
 		HttpServletRequest request = attributes.getRequest();
 
-		String json = JSONUtil.toJsonStr(o);
+		String requestBody = JSONUtil.toJsonStr(o);
 
-		log.info("请求地址：{}，(post)请求体：{}",request.getRequestURI(),json);
+		request.setAttribute("requestBody",requestBody);
+
+//		log.info("请求地址：{}，(post)请求体：{}",request.getRequestURI(),requestBody);
 
 		return o;
 	}
