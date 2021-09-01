@@ -1,0 +1,91 @@
+#应用目录，jar包部署后所在的目录
+app-dir: D:\Project\GitHubProject\springboot-admin-page
+
+spring:
+  profiles:
+    active: dev1
+  datasource:
+    type: com.alibaba.druid.pool.DruidDataSource
+    url: jdbc:mysql://localhost:3306/springboot-admin-page?characterEncoding=utf8&serverTimezone=Asia/Shanghai&useSSL=false&tinyInt1isBit=false&autoReconnect=true&failOverReadOnly=false
+    username: root
+    password: root
+    driver-class-name: com.mysql.jdbc.Driver
+    # 配置监控统计拦截的filters，去掉后监控界面sql无法统计，'wall'用于防火墙
+    filters: stat,wall,log4j,filterEvent
+    maxActive: 20
+    initialSize: 10
+    maxWait: 60000
+    minIdle: 10
+    timeBetweenEvictionRunsMillis: 60000
+    minEvictableIdleTimeMillis: 300000
+    validationQuery: select 'x'
+    testWhileIdle: true
+    testOnBorrow: false
+    testOnReturn: false
+    # 打开PSCache，并且指定每个连接上PSCache的大小
+    poolPreparedStatements: true
+    maxPoolPreparedStatementPerConnectionSize: 50
+    maxOpenPreparedStatements: 50
+    # 通过connectProperties属性来打开mergeSql功能；慢SQL记录
+    connectionProperties: druid.stat.mergeSql=true;druid.stat.slowSqlMillis=5000
+  jpa:
+    database: mysql
+    hibernate:
+      ddl-auto: none
+    show-sql: false
+    properties:
+      hibernate.format_sql: true
+      hibernate.id.new_generator_mappings: false
+      hibernate.physical_naming_strategy: org.springframework.boot.orm.jpa.hibernate.SpringPhysicalNamingStrategy
+
+  jackson:
+    date-format: yyyy-MM-dd HH:mm:ss
+    time-zone: GMT+8
+
+  #禁用thymeleaf缓存，修改 html 代码后，不需要重启就能生效
+  thymeleaf:
+    cache: false
+#    prefix: classpath:/templates/
+
+  #上传文件大小
+  servlet:
+    multipart:
+      max-file-size: 10240MB
+      max-request-size: 10240MB
+  mail:
+    host: smtp.163.com    #发送邮件服务器
+    username: mengdexuan_test@163.com   #发件人邮箱
+    password: YAIMDENAYOULWVWH  #客户端授权码
+    port: 465
+    test-connection: true
+    properties:
+      mail.smtp.socketFactory.class: javax.net.ssl.SSLSocketFactory
+    receive:
+      enable: false
+      protocol: imap
+      host: imap.126.com    #接收邮件服务器
+      username: mengdexuan_test@126.com   #收件人邮箱
+      password: ABFVBHJMSOWLEAIT  #客户端授权码
+      port: 143
+
+server:
+  port: 2100 #项目端口
+  servlet:
+    context-path: /adminPage #项目名称
+  tomcat:
+    basedir: ${app-dir}/workDir
+
+
+
+
+#可编辑的文件后
+can-edit-ext: txt,js,html,jsp,css,log,sh,bat,ini,config,java,yml,properties,xml,json,md,conf
+
+logging:
+    level:
+        ROOT: INFO
+        com.boot: INFO
+    #与logback.xml中配置的日志路径保持一致
+    info-log: ${app-dir}/log/info.log
+    error-log: ${app-dir}/log/error.log
+
