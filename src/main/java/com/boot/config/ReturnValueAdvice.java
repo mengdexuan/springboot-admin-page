@@ -25,7 +25,7 @@ import java.util.Map;
 @Component
 @ControllerAdvice
 @Slf4j
-public class ReturnValueAdvice  implements ResponseBodyAdvice<Object> {
+public class ReturnValueAdvice implements ResponseBodyAdvice<Object> {
 
 	@Override
 	public boolean supports(MethodParameter methodParameter, Class<? extends HttpMessageConverter<?>> aClass) {
@@ -48,8 +48,14 @@ public class ReturnValueAdvice  implements ResponseBodyAdvice<Object> {
 		Object requestBody = request.getAttribute("requestBody");
 		String url = request.getRequestURI();
 
-		log.info("请求地址：{}，请求(url中)参数：{}，请求(@PathVariable)参数：{}，(post)请求体：{}，响应体：{}",
-				url,queryParam,pathMap,requestBody,responseBody);
+		String controllerName = methodParameter.getMember().getDeclaringClass().getName();
+		String methodName = methodParameter.getMember().getName();
+
+		String mediaTypeStr = mediaType.toString();
+
+		log.info("请求地址：{}，请求(url中)参数：{}，请求(@PathVariable)参数：{}，" +
+						"请求媒体类型：{}，(post)请求体：{}，响应体：{}，类名：{}，方法名：{}",
+				url,queryParam,pathMap,mediaType,requestBody,responseBody,controllerName,methodName);
 
 		return o;
 	}
