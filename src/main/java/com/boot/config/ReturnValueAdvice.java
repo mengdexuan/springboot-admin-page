@@ -9,11 +9,12 @@ import org.springframework.http.server.ServerHttpRequest;
 import org.springframework.http.server.ServerHttpResponse;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.ControllerAdvice;
-import org.springframework.web.context.request.RequestContextHolder;
-import org.springframework.web.context.request.ServletRequestAttributes;
+import org.springframework.web.context.request.*;
+import org.springframework.web.servlet.HandlerMapping;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseBodyAdvice;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.Map;
 
 /**
  * ResponseBodyAdvice : 可以在controller的方法在用@ResponseBody把返回值转换为json对象之前捕捉到返回的对象,
@@ -37,12 +38,15 @@ public class ReturnValueAdvice  implements ResponseBodyAdvice<Object> {
 		ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
 		HttpServletRequest request = attributes.getRequest();
 
+		NativeWebRequest webRequest = new ServletWebRequest(request);
+
+		Map<String, String> map = (Map<String, String>) webRequest.getAttribute(HandlerMapping.URI_TEMPLATE_VARIABLES_ATTRIBUTE, RequestAttributes.SCOPE_REQUEST);
+
 		String json = JSONUtil.toJsonStr(o);
+		String param = request.getQueryString();
 
-		request.setAttribute("_outMsg_",json);
-
-		// 记录响应内容
-//		log.info("****** {}	响应：{}	 ******",request.getRequestURI(),json);
+		log.info("请求地址：{}，请求(url中)参数：{}，请求(@PathVariable)参数：{}，响应体：{}",
+				request.getRequestURI(),param,map,json);
 
 		return o;
 	}
