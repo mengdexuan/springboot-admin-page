@@ -53,9 +53,16 @@ public class ReturnValueAdvice implements ResponseBodyAdvice<Object> {
 
 		String mediaTypeStr = mediaType.toString();
 
-		log.info("请求地址：{}，请求(url中)参数：{}，请求(@PathVariable)参数：{}，" +
-						"请求媒体类型：{}，(post)请求体：{}，响应体：{}，类名：{}，方法名：{}",
-				url,queryParam,pathMap,mediaType,requestBody,responseBody,controllerName,methodName);
+		log.info("\n");
+		log.info("请求地址：{}",url);
+		log.info("请求参数(url中)：{}",queryParam);
+		log.info("请求参数(@PathVariable中)：{}",pathMap);
+		log.info("请求媒体类型：{}",mediaTypeStr);
+		log.info("请求体(post)：{}",requestBody);
+		log.info("响应体：{}",responseBody);
+		log.info("请求处理类：{}",controllerName);
+		log.info("请求处理方法：{}",methodName);
+		log.info("\n");
 
 		return o;
 	}

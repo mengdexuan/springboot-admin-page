@@ -32,11 +32,16 @@
         <oshi.version>3.9.1</oshi.version>
         <jwt.version>0.9.1</jwt.version>
         <jmockdata.version>2.4</jmockdata.version>
+        <jasypt.version>2.1.2</jasypt.version>
     </properties>
 
 
     <dependencies>
-
+        <dependency>
+            <groupId>com.github.ulisesbocchio</groupId>
+            <artifactId>jasypt-spring-boot-starter</artifactId>
+            <version>${jasypt.version}</version>
+        </dependency>
 
         <dependency>
             <groupId>com.github.ben-manes.caffeine</groupId>

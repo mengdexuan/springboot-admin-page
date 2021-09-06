@@ -22,7 +22,9 @@ import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.camel.CamelContext;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
+import org.springframework.core.env.Environment;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.jdbc.datasource.init.DatabasePopulatorUtils;
 import org.springframework.jdbc.datasource.init.ResourceDatabasePopulator;
@@ -76,59 +78,16 @@ public class TestController {
 	@Autowired
 	NativeSqlQueryServices nativeSqlQueryServices;
 
-
-	@GetMapping(value = "/download")
-	public void download(HttpServletResponse response, String audioPath) throws Exception {
-
-		ClassPathResource file = getTempFile();
-
-		String filename = file.getName();
-		filename = java.net.URLEncoder.encode(filename, "UTF-8");
-
-		response.setHeader("Content-Disposition", "filename=" + filename);
-		response.setCharacterEncoding("utf-8");
-		ServletOutputStream out = response.getOutputStream();
-
-		InputStream in = file.getStream();
-
-//		IoUtil.copyByNIO(in, out, 1024, (StreamProgress) null);
-//		IoUtil.close(in);
-//		IoUtil.close(out);
-
-		byte[] b = new byte[1024];
-		int len;
-		//从输入流中读取一定数量的字节，并将其存储在缓冲区字节数组中，读到末尾返回-1
-		while ((len = in.read(b)) > 0) {
-			out.write(b, 0, len);
-		}
-		in.close();
-		out.close();
-	}
+	@Autowired
+	Environment environment;
 
 
-	//临时文件
-	private ClassPathResource getTempFile(){
-		List<ClassPathResource> tempList = Lists.newLinkedList();
-
-		ClassPathResource classPathResource = new ClassPathResource("audio/川井憲次大団円.mp3");
-		ClassPathResource classPathResource2 = new ClassPathResource("audio/纯音乐温馨时刻.wma");
-
-		tempList.add(classPathResource);
-		tempList.add(classPathResource2);
-
-		int index = RandomUtil.randomInt(0, 2);
-
-		return tempList.get(index);
-	}
 
 
 	@GetMapping("/test1")
 	@ResponseBody
-	public Result test1() throws Exception {
+	public Result test1(String name) throws Exception {
 		Object obj = null;
-
-
-
 
 		return ResultUtil.buildSuccess(obj);
 	}
