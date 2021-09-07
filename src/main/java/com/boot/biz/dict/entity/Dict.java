@@ -20,7 +20,7 @@ import java.util.Date;
 @Data
 @Accessors(chain = true)
 @Entity
-@Table(name = "sys_dictionary")
+@Table(name = "sys_dict")
 public class Dict {
 
     @Id
