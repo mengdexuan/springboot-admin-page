@@ -1,5 +1,9 @@
 package com.boot.base.jwt;
 
+import cn.hutool.core.date.DateTime;
+import cn.hutool.core.date.DateUtil;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import lombok.extern.slf4j.Slf4j;
@@ -90,5 +94,60 @@ public class JwtUtil {
 
 		return null;
 	}
+
+
+
+
+	public static String genToken(Map<String,Object> map) {
+		Date now = new Date();
+		DateTime offset = DateUtil.offsetDay(now, 1);//1天后过期
+
+		String jwt = Jwts.builder()
+
+				.setClaims(map)
+				.setExpiration(offset)
+				.signWith(SignatureAlgorithm.HS512,  SECRET)
+				.compact();
+
+		return  jwt;
+	}
+
+
+
+	public static Map<String,Object> parseToken(String token){
+		try {
+			Map<String, Object> body = Jwts.parser()
+					.setSigningKey(SECRET)
+					.parseClaimsJws(token.replace(TOKEN_PREFIX, ""))
+					.getBody();
+
+			return body;
+		} catch (Exception e) {
+			log.error("token 解析失败！",e);
+		}
+
+		return null;
+	}
+
+
+	public static void main(String[] args) {
+
+		Map<String,Object> map = Maps.newHashMap();
+		map.put("abcd",123);
+		map.put("list", Lists.newArrayList(1,2,3));
+
+//		String token = genToken(map);
+//		System.out.println(token);
+
+		String token = "eyJhbGciOiJIUzUxMiJ9.eyJsaXN0IjpbMSwyLDNdLCJleHAiOjE2MzA5OTUzODcsImFiY2QiOjEyM30.p_cqSJZid0SYYRa93_lhUc-hmGC04-xjj4aiUP-VvTazUOEjIOse50-zVl_yaJOk_zRvYDNK_OnPlI-pHTd8Cg";
+		Map<String, Object> map2 = parseToken(token);
+
+		System.out.println(map2);
+
+	}
+
+
+
+
 
 }
