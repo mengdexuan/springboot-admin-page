@@ -303,6 +303,7 @@ public class FtpController {
 
 		InputStream finalIn = in;
 		OutputStream finalOut = out;
+
 		IoUtil.copyByNIO(in, out, 10240, new StreamProgress() {
 			/**
 			 * 开始
@@ -331,14 +332,15 @@ public class FtpController {
 			public void finish() {
 				uploadProgressMap.put(fileNameMd5, "100.00%");
 
-				try {
+				/*try {
 					ftpClient.completePendingCommand();
 				} catch (IOException e) {
-				}
+				}*/
 
 				IoUtil.close(finalIn);
 				IoUtil.close(finalOut);
 
+				ftpClientMap.remove(id);
 			}
 		});
 

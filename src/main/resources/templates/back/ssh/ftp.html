@@ -299,12 +299,13 @@
         $.ajaxFileUpload({
             url: 'uploadFtpFile?id='+ftpInfo.id,
             type: 'post',
+            async: false,
             secureuri: false,
             fileElementId: 'ftpUploadFile',
             dataType: 'json',
             elementIds: '',
             success: function(data, status){
-				// refresh();
+				refresh();
             },
             error: function(data, status, e){
                 // $('#progress').html("upload failed.");
