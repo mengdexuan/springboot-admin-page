@@ -1,5 +1,6 @@
 package com.boot.config;
 
+import cn.hutool.extra.servlet.ServletUtil;
 import cn.hutool.json.JSONUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.MethodParameter;
@@ -45,7 +46,7 @@ public class ReturnValueAdvice implements ResponseBodyAdvice<Object> {
 		String responseBody = JSONUtil.toJsonStr(o);
 		String queryParam = request.getQueryString();
 
-		Object requestBody = request.getAttribute("requestBody");
+		Object requestBody = request.getAttribute("_inMsg_");
 		String url = request.getRequestURI();
 
 		String controllerName = methodParameter.getMember().getDeclaringClass().getName();
@@ -53,7 +54,10 @@ public class ReturnValueAdvice implements ResponseBodyAdvice<Object> {
 
 		String mediaTypeStr = mediaType.toString();
 
+		String ip = ServletUtil.getClientIP(request);
+
 		log.info("\n");
+		log.info("客户端IP：{}",ip);
 		log.info("请求地址：{}",url);
 		log.info("请求参数(url中)：{}",queryParam);
 		log.info("请求参数(@PathVariable中)：{}",pathMap);

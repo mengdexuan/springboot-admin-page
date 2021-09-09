@@ -44,7 +44,7 @@ public class RequestValueAdvice implements RequestBodyAdvice {
 
 		String requestBody = JSONUtil.toJsonStr(o);
 
-		request.setAttribute("requestBody",requestBody);
+		request.setAttribute("_inMsg_",requestBody);
 
 //		log.info("请求地址：{}，(post)请求体：{}",request.getRequestURI(),requestBody);
 
