@@ -1,5 +1,8 @@
 package com.boot.biz.test;
 
+import cn.hutool.core.date.DatePattern;
+import cn.hutool.core.date.DateTime;
+import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.io.resource.ClassPathResource;
 import cn.hutool.core.thread.ThreadUtil;
 import cn.hutool.core.util.RandomUtil;
@@ -210,27 +213,14 @@ public class TestController {
 
 
 	public static void main(String[] args) throws ImageProcessingException,IOException {
-		File jpegFile = new File("C:\\Users\\18514\\Desktop\\test5\\audio\\a.wav");
 
-		String md5 = SecureUtil.md5(jpegFile);
+		String str = "2021-09-10T00:07:57.352779975+00:00";
 
-//		a50064d8e91cc367aa27b6203d01cb86
-		System.out.println(md5);
+		String temp = str.split("\\.")[0];
 
-		Metadata metadata = WavMetadataReader.readMetadata(jpegFile);
+		DateTime date = DateUtil.parse(temp, DatePattern.UTC_SIMPLE_FORMAT);
 
-		for (Directory directory : metadata.getDirectories()) {
-			for (Tag tag : directory.getTags()) {
-				//格式化输出[directory.getName()] - tag.getTagName() = tag.getDescription()
-				System.out.format("[%s] - %s = %s\n",
-						directory.getName(), tag.getTagName(), tag.getDescription());
-			}
-			if (directory.hasErrors()) {
-				for (String error : directory.getErrors()) {
-					System.err.format("ERROR: %s", error);
-				}
-			}
-		}
+		System.out.println(temp);
 	}
 
 

@@ -796,6 +796,17 @@ public class HelpMe {
 
 
 	/**
+	 * 将字符串写入文件(追加方式)，并自动换行
+	 * @param file
+	 * @param content
+	 */
+	public static void append2File(String file, String content) {
+		FileUtil.appendUtf8String(content,file);
+		FileUtil.appendUtf8String("\n",file);
+	}
+
+
+	/**
 	 * 将数据以json的格式写入某个文件中
 	 *
 	 * @param list     数据集合
