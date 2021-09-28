@@ -31,6 +31,9 @@ public class Server {
 
 	private static final int OSHI_WAIT_SECOND = 1000;
 
+
+	private long pid;
+
 	/**
 	 * CPU相关信息
 	 */
@@ -235,5 +238,13 @@ public class Server {
 		} else {
 			return String.format("%d B", size);
 		}
+	}
+
+	public long getPid() {
+		return pid;
+	}
+
+	public void setPid(long pid) {
+		this.pid = pid;
 	}
 }

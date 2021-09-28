@@ -4,6 +4,9 @@ import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.io.resource.ResourceUtil;
 import cn.hutool.core.util.RandomUtil;
 import cn.hutool.core.util.StrUtil;
+import cn.hutool.system.SystemUtil;
+import com.boot.base.Result;
+import com.boot.base.ResultUtil;
 import com.boot.base.job.entity.Job;
 import com.boot.base.job.service.JobService;
 import com.boot.base.util.HelpMe;
@@ -17,14 +20,11 @@ import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.camel.CamelContext;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.env.Environment;
 import org.springframework.core.env.MutablePropertySources;
 import org.springframework.core.env.PropertySource;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -33,7 +33,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.context.support.StandardServletEnvironment;
 
-import javax.annotation.PostConstruct;
 import java.io.File;
 import java.util.Iterator;
 import java.util.List;
@@ -61,6 +60,17 @@ public class IndexController {
 
 	@Autowired
 	SysLogMessaging sysLogMessaging;
+
+
+	@GetMapping("/")
+	@ResponseBody
+	public Result index() {
+
+		Server serverInfo = ServerController.serverInfo();
+		serverInfo.setPid(SystemUtil.getCurrentPID());
+
+		return ResultUtil.buildSuccess(serverInfo);
+	}
 
 
 
