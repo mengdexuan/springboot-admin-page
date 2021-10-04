@@ -20,8 +20,23 @@ import java.util.Map;
 
 /**
  * 本地sql查询
- *
  * @author mengdexuan on 2020/2/11 15:49.
+ *
+ * 若在 AbcServices 中引用 NativeSqlQueryServices，则 AbcServices 需要加 @Transactional(readOnly = true)，
+ * 否则会报错：cannot be cast to org.hibernate.query.internal.NativeQueryImpl
+ *
+ * 示例如下：
+ *
+ * @Service
+ * @Transactional(readOnly = true)
+ * public class AbcServices {
+ *
+ *		@Autowired
+ *	 	NativeSqlQueryServices nativeSqlQueryServices
+ *
+ *	    ......
+ * }
+ *
  */
 @Slf4j
 @Service
