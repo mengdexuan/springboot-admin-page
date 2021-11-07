@@ -177,7 +177,7 @@ public class AttachmentController extends BaseController {
 
     private String attachmentPath;
 
-    @PostConstruct
+//    @PostConstruct
     private void init() {
         attachmentPath = HelpMe.createDir(dictService.dictVal(SysConfig.file_save_dir), "attachment.sql");
     }
