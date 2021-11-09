@@ -62,15 +62,6 @@ public class BaseController {
 	}
 
 	/**
-	 * 构建成功结果带信息
-	 * @param msg
-	 * @return
-	 */
-	public <T> Result<T> success(String msg){
-		return success(msg,null);
-	}
-
-	/**
 	 * 构建成功结果待数据
 	 * @param data
 	 * @return
