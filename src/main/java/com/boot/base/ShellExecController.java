@@ -10,6 +10,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
+
 /**
  * @author mengdexuan on 2021/11/18 15:49.
  */
@@ -25,7 +27,7 @@ public class ShellExecController extends BaseController {
 	@ApiOperation("执行shell命令")
 	public Result exec(@RequestBody String cmd) {
 
-		String result = ShellExeUtil.exeCmd(cmd);
+		List<String> result = ShellExeUtil.exeCmdGetList(cmd);
 
 		return success(result);
 	}

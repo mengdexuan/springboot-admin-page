@@ -6,6 +6,7 @@ import cn.hutool.core.util.RuntimeUtil;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.File;
+import java.util.List;
 
 /**
  * @author mengdexuan on 2021/9/1 17:28.
@@ -47,6 +48,30 @@ public class ShellExeUtil {
 
 		return cmdResult;
 	}
+
+
+
+	/**
+	 * 按行获取执行结果
+	 * @param cmd
+	 * @return
+	 */
+	public static List<String> exeCmdGetList(String cmd){
+
+		String str = exeCmd(cmd);
+
+		File file = FileUtil.newFile(IdUtil.fastSimpleUUID() + ".txt");
+
+		FileUtil.appendUtf8String(str,file);
+
+		List<String> list = FileUtil.readUtf8Lines(file);
+
+		FileUtil.del(file);
+
+		return list;
+	}
+
+
 
 
 
