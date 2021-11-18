@@ -35,11 +35,11 @@ public class ShellExeUtil {
 		//设置可执行权限
 		RuntimeUtil.execForStr("chmod 777 "+file.getAbsolutePath());
 
-		log.info("------ 脚本内容：\n\n{}\n\n ------ 脚本内容结束",FileUtil.readUtf8String(file));
+		log.info("\n------ 脚本内容如下\n\n{}\n\n------ 脚本内容结束",FileUtil.readUtf8String(file));
 
 		String cmdResult = RuntimeUtil.execForStr(file.getAbsolutePath());
 
-		log.info("脚本执行结果：{}",cmdResult);
+		log.info("脚本执行结果：\n{}",cmdResult);
 
 		log.info("删除临时脚本文件：{}",file.getAbsolutePath());
 
