@@ -47,10 +47,10 @@ public class GlobalExceptionHandler {
 
     private String getMessage(Exception exception,ErrorStatus status){
         String msg = "";
-        if (status!=null){
+        /*if (status!=null){
             msg += status.getMessage();
             msg += ":";
-        }
+        }*/
         if (exception!=null){
             msg += exception.getMessage();
         }
