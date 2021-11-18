@@ -2,7 +2,9 @@ package com.boot.base.util;
 
 import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.util.IdUtil;
+import cn.hutool.core.util.ReUtil;
 import cn.hutool.core.util.RuntimeUtil;
+import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.File;
@@ -68,7 +70,15 @@ public class ShellExeUtil {
 
 		FileUtil.del(file);
 
-		return list;
+		List<String> result = Lists.newArrayList();
+
+		for (String item:list){
+			//将 tab 换成 4 个空格
+			String temp = ReUtil.replaceAll(item, "\t", "    ");
+			result.add(temp);
+		}
+
+		return result;
 	}
 
 
