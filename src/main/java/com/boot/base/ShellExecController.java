@@ -1,6 +1,6 @@
 package com.boot.base;
 
-import com.boot.base.util.ShellExeUtil;
+import com.boot.base.util.ShellExecUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
@@ -27,7 +27,7 @@ public class ShellExecController extends BaseController {
 	@ApiOperation("执行shell命令")
 	public Result exec(@RequestBody String cmd) {
 
-		List<String> result = ShellExeUtil.exeCmdGetList(cmd);
+		List<String> result = ShellExecUtil.exeCmdGetList(cmd);
 
 		return success(result);
 	}

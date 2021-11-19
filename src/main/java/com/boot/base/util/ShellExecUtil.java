@@ -14,7 +14,7 @@ import java.util.List;
  * @author mengdexuan on 2021/9/1 17:28.
  */
 @Slf4j
-public class ShellExeUtil {
+public class ShellExecUtil {
 
 
 	/**
