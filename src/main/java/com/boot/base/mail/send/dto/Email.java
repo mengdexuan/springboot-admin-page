@@ -15,6 +15,7 @@ public class Email implements Serializable {
 	private List<String> emailList;//接收方邮件列表
 	private String subject;//主题
 	private String content;//邮件内容
+	private String from;//
 
 
 	//选填
