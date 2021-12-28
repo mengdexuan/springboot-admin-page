@@ -1,4 +1,4 @@
-package com.boot.biz.mail.send.dto;
+package com.boot.base.mail.send.dto;
 
 import lombok.Data;
 

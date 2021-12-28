@@ -3,10 +3,7 @@ package com.boot.biz.test;
 import cn.hutool.core.date.DatePattern;
 import cn.hutool.core.date.DateTime;
 import cn.hutool.core.date.DateUtil;
-import cn.hutool.core.io.resource.ClassPathResource;
 import cn.hutool.core.thread.ThreadUtil;
-import cn.hutool.core.util.RandomUtil;
-import cn.hutool.crypto.SecureUtil;
 import cn.hutool.extra.mail.MailAccount;
 import cn.hutool.extra.mail.MailUtil;
 import com.boot.base.NativeSqlQueryServices;
@@ -14,18 +11,12 @@ import com.boot.base.Result;
 import com.boot.base.ResultUtil;
 import com.boot.base.annotation.PrintTime;
 import com.boot.base.job.service.JobService;
-import com.boot.biz.mail.send.MailSendService;
+import com.boot.base.mail.send.MailSendService;
 import com.boot.biz.validation.ValidatedBean;
 import com.drew.imaging.ImageProcessingException;
-import com.drew.imaging.wav.WavMetadataReader;
-import com.drew.metadata.Directory;
-import com.drew.metadata.Metadata;
-import com.drew.metadata.Tag;
-import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.camel.CamelContext;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.env.Environment;
 import org.springframework.core.io.FileSystemResource;
@@ -39,14 +30,9 @@ import javax.mail.Folder;
 import javax.mail.Message;
 import javax.mail.Session;
 import javax.mail.Store;
-import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import javax.sql.DataSource;
-import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
-import java.util.List;
 import java.util.concurrent.Executor;
 
 /**
@@ -190,7 +176,7 @@ public class TestController {
 
 			Message[] msg = folder.getMessages();
 
-			com.boot.biz.mail.receive.MailUtil.parseMessage(msg);
+			com.boot.base.mail.receive.MailUtil.parseMessage(msg);
 
 			ThreadUtil.safeSleep(2000);
 		}

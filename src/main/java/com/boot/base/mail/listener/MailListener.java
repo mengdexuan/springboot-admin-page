@@ -1,8 +1,8 @@
-package com.boot.biz.mail.listener;
+package com.boot.base.mail.listener;
 
 import cn.hutool.core.date.DatePattern;
 import cn.hutool.core.date.DateUtil;
-import com.boot.biz.mail.receive.MailMsgWrapper;
+import com.boot.base.mail.receive.MailMsgWrapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Async;

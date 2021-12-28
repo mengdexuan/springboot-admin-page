@@ -1,4 +1,4 @@
-package com.boot.biz.mail.receive;
+package com.boot.base.mail.receive;
 
 import lombok.extern.slf4j.Slf4j;
 

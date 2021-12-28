@@ -1,16 +1,13 @@
-package com.boot.biz.mail.receive;
+package com.boot.base.mail.receive;
 
 import cn.hutool.core.collection.CollUtil;
 import com.boot.base.job.annotation.JobCron;
-import com.github.jsonzou.jmockdata.utils.MockUtil;
-import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * @author mengdexuan on 2021/8/10 23:05.

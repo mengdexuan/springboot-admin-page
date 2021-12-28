@@ -3,7 +3,7 @@ package com.boot.base.job.example;
 import com.boot.base.job.annotation.JobCron;
 import com.boot.base.job.entity.Job;
 import com.boot.base.job.service.JobService;
-import com.boot.biz.mail.send.MailSendService;
+import com.boot.base.mail.send.MailSendService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;

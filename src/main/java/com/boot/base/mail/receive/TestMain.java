@@ -1,8 +1,7 @@
-package com.boot.biz.mail.receive;
+package com.boot.base.mail.receive;
 
 import com.sun.mail.imap.IMAPStore;
 
-import javax.mail.Flags;
 import javax.mail.Folder;
 import javax.mail.Session;
 import java.util.HashMap;

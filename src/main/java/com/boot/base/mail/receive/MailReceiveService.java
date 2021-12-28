@@ -1,6 +1,5 @@
-package com.boot.biz.mail.receive;
+package com.boot.base.mail.receive;
 
-import cn.hutool.core.date.DatePattern;
 import com.google.common.collect.Lists;
 import com.sun.mail.imap.IMAPFolder;
 import com.sun.mail.imap.IMAPStore;

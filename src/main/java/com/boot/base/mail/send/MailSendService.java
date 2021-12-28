@@ -1,7 +1,7 @@
-package com.boot.biz.mail.send;
+package com.boot.base.mail.send;
 
 
-import com.boot.biz.mail.send.dto.Email;
+import com.boot.base.mail.send.dto.Email;
 
 import java.util.List;
 
