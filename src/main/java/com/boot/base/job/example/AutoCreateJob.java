@@ -16,6 +16,8 @@ import org.springframework.stereotype.Component;
 //cron表达式示例
 //@Scheduled(cron = "0/3 * * * * *")   每3秒执行一次
 //@Scheduled(cron = "0 */10 * * * ?")   每10分钟执行一次
+//@Scheduled(cron = "10 */1 * * * ?")   每1分钟的第10秒执行一次
+//@Scheduled(cron = "10 */2 * * * ?")   每2分钟的第10秒执行一次
 //@Scheduled(cron = "0 0 1 1 1 ?")//每年一月的一号的1:00:00 执行一次
 //@Scheduled(cron = "0 0 1 1 1,6 ?") //一月和六月的一号的1:00:00 执行一次
 //@Scheduled(cron = "0 0 1 1 1,4,7,10 ?") //每个季度的第一个月的一号的1:00:00 执行一次
