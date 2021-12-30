@@ -71,14 +71,6 @@ public final class ResultUtil {
 		return buildSuccess(null,null);
 	}
 
-	/**
-	 * 构建成功结果带信息
-	 * @param msg
-	 * @return
-	 */
-	public static <T> Result<T> buildSuccess(String msg){
-		return buildSuccess(msg,null);
-	}
 
 	/**
 	 * 构建成功结果待数据
