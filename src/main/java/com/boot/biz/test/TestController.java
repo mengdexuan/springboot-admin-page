@@ -130,26 +130,6 @@ public class TestController {
 
 
 
-	@PrintTime
-	@PostMapping("/test4")
-	public Result<String> test4(@Validated ValidatedBean validatedBean){
-
-
-		return ResultUtil.buildSuccess("abc");
-	}
-
-
-
-	@PrintTime
-	@PostMapping("/test5")
-	public Result test5(@Validated @RequestBody ValidatedBean validatedBean){
-
-
-
-		return ResultUtil.buildSuccess();
-	}
-
-
 
 	public static void main1(String[] args) throws Exception{
 
