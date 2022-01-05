@@ -6,9 +6,9 @@ import com.boot.base.jwt.JwtUtil;
 import com.boot.base.util.HelpMe;
 import com.boot.biz.dict.service.DictService;
 import com.boot.biz.index.controller.IndexController;
+import com.boot.biz.test.TestController;
 import com.boot.biz.user.entity.SysUser;
 import com.boot.biz.user.service.UserService;
-import com.boot.biz.test.TestController;
 import com.boot.config.SysConfig;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,7 +16,11 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.context.request.NativeWebRequest;
+import org.springframework.web.context.request.RequestAttributes;
+import org.springframework.web.context.request.ServletWebRequest;
 import org.springframework.web.servlet.HandlerInterceptor;
+import org.springframework.web.servlet.HandlerMapping;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
@@ -123,6 +127,11 @@ public class LoginInterceptor implements HandlerInterceptor {
 
 		RequestMapping classRequestMapping = (RequestMapping)clazz.getDeclaredAnnotation(RequestMapping.class);
 
+		HttpServletRequest request = RequestUserHolder.getCurrentRequest();
+		NativeWebRequest webRequest = new ServletWebRequest(request);
+
+		String path = (String) webRequest.getAttribute(HandlerMapping.BEST_MATCHING_PATTERN_ATTRIBUTE, RequestAttributes.SCOPE_REQUEST);
+
 		String classRequestMappingPath = "";
 		if (classRequestMapping!=null){
 			classRequestMappingPath = classRequestMapping.value()[0];
@@ -135,6 +144,7 @@ public class LoginInterceptor implements HandlerInterceptor {
 				String[] valArr = getMapping.value();
 				for (String val:valArr){
 					if (servletPath.equals(classRequestMappingPath+val))return true;
+					if (path.equals(classRequestMappingPath+val))return true;
 				}
 			}else {
 				PostMapping postMapping = method.getAnnotation(PostMapping.class);
