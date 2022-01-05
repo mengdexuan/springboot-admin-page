@@ -223,7 +223,15 @@ public interface BaseService<T>{
 	 * @param sort 排序
 	 * @return
 	 */
-	List<T> listTop(T t,int top,Sort... sort);
+	List<T> listTopN(T t,int top,Sort... sort);
+
+	/**
+	 * 获取 1 条记录
+	 * @param t
+	 * @param sort
+	 * @return
+	 */
+	T getTop(T t,Sort... sort);
 
 	boolean exists(T t);
 

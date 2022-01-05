@@ -70,7 +70,7 @@ public class BaseServiceImpl<T, R extends BaseRepository<T>> implements BaseServ
 	 * @return
 	 */
 	@Override
-	public List<T> listTop(T t,int top,Sort... sort){
+	public List<T> listTopN(T t,int top,Sort... sort){
 		Example<T> example = Example.of(t);
 		Pageable pageable = null;
 		if (ArrayUtil.isNotEmpty(sort)){
@@ -80,6 +80,19 @@ public class BaseServiceImpl<T, R extends BaseRepository<T>> implements BaseServ
 		}
 		Page<T> page = repository.findAll(example, pageable);
 		return page.getContent();
+	}
+
+
+	/**
+	 * 获取 1 条记录
+	 * @param t
+	 * @param sort
+	 * @return
+	 */
+	@Override
+	public T getTop(T t,Sort... sort){
+		List<T> list = listTopN(t, 1, sort);
+		return list.size()>0?list.get(0):null;
 	}
 
 
@@ -571,7 +584,4 @@ public class BaseServiceImpl<T, R extends BaseRepository<T>> implements BaseServ
 	public Page<T> findAll(Specification<T> var1, Pageable var2) {
 		return repository.findAll(var1,var2);
 	}
-
-
-
 }
