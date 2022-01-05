@@ -1,15 +1,21 @@
 package com.boot.base;
 
 import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.exceptions.UtilException;
+import cn.hutool.core.map.MapUtil;
+import cn.hutool.core.util.ArrayUtil;
 import cn.hutool.core.util.ReflectUtil;
+import com.boot.base.annotation.Unique;
 import com.boot.base.exception.GlobalServiceException;
 import com.boot.base.util.HelpMe;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
@@ -17,9 +23,12 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.Id;
 import javax.persistence.Transient;
-import javax.persistence.criteria.*;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Expression;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
 import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -51,6 +60,28 @@ public class BaseServiceImpl<T, R extends BaseRepository<T>> implements BaseServ
 		boolean exists = repository.exists(example);
 		return exists;
 	}
+
+
+	/**
+	 * 返回前 top 条数据
+	 * @param t
+	 * @param top
+	 * @param sort
+	 * @return
+	 */
+	@Override
+	public List<T> listTop(T t,int top,Sort... sort){
+		Example<T> example = Example.of(t);
+		Pageable pageable = null;
+		if (ArrayUtil.isNotEmpty(sort)){
+			pageable = PageRequest.of(0, top,sort[0]);
+		}else {
+			pageable = PageRequest.of(0, top);
+		}
+		Page<T> page = repository.findAll(example, pageable);
+		return page.getContent();
+	}
+
 
 	@Override
 	public boolean existsById(Long id){
@@ -166,6 +197,85 @@ public class BaseServiceImpl<T, R extends BaseRepository<T>> implements BaseServ
 	public void save(T t) {
 		repository.save(t);
 	}
+
+
+	/**
+	 * 保存时，唯一性验证，存在 Unique 注解的字段不允许在数据库中重复
+	 * @param t
+	 */
+	@Override
+	@Transactional(rollbackFor = Exception.class)
+	public void saveUnique(T t){
+
+		Field[] fields = ReflectUtil.getFields(t.getClass());
+
+		Map<String,Object> fieldValMap = Maps.newHashMap();
+
+		for (Field field:fields){
+			Unique unique = field.getAnnotation(Unique.class);
+			if (unique!=null){
+				Object fieldVal = ReflectUtil.getFieldValue(t, field);
+				if (fieldVal!=null){
+					fieldValMap.put(field.getName(),fieldVal);
+				}
+			}
+		}
+
+		if (MapUtil.isNotEmpty(fieldValMap)){
+			List<T> list = listByFieldOr(fieldValMap);
+			if (CollUtil.isNotEmpty(list)){
+				String errMsg = "";
+				for (T item:list){
+					for (Map.Entry<String, Object> entry:fieldValMap.entrySet()){
+						Object fieldVal = ReflectUtil.getFieldValue(item, entry.getKey());
+
+						String val = entry.getValue().toString();
+
+						if (fieldVal!=null&&val.equals(fieldVal.toString())){
+							errMsg += "["+entry.getKey() + " = "+fieldVal+"] 字段值已存在;";
+						}
+					}
+				}
+				throw new GlobalServiceException(errMsg);
+			}
+		}
+
+		save(t);
+	}
+
+
+	/**
+	 * 按字段进行 or 查询
+	 * @param fieldValMap
+	 * @return
+	 */
+	@Override
+	public List<T> listByFieldOr(Map<String,Object> fieldValMap) {
+
+		if (MapUtil.isEmpty(fieldValMap)){
+			return Lists.newArrayList();
+		}
+
+		Specification specification = new Specification<T>() {
+			@Override
+			public Predicate toPredicate(Root<T> root, CriteriaQuery<?> criteriaQuery, CriteriaBuilder criteriaBuilder) {
+
+				List<Predicate> predicates = new ArrayList<>();
+
+				for (Map.Entry<String, Object> entry:fieldValMap.entrySet()){
+					Predicate p = criteriaBuilder.equal(root.get(entry.getKey()), entry.getValue());
+					predicates.add(p);
+				}
+
+				return criteriaBuilder.or(predicates.toArray(new Predicate[predicates.size()]));
+			}
+		};
+
+		return this.findAll(specification);
+	}
+
+
+
 
 	@Override
 	@Transactional(rollbackFor = Exception.class)

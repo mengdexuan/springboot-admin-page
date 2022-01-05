@@ -35,6 +35,27 @@ public interface BaseService<T>{
 	void save(T t);
 
 	/**
+	 * 保存时，唯一性验证，存在 Unique 注解的字段不允许在数据库中重复
+	 * @param t
+	 */
+	@Transactional(rollbackFor = Exception.class)
+	void saveUnique(T t);
+
+	/**
+	 * 按字段进行 or 查询
+	 * @param fieldValMap
+	 *
+	 * 如：
+	 * 		fieldValMap.put("enName","bj");
+	 * 		fieldValMap.put("createUser","admin");
+	 *
+	 * 转化为 sql 后的语句是：select * from table where en_name = 'bj' or create_user = 'admin';
+	 *
+	 * @return
+	 */
+	List<T> listByFieldOr(Map<String,Object> fieldValMap);
+
+	/**
 	 * 保存后，可以返回自增ID
 	 * @param t
 	 * @return
@@ -194,6 +215,15 @@ public interface BaseService<T>{
 	boolean exists(Specification<T> specification);
 
 	long count(T t);
+
+	/**
+	 * 返回前 top 条数据
+	 * @param t
+	 * @param top
+	 * @param sort 排序
+	 * @return
+	 */
+	List<T> listTop(T t,int top,Sort... sort);
 
 	boolean exists(T t);
 
