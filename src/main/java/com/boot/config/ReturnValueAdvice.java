@@ -56,17 +56,20 @@ public class ReturnValueAdvice implements ResponseBodyAdvice<Object> {
 
 		String ip = ServletUtil.getClientIP(request);
 
-		log.info("\n");
-		log.info("客户端IP：{}",ip);
-		log.info("请求地址：{}",url);
-		log.info("请求参数(url中)：{}",queryParam);
-		log.info("请求参数(@PathVariable中)：{}",pathMap);
-		log.info("请求媒体类型：{}",mediaTypeStr);
-		log.info("请求体(post)：{}",requestBody);
-		log.info("响应体：{}",responseBody);
-		log.info("请求处理类：{}",controllerName);
-		log.info("请求处理方法：{}",methodName);
-		log.info("\n");
+		if (!url.endsWith("error")){
+			log.info("\n");
+			log.info("客户端IP：{}",ip);
+			log.info("请求地址：{}",url);
+			log.info("请求参数(url中)：{}",queryParam);
+			log.info("请求参数(@PathVariable中)：{}",pathMap);
+			log.info("请求媒体类型：{}",mediaTypeStr);
+			log.info("请求体(post)：{}",requestBody);
+			log.info("响应体：{}",responseBody);
+			log.info("请求处理类：{}",controllerName);
+			log.info("请求处理方法：{}",methodName);
+			log.info("\n");
+		}
+
 
 		return o;
 	}
