@@ -1,5 +1,7 @@
 package com.boot.biz.dict.entity;
 
+import com.boot.base.annotation.StatusMap;
+import com.boot.base.annotation.StatusMapProperty;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
@@ -49,6 +51,10 @@ public class Dict {
     /**
      * 是否可用：0：不可用  1：可用
      */
+    @StatusMap(kvList = {
+            @StatusMapProperty(key = "0",val = "不可用"),
+            @StatusMapProperty(key = "1",val = "可用")
+    })
     private Integer enable;
     /**
      * 排序字段
