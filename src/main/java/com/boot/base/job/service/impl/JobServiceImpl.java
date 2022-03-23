@@ -138,11 +138,14 @@ public class JobServiceImpl extends BaseServiceImpl<Job, JobRepository> implemen
     public void updateStatus(Job job) {
         if (job.getStatus().intValue() == Job.Status.RUN.getValue()){
             try {
-                this.restartJob(job.getId());
+                this.parseJob(job.getId());
             } catch (Exception e) {
             }
         }else {
-            this.parseJob(job.getId());
+            try {
+                this.restartJob(job.getId());
+            } catch (Exception e) {
+            }
         }
     }
 
