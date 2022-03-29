@@ -559,6 +559,23 @@ public class HelpMe {
 
 
 	/**
+	 * 对 list 进行分组
+	 * @param list
+	 * @param classifier
+	 * @param <T>
+	 * @param <K>
+	 *
+	 *     调用示例：  Map<String, List<PaySetEntity>> mapList = HelpMe.groupList(list, PaySetEntity::getApplyCode);
+	 *     上述示例以 PaySetEntity 实体的 applyCode 属性值进行分组
+	 * @return
+	 */
+	public static <T, K> Map<K, List<T>> groupList(List<T> list,Function<? super T, ? extends K> classifier){
+		Map<K, List<T>> map = list.stream().collect(Collectors.groupingBy(classifier));
+		return map;
+	}
+
+
+	/**
 	 * obj形式的List转换为字符串形式的List
 	 *
 	 * @param list
