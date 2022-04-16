@@ -54,8 +54,8 @@ spring:
       max-request-size: 10240MB
   mail:
     host: smtp.163.com    #发送邮件服务器
-    username: mengdexuan_test@163.com   #发件人邮箱
-    password: YAIMDENAYOULWVWH  #客户端授权码
+    username: 18514756315@163.com   #发件人邮箱
+    password: AZQAZGFVWQAFVXPA  #客户端授权码
     port: 465
     test-connection: true
     properties:
@@ -74,6 +74,9 @@ server:
     context-path: /adminPage #项目名称
   tomcat:
     basedir: ${app-dir}/workDir
+    min-spare-threads: 20
+    max-threads: 100
+  connection-timeout: PT5S  #超时时间，5 秒
 
 
 
