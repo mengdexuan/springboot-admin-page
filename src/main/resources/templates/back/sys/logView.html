@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <title id="titleContent">tail log</title>
+</head>
+<body style="background-color: lightgray">
+<div style="text-align: center;background-color: black;">
+    <h2 id="serverName" style="color: yellow;"></h2>
+</div>
+<div id="log-container" style="height: 900px; overflow-y: scroll; background: #333; color: #aaa; padding: 10px;">
+    <div style="text-align: center">
+        <button type="button" style="cursor: pointer;background-color: #9c27b0;color: white" onclick="clearLog()">清空</button>
+        <button type="button" style="cursor: pointer;background-color: #3f51b5;color: white"  onclick="triggerLog()">暂停/开始</button>
+        <button type="button" style="cursor: pointer;background-color: #4caf50;color: white" onclick="refreshLog()">刷新</button>
+        <button type="button" style="cursor: pointer;background-color: #ff6022;color: white" onclick="closeWin()">关闭</button>
+    </div>
+
+    <div id="logDiv">
+    </div>
+</div>
+<div style="text-align: center;margin-top: 15px;">
+    <button type="button" style="cursor: pointer;background-color: #9c27b0;color: white" onclick="clearLog()">清空</button>
+    <button type="button" style="cursor: pointer;background-color: #3f51b5;color: white"  onclick="triggerLog()">暂停/开始</button>
+    <button type="button" style="cursor: pointer;background-color: #4caf50;color: white" onclick="refreshLog()">刷新</button>
+    <button type="button" style="cursor: pointer;background-color: #ff6022;color: white" onclick="closeWin()">关闭</button>
+</div>
+</body>
+<script type="text/javascript" th:src="@{/lib/jquery/1.9.1/jquery.min.js}"></script>
+<script type="text/javascript" th:inline="javascript">
+    var logSwitch = true;
+
+    $(document).ready(function () {
+        var href = window.location.href;
+        var pageInfoUrl = href;
+        href = href.replace('http','ws');
+        href = href.replace('/ws/view','/ws/log');
+        pageInfoUrl = pageInfoUrl.replace('/ws/view','/ws/pageInfo');
+
+        console.log(pageInfoUrl);
+        console.log(href);
+
+        pageInfo(pageInfoUrl);
+
+        // 指定websocket路径
+        var websocket = new WebSocket(href);
+
+        websocket.onmessage = function (event) {
+            if (logSwitch){
+                // 接收服务端的实时日志并添加到HTML页面中
+                $("#logDiv").append(event.data);
+                // 滚动条滚动到最低部
+                $("#log-container").scrollTop($("#logDiv").height() - $("#log-container").height());
+            }
+        };
+    });
+
+    function closeWin() {
+        window.opener = null;
+        window.open('', '_self');
+        window.close();
+    }
+
+    function pageInfo(url) {
+        $.ajax({
+            type: "get",
+            url: url,
+            dataType: "json",
+            async: true,
+            success: function (data) {
+                if (data.success){
+                    var title = data.data;
+                    $("#titleContent").html(title);
+                    $("#serverName").html(title+" 日志");
+                }else {
+                }
+            },
+            error: function (err) {
+            }
+        });
+    }
+
+
+    function clearLog() {
+        $("#logDiv").html('');
+    }
+    
+    function triggerLog() {
+        logSwitch = !logSwitch;
+        if (logSwitch){
+            alert('已开始');
+        }else {
+            alert('已暂停');
+        }
+    }
+    function refreshLog() {
+        window.location = window.location;
+    }
+
+
+
+</script>
+</body>
+</html>

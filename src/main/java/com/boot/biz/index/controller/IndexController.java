@@ -13,7 +13,6 @@ import com.boot.base.util.HelpMe;
 import com.boot.biz.dict.entity.Dict;
 import com.boot.biz.dict.service.DictService;
 import com.boot.biz.index.dto.ConfigFileDto;
-import com.boot.biz.log.SysLogMessaging;
 import com.boot.biz.serverinfo.Server;
 import com.boot.biz.serverinfo.ServerController;
 import com.google.common.collect.Lists;
@@ -58,9 +57,6 @@ public class IndexController {
 	@Autowired
 	DictService dictService;
 
-	@Autowired
-	SysLogMessaging sysLogMessaging;
-
 
 	@GetMapping("/")
 	@ResponseBody
@@ -96,7 +92,7 @@ public class IndexController {
 	@ResponseBody
 	@GetMapping("/initLog")
 	public String initLog() {
-		sysLogMessaging.initLog();
+
 		return "ok";
 	}
 
