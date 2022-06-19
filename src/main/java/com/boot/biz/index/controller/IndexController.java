@@ -4,6 +4,9 @@ import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.io.resource.ResourceUtil;
 import cn.hutool.core.util.RandomUtil;
 import cn.hutool.core.util.StrUtil;
+import cn.hutool.http.HttpRequest;
+import cn.hutool.http.HttpResponse;
+import cn.hutool.http.HttpUtil;
 import cn.hutool.system.SystemUtil;
 import com.boot.base.Result;
 import com.boot.base.ResultUtil;
@@ -167,12 +170,15 @@ public class IndexController {
 
 	public static void main(String[] args) {
 
-		String str = RandomUtil.randomString(10);
+		HttpRequest post = HttpUtil.createPost("http://localhost:8500/anxinqian/outter/fore/signPdfFile.do");
+		post.form("signJson","[{\"contractName\":\"清偿承诺函\",\"userId\":\"CFF184C4D0C45B96E05312016B0A0F0A\",\"sealId\":\"422\",\"pageNo\":1,\"x\":325,\"y\":414,\"x1\":0,\"y1\":328,\"typeId\":1}]");
+		post.form("file",new File("C:\\Users\\18514\\Desktop\\download\\清偿承诺函.pdf"));
 
-//		str = "mengd0ix034gt4";
+		HttpResponse resp = post.execute();
 
+		String body = resp.body();
 
-		System.out.println(str);
+		System.out.println(body);
 	}
 
 
@@ -259,6 +265,7 @@ public class IndexController {
 
 		return dtoList;
 	}
+
 
 
 }
