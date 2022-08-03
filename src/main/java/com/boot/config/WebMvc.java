@@ -3,10 +3,13 @@ package com.boot.config;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+
+import java.util.List;
 
 /**
  * @author mengdexuan on 2019/6/23 16:18.
@@ -17,6 +20,10 @@ public class WebMvc  implements WebMvcConfigurer {
 
 	@Autowired
 	SysConfig sysConfig;
+
+	@Autowired
+	MethodArgumentResolver methodArgumentResolver;
+
 
 	@Override
 	public void addInterceptors(InterceptorRegistry registry) {
@@ -36,6 +43,20 @@ public class WebMvc  implements WebMvcConfigurer {
 
 	}
 
+
+	/**
+	 * Add resolvers to support custom controller method argument types.
+	 * <p>This does not override the built-in support for resolving handler
+	 * method arguments. To customize the built-in support for argument
+	 * resolution, configure {@link RequestMappingHandlerAdapter} directly.
+	 *
+	 * @param resolvers initially an empty list
+	 */
+	@Override
+	public void addArgumentResolvers(List<HandlerMethodArgumentResolver> resolvers) {
+//		resolvers.add(methodArgumentResolver);
+		WebMvcConfigurer.super.addArgumentResolvers(resolvers);
+	}
 
 	/**
 	 * 允许所有请求跨域访问

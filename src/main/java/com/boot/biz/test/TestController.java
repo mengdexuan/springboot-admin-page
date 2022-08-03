@@ -1,11 +1,14 @@
 package com.boot.biz.test;
 
+import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.date.DatePattern;
 import cn.hutool.core.date.DateTime;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.thread.ThreadUtil;
 import cn.hutool.extra.mail.MailAccount;
 import cn.hutool.extra.mail.MailUtil;
+import cn.hutool.poi.excel.ExcelUtil;
+import cn.hutool.poi.excel.ExcelWriter;
 import com.boot.base.NativeSqlQueryServices;
 import com.boot.base.Result;
 import com.boot.base.ResultUtil;
@@ -33,6 +36,7 @@ import javax.mail.Store;
 import javax.servlet.http.HttpServletRequest;
 import javax.sql.DataSource;
 import java.io.IOException;
+import java.util.List;
 import java.util.concurrent.Executor;
 
 /**
@@ -75,20 +79,23 @@ public class TestController {
 
 	@GetMapping("/test1")
 	@ResponseBody
-	public Result test1(String name) throws Exception {
+	public Result test1(String name,int age,HttpServletRequest request) throws Exception {
 		Object obj = null;
+
+		log.info("name:"+name);
+		log.info("age:"+age);
 
 		return ResultUtil.buildSuccess(obj);
 	}
 
 
-	@GetMapping(value = "/sendMailTest")
-	public Result sendMailTest() {
+	@GetMapping(value = "/test3/{taskCode}/basic")
+	public Result test3(@PathVariable("taskCode") String taskCode) {
 
 
 
 
-		return ResultUtil.buildSuccess();
+		return ResultUtil.buildSuccess(taskCode);
 	}
 
 
@@ -175,6 +182,33 @@ public class TestController {
 
 		System.out.println();
 	}
+
+
+
+
+
+
+	public void write() {
+
+		List<String> row0 = CollUtil.newArrayList("冠字号码", "交易时间", "机构号", "设备编号");
+		List<String> row1 = CollUtil.newArrayList("aa", "bb", "cc", "dd");
+		List<String> row2 = CollUtil.newArrayList("aa1", "bb1", "cc1", "dd1");
+		List<String> row3 = CollUtil.newArrayList("aa2", "bb2", "cc2", "dd2");
+		List<String> row4 = CollUtil.newArrayList("aa3", "bb3", "cc3", "dd3");
+		List<String> row5 = CollUtil.newArrayList("aa4", "bb4", "cc4", "dd4");
+		List<List<String>> rows = CollUtil.newArrayList(row0,row1, row2, row3, row4, row5);
+
+
+		//通过工具类创建writer
+		ExcelWriter writer = ExcelUtil.getWriter("C:\\Users\\18514\\Desktop\\test4\\test.xls");
+//合并单元格后的标题行，使用默认标题样式
+		writer.merge(row1.size() - 1, "数据");
+//一次性写出内容，强制输出标题
+		writer.write(rows, true);
+//关闭writer，释放内存
+		writer.close();
+	}
+
 
 
 
