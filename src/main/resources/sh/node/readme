@@ -1,0 +1,9 @@
+进行 node 容器后，cd /root/vue
+
+安装依赖：
+npm install --no-fund --no-audit
+
+打包：
+npm run build:prod
+
+
