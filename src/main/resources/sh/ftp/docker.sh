@@ -1,3 +1,5 @@
+#!/usr/bin/env bash
+
 # https://hub.docker.com/r/fauria/vsftpd
 
 docker run -d -v /my/data/directory:/home/vsftpd \
