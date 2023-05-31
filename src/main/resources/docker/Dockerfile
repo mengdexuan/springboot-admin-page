@@ -1,4 +1,4 @@
-FROM fiadliel/java8-jre
+FROM openjdk:8-jdk-alpine
 
 MAINTAINER mengdexuan
 

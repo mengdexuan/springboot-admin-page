@@ -4,11 +4,14 @@ import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.date.DatePattern;
 import cn.hutool.core.date.DateTime;
 import cn.hutool.core.date.DateUtil;
+import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.thread.ThreadUtil;
 import cn.hutool.extra.mail.MailAccount;
 import cn.hutool.extra.mail.MailUtil;
+import cn.hutool.poi.excel.ExcelReader;
 import cn.hutool.poi.excel.ExcelUtil;
 import cn.hutool.poi.excel.ExcelWriter;
+import cn.hutool.poi.word.Word07Writer;
 import com.boot.base.NativeSqlQueryServices;
 import com.boot.base.Result;
 import com.boot.base.ResultUtil;
@@ -35,6 +38,9 @@ import javax.mail.Session;
 import javax.mail.Store;
 import javax.servlet.http.HttpServletRequest;
 import javax.sql.DataSource;
+import java.awt.*;
+import java.io.File;
+import java.io.FileFilter;
 import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.Executor;
@@ -212,7 +218,7 @@ public class TestController {
 
 
 
-	public static void main(String[] args) throws ImageProcessingException,IOException {
+	public static void main2(String[] args) throws ImageProcessingException,IOException {
 
 		String str = "2021-09-10T00:07:57.352779975+00:00";
 
@@ -222,6 +228,63 @@ public class TestController {
 
 		System.out.println(temp);
 	}
+
+	public static void mainaa(String[] args) throws Exception {
+
+		Word07Writer writer = new Word07Writer();
+
+		List<File> list = FileUtil.loopFiles(FileUtil.file("D:\\Project\\zhilian"), new FileFilter() {
+			@Override
+			public boolean accept(File pathname) {
+				if (FileUtil.extName(pathname).equals("java")) {
+					return true;
+				}
+				return false;
+			}
+		});
+
+		int i = 1;
+		for (File item:list){
+			i++;
+
+			if (i>120&&i<150){
+				List<String> contentList = FileUtil.readUtf8Lines(item);
+
+				for (String str:contentList){
+					writer.addText(new Font("宋体", Font.PLAIN, 10), str);
+				}
+			}
+
+		}
+
+
+		writer.flush(FileUtil.file("C:\\Users\\18514\\Desktop\\test3\\b.docx"));
+		writer.close();
+
+	}
+
+
+
+	public static void main(String[] args) throws Exception {
+		ExcelReader reader = ExcelUtil.getReader(FileUtil.file("C:\\Users\\18514\\Desktop\\test3\\经销商采购数据模版.xlsx"));
+
+		int rowCount = reader.getRowCount();
+
+
+		int startRow = 2;
+
+		for (int rowIndex=startRow;rowIndex<rowCount;rowIndex++){
+
+			List<Object> tempList = reader.readRow(rowIndex);
+
+			if (CollUtil.isNotEmpty(tempList)){
+				log.info("{}",tempList);
+			}
+		}
+
+		System.out.println(rowCount);
+	}
+
 
 
 
