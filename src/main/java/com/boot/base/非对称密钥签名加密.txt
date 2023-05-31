@@ -1,0 +1,110 @@
+签名及验签过程：
+
+1.系统A使用其私钥对数据进行签名，生成签名信息
+2.A与B进行数据通信（也可同时携带签名过去）
+3.双方可以约定公钥和签名通过何种方式传递给系统B
+4.系统B使用A的公钥及传递过来的签名对数据进行验签，验签通过，说明数据在传送过程中未被篡改，再进行后续业务...
+
+以下是示例代码：
+
+--------------------------------------------------------------------------------------------------------------------------------------
+
+RSA是一种非对称加密算法，可以用于数字签名。数字签名是一种将数据与私钥相结合的技术，以确保数据的完整性、身份验证和防篡改性。
+
+下面是使用RSA进行数字签名的基本步骤：
+
+1. 生成密钥对：使用Java的密钥对生成器（KeyPairGenerator）生成RSA密钥对，包括公钥和私钥。
+
+```
+KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance("RSA");
+keyPairGenerator.initialize(2048);
+KeyPair keyPair = keyPairGenerator.generateKeyPair();
+PrivateKey privateKey = keyPair.getPrivate();
+PublicKey publicKey = keyPair.getPublic();
+```
+
+2. 对数据进行签名：使用Java的签名器（Signature）对数据进行签名。签名器需要使用私钥进行初始化，并使用数据进行更新，最后生成签名。
+
+```
+Signature signature = Signature.getInstance("SHA256withRSA");
+signature.initSign(privateKey);
+signature.update(data);
+byte[] signatureBytes = signature.sign();
+```
+
+3. 验证签名：使用Java的签名器（Signature）对签名进行验证。签名器需要使用公钥进行初始化，并使用数据和签名进行更新，最后验证签名是否有效。
+
+``Signature signature = Signature.getInstance("SHA256withRSA");
+signature.initVerify(publicKey);
+signature.update(data);
+boolean isValidSignature = signature.verify(signatureBytes);
+```
+
+通过以上步骤，可以使用RSA进行数字签名并验证签名的有效性。需要注意的是，在实际应用中，需要将公钥和签名传递给验证方进行验证。
+另外，还需要注意保护私钥的安全，以防止私钥被泄露。
+
+--------------------------------------------------------------------------------------------------------------------------------------
+在使用数字签名时，需要将公钥和签名传递给验证方进行验证。以下是两种常见的传递方式：
+
+1. 将公钥和签名打包成一个文件，发送给验证方。验证方可以从文件中读取公钥和签名，并使用公钥对签名进行验证。这种方式简单直接，但需要另外约定好文件格式和存储位置。
+
+2. 将公钥和签名分别以字符串形式传递给验证方。例如，将公钥和签名分别转换为Base64编码字符串，并用逗号分隔。验证方可以从字符串中解析出公钥和签名，并使用公钥对签名进行验证。这种方式比较灵活，但需要约定好字符串格式和编码方式。
+
+以下是对以上两种方式的示例代码：
+
+1. 将公钥和签名打包成一个文件
+
+```
+// 生成签名并将公钥和签名保存到文件
+Signature signature = Signature.getInstance("SHA256withRSA");
+signature.initSign(privateKey);
+signature.update(data);
+byte[] signatureBytes = signature.sign();
+byte[] publicKeyBytes = publicKey.getEncoded();
+Files.write(Paths.get("signature.bin"), signatureBytes);
+Files.write(Paths.get("publickey.bin"), publicKeyBytes);
+
+// 读取公钥和签名并进行验证
+byte[] signatureBytes = Files.readAllBytes(Paths.get("signature.bin"));
+byte[] publicKeyBytes = Files.readAllBytes(Paths.get("publickey.bin"));
+X509EncodedKeySpec publicKeySpec = new X509EncodedKeySpec(publicKeyBytes);
+KeyFactory keyFactory = KeyFactory.getInstance("RSA");
+PublicKey publicKey = keyFactory.generatePublic(publicKeySpec);
+Signature signature = Signature.getInstance("SHA256withRSA");
+signature.initVerify(publicKey);
+signature.update(data);
+boolean isValidSignature = signature.verify(signatureBytes);
+```
+
+2. 将公钥和签名分别以字符串形式传递
+
+```
+// 生成签名并将公钥和签名转换为Base64编码字符串
+Signature signature = Signature.getInstance("SHA256withRSA");
+signature.initSign(privateKey);
+signature.update(data);
+byte[] signatureBytes = signature.sign();
+byte[] publicKeyBytes = publicKey.getEncoded();
+String signatureBase64 = Base64.getEncoder().encodeToString(signatureBytes);
+String publicKeyBase64 = Base64.getEncoder().encodeToString(publicKeyBytes);
+String publicKeyAndSignature = publicKeyBase64 + "," + signatureBase64;
+
+// 解析公钥和签名并进行验证
+String[] parts = publicKeyAndSignature.split(",");
+byte[] publicKeyBytes = Base64.getDecoder().decode(parts[0]);
+byte[] signatureBytes= Base64.getDecoder().decode(parts[1]);
+X509EncodedKeySpec publicKeySpec = new X509EncodedKeySpec(publicKeyBytes);
+KeyFactory keyFactory = KeyFactory.getInstance("RSA");
+PublicKey publicKey = keyFactory.generatePublic(publicKeySpec);
+Signature signature = Signature.getInstance("SHA256withRSA");
+signature.initVerify(publicKey);
+signature.update(data);
+boolean isValidSignature = signature.verify(signatureBytes);
+```
+
+需要注意的是，在传递公钥和签名时，应该采取一些防止篡改的措施，例如使用HTTPS协议或数字证书。
+
+--------------------------------------------------------------------------------------------------------------------------------------
+
+
+
