@@ -1,19 +1,27 @@
 package com.boot.base;
 
+import cn.hutool.core.date.DateUtil;
+import cn.hutool.http.HttpRequest;
+import cn.hutool.http.HttpUtil;
 import cn.hutool.json.JSONUtil;
 import com.boot.base.mail.send.dto.Email;
+import lombok.extern.slf4j.Slf4j;
 
 import javax.crypto.Cipher;
 import javax.crypto.spec.SecretKeySpec;
 import java.nio.charset.StandardCharsets;
 import java.security.*;
 import java.security.spec.InvalidKeySpecException;
+import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
 import java.util.*;
 
 /**
+ * 1.非对称密钥签名验签
+ * 2.对称密钥加密解密
  * @author mengdexuan on 2023-06-04 09:59.
  */
+@Slf4j
 public class KeyPairSign {
 
 
@@ -26,8 +34,6 @@ public class KeyPairSign {
         }
         keyPairGenerator.initialize(1024);
         KeyPair keyPair = keyPairGenerator.generateKeyPair();
-
-        keyPair.getPrivate();
 
         return keyPair;
     }
@@ -61,9 +67,10 @@ public class KeyPairSign {
     public static PrivateKey privateKeyFromBase64(String privateKeyBase64) {
 
         byte[] bytes = Base64.getDecoder().decode(privateKeyBase64);
-        X509EncodedKeySpec keySpec = new X509EncodedKeySpec(bytes);
+        PKCS8EncodedKeySpec keySpec = new PKCS8EncodedKeySpec(bytes);
         KeyFactory keyFactory = null;
         PrivateKey privateKey = null;
+
         try {
             keyFactory = KeyFactory.getInstance("RSA");
             privateKey = keyFactory.generatePrivate(keySpec);
@@ -79,6 +86,7 @@ public class KeyPairSign {
         return Base64.getDecoder().decode(str);
     }
 
+
     public static String byteArr2Str(byte[] arr) {
         return Base64.getEncoder().encodeToString(arr);
     }
@@ -86,11 +94,12 @@ public class KeyPairSign {
 
     /**
      * 使用私钥对数据签名，返回签名结果
+     *
      * @param privateKey 私钥
-     * @param data 数据
+     * @param data       数据
      * @return
      */
-    public static byte[] sign(String privateKey,byte[] data) {
+    public static byte[] sign(String privateKey, byte[] data) {
 
         Signature signature = null;
         try {
@@ -103,43 +112,45 @@ public class KeyPairSign {
             e.printStackTrace();
         }
 
-       return null;
+        return null;
     }
 
 
     /**
      * 使用公钥对签名进行验证
+     *
      * @param publicKey 公钥
-     * @param data  数据
-     * @param signBytes  签名
+     * @param data      数据
+     * @param signBytes 签名
      * @return
      */
-    public static boolean verify(String publicKey,byte[] data,byte[] signBytes) {
+    public static boolean verify(String publicKey, byte[] data, byte[] signBytes) {
         try {
             Signature signature = Signature.getInstance("SHA256withRSA");
             signature.initVerify(publicKeyFromBase64(publicKey));
             signature.update(data);
             boolean isValidSignature = signature.verify(signBytes);
             return isValidSignature;
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return false;
     }
 
 
-//    这个密钥可以替换为任何其他的 16 字节长度的字节数组
+    //    这个密钥可以替换为任何其他的 16 字节长度的字节数组
     private static String secretKeyStr = "1234567890123456";
 
 
     /**
      * 使用密钥，对明文进行加密
+     *
      * @param plaintext
      * @return
      */
     public static String encode(String plaintext) {
         String encoded = "";
-        try{
+        try {
             // Generate a secret key
             SecretKeySpec secretKey = new SecretKeySpec(secretKeyStr.getBytes(StandardCharsets.UTF_8), "AES");
 
@@ -154,10 +165,10 @@ public class KeyPairSign {
             // Convert the ciphertext to a base64-encoded string for transmission or storage
             encoded = Base64.getEncoder().encodeToString(ciphertext);
 
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
-        System.out.println("加密后的数据: " + encoded+" , 长度："+encoded.length());
+        log.info("加密后的数据: " + encoded + " , 长度：" + encoded.length());
 
         return encoded;
     }
@@ -165,13 +176,14 @@ public class KeyPairSign {
 
     /**
      * 使用密钥，对密文进行解密
+     *
      * @param encodeStr
      * @return
      */
 
     public static String decode(String encodeStr) {
         String decryptedText = "";
-        try{
+        try {
             // Generate a secret key
             SecretKeySpec secretKey = new SecretKeySpec(secretKeyStr.getBytes(StandardCharsets.UTF_8), "AES");
 
@@ -188,52 +200,169 @@ public class KeyPairSign {
             // Convert the decrypted plaintext to a string
             decryptedText = new String(decrypted, StandardCharsets.UTF_8);
 
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
 
-        System.out.println("解密后的数据: " + decryptedText);
+        log.info("解密后的数据: " + decryptedText);
 
         return decryptedText;
 
     }
 
 
-    public static void main(String[] args) {
+    /**
+     * 使用密钥，对明文进行加密
+     * @param secretKeyStr
+     * @param plaintext
+     * @return
+     */
+    public static String encode(String secretKeyStr,String plaintext) {
+        String encoded = "";
+        try {
+            // Generate a secret key
+            SecretKeySpec secretKey = new SecretKeySpec(secretKeyStr.getBytes(StandardCharsets.UTF_8), "AES");
 
-        List<Email> emailList = new ArrayList<>();
-        Email email = new Email();
-        for (int i=0;i<10;i++){
-            Email item = new Email();
-            item.setFrom("from"+i);
-            item.setContent("content"+i);
-            item.setPersonal("personal"+i);
-            Map<String,Object> map = new HashMap<>();
-            map.put("a"+i,i);
-            item.setKvMap(map);
+//        我们使用 ECB 模式和 PKCS5Padding 填充方式来加密和解密数据
+            // Create a cipher object and initialize it with the secret key
+            Cipher cipher = Cipher.getInstance("AES/ECB/PKCS5Padding");
+            cipher.init(Cipher.ENCRYPT_MODE, secretKey);
 
-            if (i==0){
-                email = item;
-            }
+            // Encrypt the plaintext
+            byte[] ciphertext = cipher.doFinal(plaintext.getBytes(StandardCharsets.UTF_8));
 
-            emailList.add(item);
+            // Convert the ciphertext to a base64-encoded string for transmission or storage
+            encoded = Base64.getEncoder().encodeToString(ciphertext);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        log.info("加密后的数据: " + encoded + " , 长度：" + encoded.length());
+
+        return encoded;
+    }
+
+
+    /**
+     * 使用密钥，对密文进行解密
+     *
+     * @param secretKeyStr
+     * @param encodeStr
+     * @return
+     */
+    public static String decode(String secretKeyStr,String encodeStr) {
+        String decryptedText = "";
+        try {
+            // Generate a secret key
+            SecretKeySpec secretKey = new SecretKeySpec(secretKeyStr.getBytes(StandardCharsets.UTF_8), "AES");
+
+            // Decode the ciphertext from the base64-encoded string
+            byte[] decoded = Base64.getDecoder().decode(encodeStr);
+
+            // Create a new cipher object and initialize it with the secret key
+            Cipher cipher = Cipher.getInstance("AES/ECB/PKCS5Padding");
+            cipher.init(Cipher.DECRYPT_MODE, secretKey);
+
+            // Decrypt the ciphertext
+            byte[] decrypted = cipher.doFinal(decoded);
+
+            // Convert the decrypted plaintext to a string
+            decryptedText = new String(decrypted, StandardCharsets.UTF_8);
+
+        } catch (Exception e) {
+            e.printStackTrace();
         }
 
-        String str1 = encode(JSONUtil.toJsonStr(email));
-        String str2 = encode(JSONUtil.toJsonStr(emailList));
+        log.info("解密后的数据: " + decryptedText);
 
-        System.out.println(str1);
-        System.out.println(str2);
+        return decryptedText;
 
-        String str3 = decode(str1);
-        String str4 = decode(str2);
+    }
 
-        Email temp = JSONUtil.toBean(str3,Email.class);
-        List<Email> tempList = JSONUtil.toList(str4,Email.class);
+
+
+    public static void main2(String[] args) {
+        KeyPair keyPair = keyPair();
+
+        String privateKey = privateKey2Base64(keyPair.getPrivate());
+        String publicKey = publicKey2Base64(keyPair.getPublic());
+
+        PrivateKey key1 = privateKeyFromBase64(privateKey);
+        PublicKey key2 = publicKeyFromBase64(publicKey);
 
         System.out.println();
     }
 
+
+    public static void main(String[] args) {
+
+        String url = "http://127.0.0.1:8821/gateway/xfs/exchange";
+
+        String appKey = "1234567890123456";
+        String appSecret = "MIICdwIBADANBgkqhkiG9w0BAQEFAASCAmEwggJdAgEAAoGBAIbxHIv01LGvx84Z6sG21NPNWUgZ8f8pzyuVGFmx1seSNQYRgrz7aoezjteGrP18ZaKTGY2IBHBMWKWVbuq4rmT38wP229slzM/dbRLh35Dl4AhEXvSoNLI8/M3kX++/FkkNpBmwf7TqwcktAryeRYnGSThKJbKCOTvq/Eyf2lRLAgMBAAECgYA2kW4f0qPoLtM3rxdVup+Z/uJp28QWkUurriEotFfMYH18tLwPvAO6WIwc7+MoppNbCO0+ZJCW8OiwHRu7Y29x4s+xML+/l2wX+hN2IikVZAdT4UZpr8izd0q7nfcEbNiGia2Le2Wh6rZ7n0vOsDFxHar8uyH/1QCw/fPEcF9WQQJBAL3VgMHuxPtNd61MFzwtjKZZcRAjJiQGICXz0HDtt1zy0icjy1HioZYBkl2VA2+0OCxAer/R0BOceWztQx4tvvsCQQC1+bHM9b0D9V8zA0mG6HGB4W5MnJs9s415BUqRHU7kQ54iy8GPu1YOe5HEhMpvHLbS95S8oMkJbqAUGri2Pn7xAkEAhq1U9sFN0LgKAtFr3o62LUJhO0Cki4QpBKPwKl4L645917TGR2bQmpqs22WflX03KPXp3/Kbe35UixnctylfRwJAS3s29P05Wdr9kftbFEp2SplnVv/epMlFdV1sgKTXhHdHsMczkpryJy+6Vvl9vnj6nKd1WoiW2wK4A57R30YtAQJBAKnGBkbP+/J2F1g/4Eluy7ct8xGSigIenp4U1gD8mTTxI9OiL5Ze4vhSb0BDxcQYEqr5Gb2x6TKEWOMPExQdq/M=";
+
+        Map<String, String> headers = new HashMap<>();
+        headers.put("time",new Date().getTime()+"");
+        headers.put("route","/addUser");
+
+        Map<String,Object> param = new HashMap<>();
+        param.put("id",1);
+        param.put("name","小明");
+
+        String result = invokeTemplate(url, appKey, appSecret, headers, param);
+
+        System.out.println(result);
+    }
+
+
+    /**
+     * 接口调用示例
+     * @param url 接口请求地址
+     * @param appKey 客户端 key
+     * @param appSecret 客户端 secret
+     * @param headers 请求头参数，固定为 2 个参数，如下：
+     *                {
+     *                  "time":1687943282163, #当前请求时间毫秒值
+     *                  "route":"/addUser"  #接口路径
+     *                }
+     * @param param 接口参数, 例如：
+     *              {
+     *                  "id":1,
+     *                  "name":"小明"
+     *              }
+     *
+     */
+    public static String invokeTemplate(String url,String appKey,String appSecret,Map<String, String> headers,Map<String,Object> param) {
+
+        //原始参数
+        String paramData = JSONUtil.toJsonStr(param);
+
+        //使用 appKey 加密后的参数
+        String paramDataEncode = KeyPairSign.encode(appKey,paramData);
+
+        //将加密后的参数转为 byte 形式
+        byte[] data = KeyPairSign.str2byteArr(paramDataEncode);
+
+        //使用 appSecret 进行签名
+        byte[] signData = KeyPairSign.sign(appSecret, data);
+
+        Map<String,Object> requestMap = new HashMap<>();
+
+        //将参数及签名转化为 str 进行传输
+        requestMap.put("data",KeyPairSign.byteArr2Str(data));
+        requestMap.put("signData",KeyPairSign.byteArr2Str(signData));
+
+        //请请求参数转化为 json ，构造 post 请求体
+        String body = JSONUtil.toJsonStr(requestMap);
+        HttpRequest post = HttpUtil.createPost(url);
+        post.headerMap(headers,true);
+        post.body(body);
+
+        //请求并获取结果
+        String result = post.execute().body();
+
+        return result;
+    }
 
 
 

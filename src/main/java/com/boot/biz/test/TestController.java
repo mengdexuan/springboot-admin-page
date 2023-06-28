@@ -5,9 +5,13 @@ import cn.hutool.core.date.DatePattern;
 import cn.hutool.core.date.DateTime;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.io.FileUtil;
+import cn.hutool.core.io.IoUtil;
 import cn.hutool.core.thread.ThreadUtil;
+import cn.hutool.core.util.StrUtil;
 import cn.hutool.extra.mail.MailAccount;
 import cn.hutool.extra.mail.MailUtil;
+import cn.hutool.json.JSONArray;
+import cn.hutool.json.JSONUtil;
 import cn.hutool.poi.excel.ExcelReader;
 import cn.hutool.poi.excel.ExcelUtil;
 import cn.hutool.poi.excel.ExcelWriter;
@@ -42,7 +46,10 @@ import java.awt.*;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.Executor;
 
 /**
@@ -264,8 +271,38 @@ public class TestController {
 	}
 
 
+	public static void main(String[] args) {
+		File file = new File("test.txt");
 
-	public static void main(String[] args) throws Exception {
+		FileUtil.touch(file);
+
+		String str = IoUtil.readUtf8(FileUtil.getInputStream(file));
+
+		if (StrUtil.isNotEmpty(str)){
+			JSONArray arr = JSONUtil.parseArray(str);
+
+		}
+
+		List<Map<String,Object>> list = new ArrayList<>();
+
+		Map<String,Object> map = new HashMap<>();
+		map.put("a","a");
+		map.put("id",1);
+		map.put("name","test");
+
+		list.add(map);
+
+
+		str = JSONUtil.toJsonPrettyStr(list);
+
+		IoUtil.writeUtf8(FileUtil.getOutputStream(file),true,str);
+
+
+	}
+
+
+
+	public static void main3(String[] args) throws Exception {
 		ExcelReader reader = ExcelUtil.getReader(FileUtil.file("C:\\Users\\18514\\Desktop\\test3\\经销商采购数据模版.xlsx"));
 
 		int rowCount = reader.getRowCount();
