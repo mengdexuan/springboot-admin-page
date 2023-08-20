@@ -296,20 +296,16 @@ public class KeyPairSign {
 
     public static void main(String[] args) {
 
-        String url = "http://127.0.0.1:8821/gateway/xfs/exchange";
-
-        String appKey = "1234567890123456";
-        String appSecret = "MIICdwIBADANBgkqhkiG9w0BAQEFAASCAmEwggJdAgEAAoGBAIbxHIv01LGvx84Z6sG21NPNWUgZ8f8pzyuVGFmx1seSNQYRgrz7aoezjteGrP18ZaKTGY2IBHBMWKWVbuq4rmT38wP229slzM/dbRLh35Dl4AhEXvSoNLI8/M3kX++/FkkNpBmwf7TqwcktAryeRYnGSThKJbKCOTvq/Eyf2lRLAgMBAAECgYA2kW4f0qPoLtM3rxdVup+Z/uJp28QWkUurriEotFfMYH18tLwPvAO6WIwc7+MoppNbCO0+ZJCW8OiwHRu7Y29x4s+xML+/l2wX+hN2IikVZAdT4UZpr8izd0q7nfcEbNiGia2Le2Wh6rZ7n0vOsDFxHar8uyH/1QCw/fPEcF9WQQJBAL3VgMHuxPtNd61MFzwtjKZZcRAjJiQGICXz0HDtt1zy0icjy1HioZYBkl2VA2+0OCxAer/R0BOceWztQx4tvvsCQQC1+bHM9b0D9V8zA0mG6HGB4W5MnJs9s415BUqRHU7kQ54iy8GPu1YOe5HEhMpvHLbS95S8oMkJbqAUGri2Pn7xAkEAhq1U9sFN0LgKAtFr3o62LUJhO0Cki4QpBKPwKl4L645917TGR2bQmpqs22WflX03KPXp3/Kbe35UixnctylfRwJAS3s29P05Wdr9kftbFEp2SplnVv/epMlFdV1sgKTXhHdHsMczkpryJy+6Vvl9vnj6nKd1WoiW2wK4A57R30YtAQJBAKnGBkbP+/J2F1g/4Eluy7ct8xGSigIenp4U1gD8mTTxI9OiL5Ze4vhSb0BDxcQYEqr5Gb2x6TKEWOMPExQdq/M=";
-
-        Map<String, String> headers = new HashMap<>();
-        headers.put("time",new Date().getTime()+"");
-        headers.put("route","/addUser");
+        String url = "http://test.zjsjwyt2axfs.ticket.iciyun.net/gateway/xfs/test";
 
         Map<String,Object> param = new HashMap<>();
-        param.put("id",1);
-        param.put("name","小明");
+        param.put("orderId","1234567");
+        param.put("userId","4634");
+        param.put("orderAmount","12345");
+        param.put("orderTime","2023-07-11 15:11:59");
+        param.put("shopOrgNum","91110000773396449E");
 
-        String result = invokeTemplate(url, appKey, appSecret, headers, param);
+        String result = HttpUtil.post(url,JSONUtil.toJsonStr(param));
 
         System.out.println(result);
     }

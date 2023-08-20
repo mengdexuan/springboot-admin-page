@@ -10,6 +10,8 @@ import cn.hutool.core.thread.ThreadUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.extra.mail.MailAccount;
 import cn.hutool.extra.mail.MailUtil;
+import cn.hutool.http.HttpRequest;
+import cn.hutool.http.HttpUtil;
 import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONUtil;
 import cn.hutool.poi.excel.ExcelReader;
@@ -46,10 +48,8 @@ import java.awt.*;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.*;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.Executor;
 
 /**
@@ -272,31 +272,26 @@ public class TestController {
 
 
 	public static void main(String[] args) {
-		File file = new File("test.txt");
 
-		FileUtil.touch(file);
+		String uploadUrl = "http://test.zjsjwyt2axfs.ticket.iciyun.net/gateway/xfs/exchange";
 
-		String str = IoUtil.readUtf8(FileUtil.getInputStream(file));
+		Date date = new Date();
 
-		if (StrUtil.isNotEmpty(str)){
-			JSONArray arr = JSONUtil.parseArray(str);
+		Map<String,Object> param = new HashMap<>();
+		param.put("orderId","asfasf");
+		param.put("userId","1234");
+		param.put("orderAmount","123");
+		param.put("orderTime","2023-07-11 15:11:56");
+		param.put("shopOrgNum","asfasfasfsaf");
 
-		}
+		HttpRequest post = HttpUtil.createPost(uploadUrl);
 
-		List<Map<String,Object>> list = new ArrayList<>();
+		post.header("time",date.getTime()+"");
+		post.header("route","/syncOrder");
 
-		Map<String,Object> map = new HashMap<>();
-		map.put("a","a");
-		map.put("id",1);
-		map.put("name","test");
+		String result = post.execute().body();
 
-		list.add(map);
-
-
-		str = JSONUtil.toJsonPrettyStr(list);
-
-		IoUtil.writeUtf8(FileUtil.getOutputStream(file),true,str);
-
+		System.out.println(result);
 
 	}
 
