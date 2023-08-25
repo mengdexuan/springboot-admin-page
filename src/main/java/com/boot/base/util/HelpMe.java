@@ -13,6 +13,7 @@ import com.google.common.collect.Lists;
 import com.google.common.io.Files;
 import com.google.common.io.Resources;
 import lombok.extern.slf4j.Slf4j;
+import org.checkerframework.checker.units.qual.A;
 
 import java.beans.BeanInfo;
 import java.beans.IntrospectionException;
@@ -556,6 +557,23 @@ public class HelpMe {
     public static <T> Predicate<T> distinctByKey(Function<? super T, ?> keyExtractor) {
         Map<Object, Boolean> seen = new ConcurrentHashMap<>();
         return t -> seen.putIfAbsent(keyExtractor.apply(t), Boolean.TRUE) == null;
+    }
+
+    public static IntSummaryStatistics intSummaryStatistics(List<Integer> list) {
+        IntSummaryStatistics summaryStatistics = list.stream().collect(Collectors.summarizingInt(x -> x));
+        return summaryStatistics;
+    }
+
+
+    public static LongSummaryStatistics longSummaryStatistics(List<Long> list) {
+        LongSummaryStatistics summaryStatistics = list.stream().collect(Collectors.summarizingLong(x -> x));
+        return summaryStatistics;
+    }
+
+
+    public static DoubleSummaryStatistics doubleSummaryStatistics33(List<Double> list) {
+        DoubleSummaryStatistics summaryStatistics = list.stream().collect(Collectors.summarizingDouble(x -> x));
+        return summaryStatistics;
     }
 
 
