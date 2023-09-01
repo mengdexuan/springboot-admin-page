@@ -6,9 +6,10 @@ spring:
     active: dev1
   datasource:
     type: com.alibaba.druid.pool.DruidDataSource
-    url: jdbc:mysql://localhost:3306/springboot_admin?characterEncoding=utf8&serverTimezone=Asia/Shanghai&useSSL=false&tinyInt1isBit=false&autoReconnect=true&failOverReadOnly=false&rewriteBatchedStatements=true&allowMultiQueries=true
+    url: jdbc:mysql://10.211.55.3:3306/springboot_admin?characterEncoding=utf8&serverTimezone=Asia/Shanghai&useSSL=false&tinyInt1isBit=false&autoReconnect=true&failOverReadOnly=false&rewriteBatchedStatements=true&allowMultiQueries=true
     username: root
-    password: ENC(YyQYDjBTg438tbfWW05DCQ==)
+#    password: ENC(YyQYDjBTg438tbfWW05DCQ==)
+    password: 123456
     driver-class-name: com.mysql.jdbc.Driver
     # 配置监控统计拦截的filters，去掉后监控界面sql无法统计，'wall'用于防火墙
     filters: stat,wall,log4j,filterEvent

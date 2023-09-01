@@ -31,7 +31,7 @@ import java.util.List;
 /**
  * Created by mengdexuan on 2017/6/22 11:13.
  */
-@Controller
+@Controller("fileController2")
 @RequestMapping("/file")
 @Slf4j
 public class FileController {

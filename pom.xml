@@ -28,7 +28,7 @@
         <commons-io.version>2.7</commons-io.version>
         <swagger.version>2.9.2</swagger.version>
         <commons-lang3.version>3.9</commons-lang3.version>
-        <oshi.version>3.9.1</oshi.version>
+        <oshi.version>6.4.5</oshi.version>
         <jwt.version>0.9.1</jwt.version>
         <jmockdata.version>2.4</jmockdata.version>
         <jasypt.version>2.1.2</jasypt.version>
@@ -78,6 +78,12 @@
             <groupId>com.github.oshi</groupId>
             <artifactId>oshi-core</artifactId>
             <version>${oshi.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>net.java.dev.jna</groupId>
+            <artifactId>jna-platform</artifactId>
+            <version>5.13.0</version>
         </dependency>
 
         <!-- email -->

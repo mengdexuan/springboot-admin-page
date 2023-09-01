@@ -65,10 +65,10 @@ public class IndexController {
 	@ResponseBody
 	public Result index() {
 
-		Server serverInfo = ServerController.serverInfo();
-		serverInfo.setPid(SystemUtil.getCurrentPID());
+//		Server serverInfo = ServerController.serverInfo();
+//		serverInfo.setPid(SystemUtil.getCurrentPID());
 
-		return ResultUtil.buildSuccess(serverInfo);
+		return ResultUtil.buildSuccess();
 	}
 
 
@@ -106,10 +106,9 @@ public class IndexController {
 
 		log.info("首页被访问...");
 
-		Server serverInfo = ServerController.serverInfo();
-
-		model.addAttribute("sysTime", System.currentTimeMillis());
-		model.addAttribute("serverInfo", serverInfo);
+//		Server serverInfo = ServerController.serverInfo();
+//		model.addAttribute("sysTime", System.currentTimeMillis());
+//		model.addAttribute("serverInfo", serverInfo);
 
 		return "back/index";
 	}

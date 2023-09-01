@@ -65,7 +65,7 @@
 								&nbsp;&nbsp;
 								<button type="button" onclick="showModel();" class="btn btn-warning btn-sm">上传</button>
 								&nbsp;&nbsp;
-								<a class="btn btn-success btn-sm" type="button" onclick="refresh()">刷新</a>
+								<a class="btn btn-success btn-sm" type="button" onclick="refreshPage()">刷新</a>
 							</div>
 						</div>
 						<br/>
@@ -140,6 +140,14 @@
             var searchDir = $.trim($(this).val());
             loadDirEle(searchDir);
         });
+
+		var href = location.href;
+		var tempArr = href.split("currDir=");
+		if (tempArr.length>1){
+			var currDir = tempArr[1];
+			$('#searchDir').val(currDir);
+			loadDirEle(currDir);
+		}
     });
 
     var setting = {
@@ -163,7 +171,21 @@
     };
 
 
-    function parentDir() {
+	function refreshPage() {
+		var href = location.href;
+
+		href = href.split("&currDir=")[0];
+
+		href += "&currDir=";
+
+		var currDir = $("#currDir").val();
+
+		href += currDir;
+
+		window.location = href;
+	}
+
+	function parentDir() {
         var currDir = $("#currDir").val();
         // currDir = encodeURI(encodeURI(currDir));
         if (currDir==""){

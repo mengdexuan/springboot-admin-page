@@ -41,8 +41,8 @@ public class ServerController extends BaseController {
 
 
 
-	@Scheduled(cron = "0/59 * * * * *")
-	@PostConstruct
+//	@Scheduled(cron = "0/59 * * * * *")
+//	@PostConstruct
 	public void init(){
 
 		Server server = new Server();
