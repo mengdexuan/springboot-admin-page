@@ -41,8 +41,8 @@
                 <div class="panel-heading">
                     <h4 class="panel-title"></h4>
                 </div>
-                <div class="panel-body" style="color: red;min-height:600px;background: black;padding: 0;overflow: hidden">
-                    <div id="content">
+                <div class="panel-body" style="color: red;height:600px;background: black;padding: 0;overflow:scroll">
+                    <div id="content" style="overflow:scroll">
                         <div id="term"></div>
                     </div>
                 </div>
@@ -55,23 +55,27 @@
     <!--/_footer /作为公共模版分离出去-->
 
     <script type="text/javascript" th:src="@{/lib/xterm.js-2.4.0/term.js}"></script>
+    <script type="text/javascript" th:src="@{/lib/common.js}"></script>
+
 
     <script type="text/javascript" th:inline="javascript">
 
         var sshInfo = [[${sshInfo}]];
         $(".panel-title").text(sshInfo.username + "@" + sshInfo.hostname);
 
-        var url = ctx + "/sshShellHandler";
+        var url = projectWsUrl() + "/webssh";
 
-        var sock = new SockJS(url);
+        var websocket = new WebSocket(url);
 
-        sock.onopen = function(event) {
+        websocket.onopen = function () {
             console.log("socket connection open ...");
-            sock.send(JSON.stringify(sshInfo));
+            websocket.send(JSON.stringify(sshInfo));
         };
 
         var term = null;
-        sock.onmessage = function(evt) {
+
+        websocket.onmessage = function (evt) {
+            var data = evt.data.toString();
 
             console.log("Received Message: " + evt.data);
 
@@ -89,24 +93,28 @@
                 });
                 term.open($("#term").empty()[0]);
                 term.on('data', function(data) {
-                    sock.send(data);
+                    websocket.send(data);
                 });
             } else {
                 //写数据到term 控制台
                 term.write(evt.data);
             }
+
+
         };
 
-        sock.onclose = function(event) {
+
+        websocket.onclose = function (evt) {
+
         };
 
-        sock.onerror = function(event) {
-        };
+
+
 
 
         //监听窗口关闭事件，当窗口关闭时，主动去关闭websocket连接，防止连接还没断开就关闭窗口，server端会抛异常。
         window.onbeforeunload = function () {
-            sock.close();
+            websocket.close();
         }
     </script>
 </div>
