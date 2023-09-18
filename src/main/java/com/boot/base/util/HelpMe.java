@@ -772,6 +772,39 @@ public class HelpMe {
     }
 
 
+
+    /**
+     * 对 list 进行排序(自然顺序)
+     * @param list
+     * @param keyExtractor
+     * @param <T>
+     * @param <R>
+     *     调用示例：        list = HelpMe.compareList(list,ShipmentPackageTrackingInfo::getCreateTime);
+     * @return
+     */
+    public static <T, R extends Comparable<? super R>> List<T> compareList(List<T> list, java.util.function.Function<T, R> keyExtractor) {
+        return list.stream()
+                .sorted(Comparator.comparing(keyExtractor))
+                .collect(Collectors.toList());
+    }
+
+
+    /**
+     * 对 list 进行排序（倒序）
+     * @param list
+     * @param keyExtractor
+     * @param <T>
+     * @param <R>
+     *     调用示例：        list = HelpMe.compareListReversed(list,ShipmentPackageTrackingInfo::getCreateTime);
+     * @return
+     */
+    public static <T, R extends Comparable<? super R>> List<T> compareListReversed(List<T> list, java.util.function.Function<T, R> keyExtractor) {
+        return list.stream()
+                .sorted(Comparator.comparing(keyExtractor).reversed())
+                .collect(Collectors.toList());
+    }
+
+
     /**
      * 将两个集合合并成一个，顺序不变
      *
