@@ -2,7 +2,6 @@ package com.boot.base.util;
 
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang3.StringUtils;
-import sun.misc.BASE64Decoder;
 
 import javax.crypto.Cipher;
 import javax.crypto.KeyGenerator;
@@ -75,7 +74,7 @@ public class AesUtil {
      * @throws Exception
      */
     public static byte[] base64Decode(String base64Code) throws Exception{
-        return StringUtils.isEmpty(base64Code) ? null : new BASE64Decoder().decodeBuffer(base64Code);
+        return StringUtils.isEmpty(base64Code) ? null : null;
     }
 
 
