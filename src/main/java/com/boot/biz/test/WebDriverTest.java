@@ -1,5 +1,7 @@
 package com.boot.biz.test;
 
+import cn.hutool.core.collection.CollUtil;
+import cn.hutool.core.util.StrUtil;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -8,6 +10,7 @@ import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.remote.RemoteWebDriver;
 
 import java.net.URL;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -94,6 +97,9 @@ public class WebDriverTest {
     }
 
     static final String APP_URL = "https://www.baidu.com";
+
+
+
     static final String HOST_URL = "http://10.10.1.85:4444/wd/hub";
 
     public static void main(String[] args) throws Exception{
@@ -108,6 +114,8 @@ public class WebDriverTest {
         //禁止加载图片
         chromeOptions.addArguments("blink-settings=imagesEnabled=false");
         chromeOptions.addArguments("--disable-javascript");
+        chromeOptions.addArguments("--offline");
+        chromeOptions.addArguments("--selenium-manager=true");
 
         WebDriver driver = new RemoteWebDriver(new URL(HOST_URL),chromeOptions);
 
@@ -136,7 +144,14 @@ public class WebDriverTest {
 
         System.out.println("--->"+str);
 
-        Thread.sleep(5*1000);  // Let the user actually see something!
+        List<String> tempList = StrUtil.split(str, '\n');
+        if (CollUtil.isNotEmpty(tempList)){
+
+        }
+
+        System.out.println(tempList);
+
+//        Thread.sleep(5*1000);  // Let the user actually see something!
 
         driver.close();
         driver.quit();

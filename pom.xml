@@ -34,10 +34,25 @@
         <jasypt.version>2.1.2</jasypt.version>
         <selenium.version>4.15.0</selenium.version>
         <webdrivermanager.version>5.6.2</webdrivermanager.version>
+        <x-file-storage.version>2.0.0</x-file-storage.version>
+        <cos_api.version>5.6.137</cos_api.version>
     </properties>
 
 
     <dependencies>
+
+
+        <dependency>
+            <groupId>org.dromara.x-file-storage</groupId>
+            <artifactId>x-file-storage-spring</artifactId>
+            <version>${x-file-storage.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.qcloud</groupId>
+            <artifactId>cos_api</artifactId>
+            <version>${cos_api.version}</version>
+        </dependency>
 
         <dependency>
             <groupId>org.seleniumhq.selenium</groupId>
