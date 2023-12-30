@@ -2,6 +2,7 @@ package com.boot.base.util;
 
 
 import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.bean.copier.CopyOptions;
 import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.map.MapUtil;
 import cn.hutool.core.util.ReflectUtil;
@@ -1961,6 +1962,16 @@ public class HelpMe {
 
         return map;
     }
+
+
+
+    public static CopyOptions copyOptions(){
+        CopyOptions copyOptions = CopyOptions.create();
+        copyOptions.setIgnoreError(true);
+        copyOptions.setIgnoreNullValue(true);
+        return copyOptions;
+    }
+
 
 
     /**
