@@ -10,6 +10,7 @@ import com.google.common.base.*;
 import com.google.common.collect.AbstractIterator;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import com.google.common.io.Files;
 import com.google.common.io.Resources;
 import lombok.extern.slf4j.Slf4j;
@@ -1959,6 +1960,24 @@ public class HelpMe {
         }
 
         return map;
+    }
+
+
+    /**
+     * 将 list 转换为 map 返回
+     * @param list
+     * @param classifier
+     * @return
+     * @param <T>   调用示例：  Map<String, PaySetEntity> map = HelpMe.transList2Map(list, PaySetEntity::getApplyCode);
+     * @param <K>
+     */
+    public static <T, K> Map<K, T> transList2Map(List<T> list, java.util.function.Function<? super T, ? extends K> classifier) {
+        Map<K, List<T>> map = list.stream().collect(Collectors.groupingBy(classifier));
+        Map<K, T> result = Maps.newHashMap();
+        for (Map.Entry<K, List<T>> entry:map.entrySet()){
+            result.put(entry.getKey(),entry.getValue().get(0));
+        }
+        return result;
     }
 
 
