@@ -32,9 +32,15 @@ import java.sql.ResultSet;
 import java.text.DateFormat;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.ToDoubleFunction;
+import java.util.function.ToIntFunction;
+import java.util.function.ToLongFunction;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+import java.util.stream.DoubleStream;
+import java.util.stream.IntStream;
+import java.util.stream.LongStream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
@@ -576,6 +582,24 @@ public class HelpMe {
     public static DoubleSummaryStatistics doubleSummaryStatistics33(List<Double> list) {
         DoubleSummaryStatistics summaryStatistics = list.stream().collect(Collectors.summarizingDouble(x -> x));
         return summaryStatistics;
+    }
+
+
+
+    public static <T> IntStream intStream(List<T> list, ToIntFunction<? super T> function) {
+        IntStream intStream = list.stream().mapToInt(function);
+        return intStream;
+    }
+
+    public static <T> LongStream longStream(List<T> list, ToLongFunction<? super T> function) {
+        LongStream longStream = list.stream().mapToLong(function);
+        return longStream;
+    }
+
+
+    public static <T> DoubleStream longStream(List<T> list, ToDoubleFunction<? super T> function) {
+        DoubleStream doubleStream = list.stream().mapToDouble(function);
+        return doubleStream;
     }
 
 
