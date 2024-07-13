@@ -313,12 +313,16 @@ public class FtpController {
 				uploadProgressMap.put(fileNameMd5, "0.00%");
 			}
 
+			@Override
+			public void progress(long l, long l1) {
+
+			}
+
 			/**
 			 * 进行中
 			 *
 			 * @param progressSize 已经进行的大小
 			 */
-			@Override
 			public void progress(long progressSize) {
 				double num = NumberUtil.div(progressSize, totalSize) * 100;
 				String percent = NumberUtil.round(num, 2).toString() + "%";
