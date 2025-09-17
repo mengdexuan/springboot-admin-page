@@ -50,14 +50,6 @@ import java.util.zip.ZipOutputStream;
 @Slf4j
 public class HelpMe {
 
-
-    public static String yyyy_MM_dd_HH_mm_ss = "yyyy-MM-dd HH:mm:ss";//年月日时分秒
-    public static String yyyy_MM_dd = "yyyy-MM-dd";//年月日
-    public static String yyyy_MM = "yyyy-MM";//年月
-    public static String yyyy = "yyyy";//年
-    public static String MM = "MM";//月
-
-
     /**
      * 封装JDK自带的UUID, 通过Random数字生成, 中间无-分割.  32位
      *
